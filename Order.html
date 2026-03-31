@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء طلب شحنة</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .section-title {
+      background: #34495e;
+      color: white;
+      padding: 8px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: right;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .split-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .split-container input {
+      width: 50%;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 5px;
+    }
+
+    .radio-group label {
+      display: inline;
+      font-weight: normal;
+    }
+
+    button {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%;
+      margin-top: 20px;
+      font-weight: bold;
+      box-sizing: border-box;
+    }
+
+    button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .btn-print {
+      background-color: #8e44ad;
+      margin-top: 15px;
+    }
+
+    .btn-print:hover {
+      background-color: #732d91;
+    }
+
+    .btn-download {
+      background-color: #e67e22;
+      margin-top: 10px;
+    }
+
+    .btn-download:hover {
+      background-color: #d35400;
+    }
+
+    .btn-new {
+      background-color: #2980b9;
+      margin-top: 10px;
+    }
+
+    .btn-new:hover {
+      background-color: #1f618d;
+    }
+
+    #divisionGroup {
+      display: none;
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 5px;
+      border: 1px solid #ffeeba;
+    }
+
+    .success-msg {
+      text-align: center;
+      color: #155724;
+      background: #d4edda;
+      padding: 20px;
+      border-radius: 5px;
+      display: none;
+      border: 1px solid #c3e6cb;
+    }
+
+    .info-box {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 12px;
+      margin-top: 15px;
+      text-align: center;
+      color: #495057;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="formContainer">
+    <h2>طلب شحنة جديدة</h2>
+    <form id="orderForm" onsubmit="submitForm(event)">
+
+      <div class="section-title">بيانات الشركة / المرسل</div>
+      <div class="form-group">
+        <label>إيميل المرسل (إجباري - ID الحساب)</label>
+        <input type="email" id="senderEmail" required>
+      </div>
+      <div class="form-group">
+        <label>اسم الشركة / المرسل</label>
+        <input type="text" id="senderName" required>
+      </div>
+      <div class="form-group">
+        <label>رقم هاتف المرسل</label>
+        <input type="tel" id="senderPhone" required>
+      </div>
+      <div class="form-group">
+        <label>عنوان المرسل</label>
+        <input type="text" id="senderAddress" required>
+      </div>
+      <div class="form-group">
+        <label>منطقة المرسل</label>
+        <select id="senderArea" required><option value="">جاري التحميل...</option></select>
+      </div>
+
+      <div class="section-title">بيانات المستلم</div>
+      <div class="form-group">
+        <label>إيميل المستلم (اختياري - لتتبع الشحنة)</label>
+        <input type="email" id="receiverEmail">
+      </div>
+      <div class="form-group">
+        <label>اسم المستلم</label>
+        <input type="text" id="receiverName" required>
+      </div>
+      <div class="form-group">
+        <label>رقم هاتف المستلم</label>
+        <input type="tel" id="receiverPhone" required>
+      </div>
+      <div class="form-group">
+        <label>عنوان المستلم</label>
+        <input type="text" id="receiverAddress" required>
+      </div>
+      <div class="form-group">
+        <label>منطقة المستلم</label>
+        <select id="receiverArea" onchange="updateDeliveryCost()" required><option value="">جاري التحميل...</option></select>
+      </div>
+
+      <div class="section-title">التفاصيل المالية</div>
+      <div class="form-group">
+        <label>سعر المنتج (المطلوب تحصيله)</label>
+        <input type="number" id="productPrice" required>
+      </div>
+      <div class="form-group">
+        <label>تكلفة التوصيل (تلقائي حسب المنطقة)</label>
+        <input type="number" id="deliveryCost" readonly>
+      </div>
+      <div class="form-group">
+        <label>سعر التوصيل على من؟</label>
+        <select id="deliveryPaidBy" onchange="toggleDivisionDetail()" required>
+          <option value="">...اختر...</option>
+          <option value="على المرسل">على المرسل</option>
+          <option value="على المستلم">على المستلم</option>
+          <option value="تقسيم">تقسيم بينهما</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="divisionGroup">
+        <label>طريقة التقسيم:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="splitType" value="amount" checked onchange="calcSplit('sender')"> بالقيمة</label>
+          <label><input type="radio" name="splitType" value="percent" onchange="calcSplit('sender')"> بالنسبة المئوية %</label>
+        </div>
+        <div class="split-container">
+          <input type="number" id="senderShare" placeholder="حصة المرسل" oninput="calcSplit('sender')">
+          <input type="number" id="receiverShare" placeholder="حصة المستلم" oninput="calcSplit('receiver')">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn">تأكيد وإصدار البوليصة</button>
+    </form>
+  </div>
+
+  <div class="container success-msg" id="successContainer">
+    <h2>✅ تم تسجيل الشحنة بنجاح</h2>
+    <p style="font-size: 18px;">تم إنشاء البوليصة بنجاح. رقم التتبع هو:</p>
+    <h1 id="generatedTrackId" style="color: #c0392b; letter-spacing: 2px;"></h1>
+
+    <div class="info-box">
+      <p style="margin: 0;">📌 الرقم السري (PIN): <strong id="generatedPin" style="color: #e74c3c;"></strong></p>
+      <p style="margin: 5px 0 0 0; font-size: 12px;">احتفظ بهذا الرقم للتتبع المستقبلي</p>
+    </div>
+
+    <button id="viewPdfBtn" class="btn-print" onclick="viewPdfNatively()">👁️ عرض وطباعة البوليصة</button>
+    <button id="downloadPdfBtn" class="btn-download" onclick="downloadPDF()">💾 تحميل البوليصة (PDF)</button>
+
+    <button class="btn-new" onclick="resetFormManually()">➕ تسجيل شحنة أخرى</button>
+  </div>
+
+  <script>
+    var areasData = [];
+    var finalPdfBase64 = ""; 
+    var currentTrackingId = ""; 
+    var currentPin = ""; 
+
+    window.onload = function() {
+      google.script.run.withSuccessHandler(function(areas) {
+        areasData = areas;
+        var options = '<option value="">...اختر المنطقة...</option>';
+        areas.forEach(function(area) { options += '<option value="' + area.name + '" data-price="' + area.price + '">' + area.name + '</option>'; });
+        document.getElementById('senderArea').innerHTML = options;
+        document.getElementById('receiverArea').innerHTML = options;
+      }).getAreasAndPrices();
+    };
+
+    // --- وظيفة مسح النموذج والعودة للبداية ---
+    function resetFormManually() {
+      // 1. إعادة عرض النموذج وإخفاء رسالة النجاح
+      document.getElementById('formContainer').style.display = 'block';
+      document.getElementById('successContainer').style.display = 'none';
+      
+      // 2. تصفير جميع المدخلات في الفورم
+      document.getElementById('orderForm').reset();
+      
+      // 3. إعادة زر التأكيد لحالته الأصلية
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = false;
+      btn.innerText = "تأكيد وإصدار البوليصة";
+      
+      // 4. إخفاء قسم التقسيم المالي
+      document.getElementById("divisionGroup").style.display = "none";
+      
+      // 5. تصفير المتغيرات لضمان عدم تداخل البيانات
+      finalPdfBase64 = "";
+      currentTrackingId = "";
+      currentPin = "";
+      
+      // تمرير الصفحة للأعلى
+      window.scrollTo(0, 0);
+    }
+
+    function updateDeliveryCost() {
+      var select = document.getElementById('receiverArea');
+      var price = select.options[select.selectedIndex].getAttribute('data-price');
+      document.getElementById('deliveryCost').value = price || 0;
+      calcSplit('sender'); 
+    }
+
+    function toggleDivisionDetail() {
+      var select = document.getElementById("deliveryPaidBy").value;
+      var divGroup = document.getElementById("divisionGroup");
+      if (select === "تقسيم") {
+        divGroup.style.display = "block";
+      } else {
+        divGroup.style.display = "none";
+        document.getElementById("senderShare").value = "";
+        document.getElementById("receiverShare").value = "";
+      }
+    }
+
+    function calcSplit(changedField) {
+      var totalCost = parseFloat(document.getElementById('deliveryCost').value) || 0;
+      var splitType = document.querySelector('input[name="splitType"]:checked').value;
+      var senderInput = document.getElementById('senderShare');
+      var receiverInput = document.getElementById('receiverShare');
+
+      if (totalCost === 0) return;
+      if (splitType === 'amount') {
+        if (changedField === 'sender') { receiverInput.value = Math.max(0, totalCost - (parseFloat(senderInput.value) || 0)); } 
+        else { senderInput.value = Math.max(0, totalCost - (parseFloat(receiverInput.value) || 0)); }
+      } else { 
+        if (changedField === 'sender') { receiverInput.value = Math.max(0, 100 - (parseFloat(senderInput.value) || 0)); } 
+        else { senderInput.value = Math.max(0, 100 - (parseFloat(receiverInput.value) || 0)); }
+      }
+    }
+
+    function submitForm(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = "جاري إنشاء البوليصة وحفظ الطلب...";
+
+      var splitDetails = "";
+      var recShare = 0;
+      if (document.getElementById('deliveryPaidBy').value === 'تقسيم') {
+        var type = document.querySelector('input[name="splitType"]:checked').value === 'amount' ? 'جنيه' : '%';
+        splitDetails = "المرسل: " + document.getElementById('senderShare').value + type + " / المستلم: " + document.getElementById('receiverShare').value + type;
+        
+        if (type === 'جنيه') {
+            recShare = parseFloat(document.getElementById('receiverShare').value) || 0;
+        } else {
+            var totalCost = parseFloat(document.getElementById('deliveryCost').value) || 0;
+            var pct = parseFloat(document.getElementById('receiverShare').value) || 0;
+            recShare = totalCost * (pct / 100);
+        }
+      }
+
+      var currentOrderData = {
+        senderEmail: document.getElementById('senderEmail').value,
+        senderName: document.getElementById('senderName').value,
+        senderPhone: document.getElementById('senderPhone').value,
+        senderAddress: document.getElementById('senderAddress').value,
+        senderArea: document.getElementById('senderArea').value,
+        receiverEmail: document.getElementById('receiverEmail').value,
+        receiverName: document.getElementById('receiverName').value,
+        receiverPhone: document.getElementById('receiverPhone').value,
+        receiverAddress: document.getElementById('receiverAddress').value,
+        receiverArea: document.getElementById('receiverArea').value,
+        productPrice: document.getElementById('productPrice').value,
+        deliveryCost: document.getElementById('deliveryCost').value,
+        deliveryPaidBy: document.getElementById('deliveryPaidBy').value,
+        divisionDetail: splitDetails,
+        receiverShare: recShare
+      };
+
+      google.script.run.withSuccessHandler(processBackendResponse).withFailureHandler(showError).createNewOrder(currentOrderData);
+    }
+
+    function processBackendResponse(response) {
+      var btn = document.getElementById('submitBtn');
+      if(response.success) {
+        currentTrackingId = response.trackingId;
+        currentPin = response.pin;
+        
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('successContainer').style.display = 'block';
+        document.getElementById('generatedTrackId').innerText = currentTrackingId;
+        document.getElementById('generatedPin').innerText = currentPin;
+        
+        if (response.pdfBase64) {
+          finalPdfBase64 = response.pdfBase64;
+        }
+      } else {
+        alert("حدث خطأ: " + response.error);
+        btn.disabled = false;
+        btn.innerText = "تأكيد وإصدار البوليصة";
+      }
+    }
+
+    function showError(error) {
+      alert("حدث خطأ في الاتصال بالخادم.");
+      var btn = document.getElementById('submitBtn');
+      btn.disabled = false;
+      btn.innerText = "تأكيد وإصدار البوليصة";
+    }
+
+    function viewPdfNatively() {
+      if (finalPdfBase64 !== "") {
+        var byteCharacters = atob(finalPdfBase64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], {type: 'application/pdf'});
+        var blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+      } else {
+        alert("عفواً، لم يتم تحميل ملف البوليصة بعد.");
+      }
+    }
+
+    function downloadPDF() {
+      if (finalPdfBase64 !== "") {
+        var byteCharacters = atob(finalPdfBase64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], {type: 'application/pdf'});
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Waybill_' + currentTrackingId + '.pdf';
+        link.click();
+      } else {
+        alert("عفواً، لم يتم تحميل ملف البوليصة بعد.");
+      }
+    }
+  </script>
+</body>
+
+</html>

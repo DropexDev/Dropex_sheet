@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة المندوبين - Dropex</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #ecf0f1;
+      margin: 0;
+      padding: 10px;
+    }
+
+    .login-screen {
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-top: 5px solid #2c3e50;
+      text-align: right;
+    }
+
+    h2,
+    h3 {
+      color: #2c3e50;
+      margin-top: 0;
+    }
+
+    p {
+      margin: 8px 0;
+      color: #34495e;
+      font-size: 15px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 90%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    .btn-login {
+      padding: 10px 20px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 90%;
+    }
+
+    .btn-deliver {
+      flex: 1;
+      padding: 12px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-return {
+      flex: 1;
+      padding: 12px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-disabled {
+      background: #95a5a6 !important;
+      cursor: not-allowed;
+    }
+
+    .receiver-box {
+      background-color: #e8f6fd;
+      border-right: 4px solid #2980b9;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 5px;
+    }
+
+    .btn-receiver-tel {
+      background: #2980b9;
+    }
+
+    .sender-box {
+      background-color: #fdf3e8;
+      border-right: 4px solid #d35400;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 5px;
+    }
+
+    .btn-sender-tel {
+      background: #d35400;
+    }
+
+    .contact-btn {
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      color: white;
+      font-size: 13px;
+      margin-left: 5px;
+      display: inline-block;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    .wa-btn {
+      background: #25D366;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .upload-area,
+    .reason-area {
+      margin: 15px 0 10px 0;
+      border: 1px dashed #7f8c8d;
+      padding: 10px;
+      border-radius: 5px;
+      background: #fdfdfd;
+    }
+
+    .amount-tag {
+      color: #c0392b;
+      font-weight: bold;
+      font-size: 18px;
+      background: #fadbd8;
+      padding: 10px;
+      border-radius: 5px;
+      display: block;
+      text-align: center;
+      border: 1px solid #e74c3c;
+      margin: 15px 0;
+    }
+
+    #dashboard {
+      display: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .welcome-msg {
+      text-align: center;
+      color: #27ae60;
+      margin-bottom: 20px;
+    }
+
+    .info-label {
+      color: #7f8c8d;
+      font-size: 13px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loginSection" class="login-screen">
+    <h2>بوابة المندوبين</h2>
+    <input type="email" id="emailInput" placeholder="أدخل الإيميل الخاص بك"><br>
+    <input type="password" id="passInput" placeholder="أدخل الرقم السري"><br>
+    <button class="btn-login" onclick="login()" id="loginBtn">دخول</button>
+    <p id="loginError" style="color:red; display:none;"></p>
+  </div>
+
+  <div id="dashboard">
+    <h3 id="welcomeText" class="welcome-msg"></h3>
+    <h3 style="text-align:center; color: #2980b9;">📦 الشحنات المطلوب توصيلها</h3>
+    <div id="ordersList">
+      <p style="text-align:center;">جاري التحميل...</p>
+    </div>
+  </div>
+
+  <script>
+    var currentCourier = "";
+
+    function login() {
+      // إزالة المسافات الزائدة قبل الإرسال لتجنب الأخطاء
+      var email = document.getElementById('emailInput').value.trim();
+      var pass = document.getElementById('passInput').value.trim();
+      var btn = document.getElementById('loginBtn');
+      
+      if(!email || !pass) {
+        document.getElementById('loginError').innerText = "الرجاء إدخال الإيميل والرقم السري.";
+        document.getElementById('loginError').style.display = 'block';
+        return;
+      }
+
+      btn.innerText = "جاري التحقق...";
+      btn.disabled = true;
+
+      google.script.run.withSuccessHandler(function(response) {
+        btn.innerText = "دخول";
+        btn.disabled = false;
+        
+        if (response.error) {
+          document.getElementById('loginError').style.display = 'block';
+          document.getElementById('loginError').innerText = response.error;
+        } else {
+          currentCourier = response.courierName;
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          document.getElementById('welcomeText').innerText = "مرحباً بك يا " + currentCourier;
+          renderOrders(response.orders);
+        }
+      }).getCourierOrders(email, pass);
+    }
+
+    function renderOrders(orders) {
+      var list = document.getElementById('ordersList');
+      var html = "";
+
+      if (orders.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:#7f8c8d;">لا توجد شحنات معلقة حالياً في عهدتك. شغل ممتاز! 👏</p>';
+        return;
+      }
+
+      orders.forEach(function(o) {
+        html += '<div class="card" id="card-' + o.row + '">';
+        html += '<h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">رقم الشحنة: <span style="color:#e67e22">' + o.id + '</span></h3>';
+        
+        var recPhoneStr = String(o.receiverPhone);
+        var recWaNumber = recPhoneStr.startsWith('0') ? '2' + recPhoneStr : recPhoneStr;
+        
+        html += '<div class="receiver-box">';
+        html += '<p><span class="info-label">👤 المستلم (الزبون):</span><br><strong>' + o.receiver + '</strong></p>';
+        html += '<p><span class="info-label">📍 العنوان:</span><br>' + o.address + '</p>';
+        html += '<p><span class="info-label">📱 رقم الهاتف:</span> ' + recPhoneStr + '</p>';
+        html += '<div>';
+        html += '<a href="tel:' + recPhoneStr + '" class="contact-btn btn-receiver-tel">📞 اتصال</a>';
+        html += '<a href="https://wa.me/' + recWaNumber + '" target="_blank" class="contact-btn wa-btn">💬 واتس المستلم</a>';
+        html += '</div></div>';
+
+        var senPhoneStr = String(o.senderPhone);
+        var senWaNumber = senPhoneStr.startsWith('0') ? '2' + senPhoneStr : senPhoneStr;
+
+        html += '<div class="sender-box">';
+        html += '<p><span class="info-label">🏪 الراسل (المتجر/البائع):</span><br><strong>' + o.sender + '</strong></p>';
+        html += '<div>';
+        html += '<a href="tel:' + senPhoneStr + '" class="contact-btn btn-sender-tel">📞 اتصال</a>';
+        html += '<a href="https://wa.me/' + senWaNumber + '" target="_blank" class="contact-btn wa-btn">💬 واتس الراسل</a>';
+        html += '</div></div>';
+
+        html += '<div class="amount-tag">💰 المطلوب تحصيله:<br><span style="font-size: 24px;">' + o.amount + ' ج.م</span></div>';
+        
+        html += '<div class="upload-area">';
+        html += '<label style="color:#2c3e50; font-weight:bold;">📸 صورة إثبات التسليم أو المرتجع (إجبارية):</label><br>';
+        html += '<input type="file" id="file-' + o.row + '" accept="image/*" capture="camera" style="margin-top:8px; width: 100%;">';
+        html += '</div>';
+
+        html += '<div class="reason-area">';
+        html += '<label>📝 سبب المرتجع (مطلوب في حال الإرجاع فقط):</label><br>';
+        html += '<input type="text" id="reason-' + o.row + '" placeholder="اكتب السبب هنا..." style="margin-top:8px;">';
+        html += '</div>';
+
+        html += '<div class="action-buttons">';
+        html += '<button class="btn-deliver" id="btnDel-' + o.row + '" onclick="processAction(' + o.row + ', \'delivered\')">إتمام التسليم ✓</button>';
+        html += '<button class="btn-return" id="btnRet-' + o.row + '" onclick="processAction(' + o.row + ', \'returned\')">مرتجع ✗</button>';
+        html += '</div>';
+
+        html += '</div>';
+      });
+
+      list.innerHTML = html;
+    }
+
+    function compressImage(file, callback) {
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var MAX_WIDTH = 800; 
+          var scaleSize = MAX_WIDTH / img.width;
+          if (img.width > MAX_WIDTH) { canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; } 
+          else { canvas.width = img.width; canvas.height = img.height; }
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          var dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
+          callback(dataUrl);
+        }
+        img.src = event.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+
+        function processAction(row, actionType) {
+      var fileInput = document.getElementById('file-' + row);
+      var reasonInput = document.getElementById('reason-' + row).value.trim();
+      var btnDel = document.getElementById('btnDel-' + row);
+      var btnRet = document.getElementById('btnRet-' + row);
+
+      // 1. التأكد من رفع الصورة أولاً (مهم جداً)
+      if (fileInput.files.length === 0) { 
+        alert("⚠️ تنبيه: لا يمكنك إتمام العملية بدون إرفاق صورة الإثبات!"); 
+        return; 
+      }
+      
+      // 2. التأكد من كتابة سبب المرتجع
+      if (actionType === 'returned' && reasonInput === "") { 
+        alert("⚠️ تنبيه: الرجاء كتابة سبب الإرجاع في المربع المخصص!"); 
+        return; 
+      }
+
+      // 3. تغيير شكل الأزرار لمنع الضغط مرتين
+      btnDel.disabled = true; btnRet.disabled = true;
+      btnDel.classList.add('btn-disabled'); btnRet.classList.add('btn-disabled');
+      
+      var activeBtn = (actionType === 'delivered') ? btnDel : btnRet;
+      activeBtn.innerText = "📍 جاري سحب الموقع...";
+
+      var uploadedFile = fileInput.files[0];
+
+      // 4. إجبار المندوب على أخذ الموقع (GPS)
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            // في حال نجاح سحب الموقع
+            var locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
+            activeBtn.innerText = "⏳ جاري رفع البيانات...";
+            prepareDataAndUpload(row, actionType, uploadedFile, reasonInput, locationData);
+          }, 
+          function(error) { 
+            // في حال فشل سحب الموقع أو المندوب رفض إعطاء الصلاحية
+            resetButtons(row); // إعادة تشغيل الأزرار
+            var errorMsg = "حدث خطأ غير معروف.";
+            if(error.code == 1) errorMsg = "لقد رفضت صلاحية الوصول للموقع! يرجى السماح للمتصفح بالوصول للـ GPS.";
+            else if(error.code == 2) errorMsg = "الـ GPS غير مفعل في هاتفك، يرجى تشغيله والمحاولة مرة أخرى.";
+            else if(error.code == 3) errorMsg = "انتهى وقت محاولة جلب الموقع (الإنترنت أو الـ GPS ضعيف).";
+            
+            alert("❌ لا يمكن إتمام الطلب: " + errorMsg);
+          },
+          // رفع مدة الانتظار لـ 10 ثواني لضمان سحب الموقع بدقة
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
+        );
+      } else { 
+        alert("متصفحك لا يدعم تحديد الموقع (GPS).");
+        resetButtons(row);
+      }
+    }
+
+    function prepareDataAndUpload(row, actionType, file, reason, locationData) {
+      if (file) {
+        compressImage(file, function(compressedBase64) {
+          var filename = "POD_" + actionType + "_" + row + "_" + new Date().getTime() + ".jpg";
+          sendToBackend(row, actionType, compressedBase64, filename, reason, locationData);
+        });
+      }
+    }
+
+    function sendToBackend(row, actionType, imageData, filename, reason, locationData) {
+      google.script.run.withSuccessHandler(function(res) {
+        if(res.success) {
+          alert("تم تسجيل العملية بنجاح! 🚀");
+          document.getElementById('card-' + row).style.display = 'none';
+        } else {
+          alert("خطأ: " + res.error);
+          resetButtons(row);
+        }
+      }).processCourierUpdate(row, actionType, imageData, filename, reason, locationData);
+    }
+
+    function resetButtons(row) {
+      var btnDel = document.getElementById('btnDel-' + row);
+      var btnRet = document.getElementById('btnRet-' + row);
+      btnDel.disabled = false; btnRet.disabled = false;
+      btnDel.classList.remove('btn-disabled'); btnRet.classList.remove('btn-disabled');
+      btnDel.innerText = "إتمام التسليم ✓"; btnRet.innerText = "مرتجع ✗";
+    }
+  </script>
+</body>
+
+</html>

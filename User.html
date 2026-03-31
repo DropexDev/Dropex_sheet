@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم التجار - Dropex</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    #loginSection {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    #loginSection input {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    #loginSection button {
+      background-color: #e67e22;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .error-msg {
+      color: #e74c3c;
+      margin-top: 10px;
+      font-weight: bold;
+      display: none;
+    }
+
+    #dashboardContent {
+      display: none;
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      flex: 1;
+      min-width: 140px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      border-bottom: 4px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .card.blue {
+      border-color: #3498db;
+    }
+
+    .card.green {
+      border-color: #2ecc71;
+    }
+
+    .card.red {
+      border-color: #e74c3c;
+    }
+
+    .card.purple {
+      border-color: #9b59b6;
+    }
+
+    .card.orange {
+      border-color: #e67e22;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 13px;
+      color: #7f8c8d;
+    }
+
+    .card .value {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 5px 0 0 0;
+      color: #2c3e50;
+    }
+
+    .owed-amount {
+      color: #27ae60 !important;
+      font-size: 26px !important;
+    }
+
+    .actions-bar {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-action {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+    }
+
+    .btn-add {
+      background-color: #2980b9;
+    }
+
+    .btn-upload {
+      background-color: #8e44ad;
+    }
+
+    .table-container {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #f8f9fa;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: white;
+    }
+
+    .badge.delivered {
+      background-color: #2ecc71;
+    }
+
+    .badge.pending {
+      background-color: #f39c12;
+    }
+
+    .badge.returned {
+      background-color: #e74c3c;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background: #fff;
+      margin: 2% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 95%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close {
+      float: left;
+      font-size: 24px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .grid-table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+
+    .grid-table th {
+      background: #34495e;
+      color: white;
+      padding: 8px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .grid-table td {
+      padding: 5px;
+    }
+
+    .grid-table input,
+    .grid-table select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      font-size: 12px;
+    }
+
+    .grid-btn {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    .add-row-btn {
+      background: #34495e;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h2>بوابة التجار والعملاء</h2>
+  </div>
+
+  <div id="loginSection">
+    <h3>تسجيل الدخول</h3>
+    <input type="email" id="userEmail" placeholder="البريد الإلكتروني">
+    <input type="password" id="userPass" placeholder="كلمة المرور">
+    <button onclick="loginUser()" id="loginBtn">دخول</button>
+    <div id="errorMsg" class="error-msg"></div>
+  </div>
+
+  <div id="dashboardContent">
+    <h3 style="color:#2c3e50; margin-top:0;">مرحباً، <span id="userNameTxt"></span></h3>
+
+    <div class="cards-container">
+      <div class="card blue">
+        <h3>إجمالي الشحنات</h3>
+        <p class="value" id="st-total">0</p>
+      </div>
+      <div class="card green">
+        <h3>الواصل</h3>
+        <p class="value" id="st-del">0</p>
+      </div>
+      <div class="card red">
+        <h3>المرتجع</h3>
+        <p class="value" id="st-ret">0</p>
+      </div>
+      <div class="card orange">
+        <h3>الرصيد المستحق لك</h3>
+        <p class="value owed-amount" id="st-owed">0 ج.م</p>
+      </div>
+      <div class="card purple">
+        <h3>إجمالي المبيعات (منذ البداية)</h3>
+        <p class="value" id="st-history">0 ج.م</p>
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <div>
+        <button class="btn-action btn-upload" onclick="openGridModal()">📋 إضافة طلبات مجمعة (جدول)</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h3>شحناتي الأخيرة</h3>
+      <div style="overflow-x: auto;">
+        <!-- لجعل الجدول يدعم التمرير الأفقي في الشاشات الصغيرة -->
+        <table>
+          <thead>
+            <tr>
+              <th>رقم التتبع</th>
+              <th>رمز البن</th>
+              <th>المستلم</th>
+              <th>الحالة</th>
+              <th>سعر المنتج</th>
+              <th>المستحق لك</th>
+              <th>بوليصة PDF</th>
+              <th>تفاصيل إضافية</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="gridModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('gridModal').style.display='none'">×</span>
+      <h3 style="margin-top: 0;" id="modalTitle">إضافة طلبات</h3>
+      <p style="font-size:13px; color:#7f8c8d;">أدخل بيانات المستلم. سيتم إصدار بوليصة PDF لكل طلب تلقائياً.</p>
+
+      <div style="overflow-x: auto;">
+        <table class="grid-table" id="ordersGrid">
+          <thead>
+            <tr>
+              <th>اسم المستلم</th>
+              <th>رقم الهاتف</th>
+              <th>إيميل المستلم (اختياري)</th>
+              <th>العنوان بالتفصيل</th>
+              <th>منطقة المستلم</th>
+              <th>سعر المنتج</th>
+              <th>التوصيل على من؟</th>
+            </tr>
+          </thead>
+          <tbody id="gridBody">
+          </tbody>
+        </table>
+      </div>
+
+      <button class="add-row-btn" onclick="addGridRow()" id="addRowBtn">+ إضافة صف جديد</button>
+      <button class="grid-btn" id="saveGridBtn" onclick="saveGridOrders()">حفظ وإرسال الطلبات</button>
+    </div>
+  </div>
+  <!-- نافذة التفاصيل الإضافية المنبثقة -->
+  <div id="orderDetailsModal" class="modal"
+    style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6);">
+    <div class="modal-content"
+      style="background-color:#fff; margin:10% auto; padding:20px; border:1px solid #888; width:90%; max-width:450px; border-radius:10px; text-align:right; direction:rtl; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+      <span onclick="document.getElementById('orderDetailsModal').style.display='none'" style="color:#aaa; float:left; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+      <h3 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #ecf0f1; padding-bottom:10px;">تفاصيل الشحنة</h3>
+      <div id="orderDetailsContent" style="line-height:2; font-size:15px; color:#34495e;">
+        <!-- سيتم حقن البيانات هنا بواسطة الجافاسكريبت -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var currentUser = null;
+    var areasOptionsHTML = '<option value="">..اختر المنطقة..</option>'; 
+
+    window.onload = function() {
+      google.script.run.withSuccessHandler(function(areas) {
+        areas.forEach(function(area) { 
+          areasOptionsHTML += '<option value="' + area.name + '">' + area.name + '</option>'; 
+        });
+      }).getAreasAndPrices();
+    };
+
+    function loginUser() {
+      var email = document.getElementById('userEmail').value.trim();
+      var pass = document.getElementById('userPass').value.trim();
+      var btn = document.getElementById('loginBtn');
+      var err = document.getElementById('errorMsg');
+      if(!email || !pass) { err.innerText = "أدخل الإيميل والباسورد"; err.style.display="block"; return; }
+      
+      btn.disabled = true; btn.innerText = "جاري التحقق..."; err.style.display="none";
+
+      google.script.run.withSuccessHandler(function(res) {
+        if(res.success) {
+          currentUser = res.userData;
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('userNameTxt').innerText = currentUser.name;
+          document.getElementById('dashboardContent').style.display = 'block';
+          loadDashboard();
+        } else {
+          err.innerText = res.error; err.style.display="block";
+          btn.disabled = false; btn.innerText = "دخول";
+        }
+      }).userLogin(email, pass);
+    }
+
+        // متغير عالمي لحفظ الطلبات حتى نتمكن من عرض تفاصيلها في النافذة المنبثقة
+    var globalOrdersList = []; 
+
+    function loadDashboard() {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if(res.success) {
+            document.getElementById('st-total').innerText = res.stats.totalOrders;
+            document.getElementById('st-del').innerText = res.stats.deliveredOrders;
+            document.getElementById('st-ret').innerText = res.stats.returnedOrders;
+            document.getElementById('st-owed').innerText = res.stats.currentOwed + ' ج.م';
+            document.getElementById('st-history').innerText = res.stats.totalHistoricalAmount + ' ج.م';
+            
+            // حفظ البيانات في المتغير العالمي
+            globalOrdersList = res.stats.ordersList; 
+
+            var tbody = '';
+            res.stats.ordersList.forEach(function(o, index) { // لاحظ إضافة index هنا
+              var badge = "badge pending";
+              if(o.status === "تم التوصيل") badge = "badge delivered";
+              else if(o.status === "مرتجع") badge = "badge returned";
+              
+              var pdfLink = o.waybillUrl ? '<a href="'+o.waybillUrl+'" target="_blank" style="color:#2980b9; font-weight:bold; text-decoration:none;">عرض</a>' : '<span style="color:#bdc3c7; font-weight:bold;">—</span>';
+
+              // بناء صف الجدول المصغر
+              tbody += '<tr>';
+              tbody += '<td style="white-space: nowrap;">' + o.id + '</td>';
+              tbody += '<td style="color:#e74c3c; font-weight:bold;">' + o.pin + '</td>';
+              tbody += '<td>' + o.receiver + '</td>';
+              tbody += '<td style="white-space: nowrap;"><span class="' + badge + '">' + o.status + '</span></td>';
+              tbody += '<td style="white-space: nowrap;">' + o.productPrice + ' ج.م</td>';
+              
+              var netColor = o.merchantNet < 0 ? "#c0392b" : "#16a085";
+              tbody += '<td style="color:' + netColor + '; font-weight:bold; white-space: nowrap;">' + o.merchantNet + ' ج.م</td>';
+              
+              tbody += '<td>' + pdfLink + '</td>';
+              
+              // زر "تفاصيل أكثر" يرسل رقم الـ index للدالة الجديدة
+              tbody += '<td><button onclick="showOrderDetails(' + index + ')" style="background:#34495e; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;">تفاصيل أكثر 🔽</button></td>';
+              
+              tbody += '</tr>';
+            });
+            
+            // تم تغيير colspan إلى 8 ليتناسب مع عدد الأعمدة الجديد
+            document.getElementById('ordersTableBody').innerHTML = tbody || '<tr><td colspan="8" style="text-align:center;">لا توجد شحنات بعد</td></tr>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert("حدث خطأ أثناء جلب البيانات: " + error);
+        })
+        .getUserDashboardStats(currentUser.email, currentUser.name);
+    }
+
+    // ==========================================
+    // الدالة الجديدة لفتح النافذة المنبثقة بالتفاصيل
+    // ==========================================
+    function showOrderDetails(index) {
+        // جلب بيانات الطلب المحدد من المتغير العالمي
+        var o = globalOrdersList[index];
+        
+        // تجهيز الروابط
+        var podLink = o.podImage ? '<a href="'+o.podImage+'" target="_blank" style="color:#27ae60; font-weight:bold; text-decoration:none;">🖼️ عرض صورة الاستلام</a>' : '<span style="color:#bdc3c7;">لا يوجد</span>';
+        var locLink = o.location ? '<a href="'+o.location+'" target="_blank" style="color:#d35400; font-weight:bold; text-decoration:none;">📍 فتح الموقع على الخريطة</a>' : '<span style="color:#bdc3c7;">لا يوجد</span>';
+        var paidByColor = o.paidBy === "على المرسل" ? "#c0392b" : "#2980b9";
+
+        // بناء محتوى النافذة المنبثقة
+        var content = `
+            <div style="background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:10px;">
+                <strong>العنوان بالتفصيل:</strong><br>
+                ${o.address}
+            </div>
+            <p><strong>التوصيل على:</strong> <span style="color:${paidByColor}; font-weight:bold; background:#ecf0f1; padding:2px 8px; border-radius:4px;">${o.paidBy || 'غير محدد'}</span></p>
+            <p><strong>سعر البك أب:</strong> <span style="font-weight:bold;">${o.pickupPrice} ج.م</span></p>
+            <hr style="border:0; border-top:1px solid #ecf0f1; margin:15px 0;">
+            <p>${podLink}</p>
+            <p>${locLink}</p>
+        `;
+        
+        // وضع المحتوى داخل النافذة وإظهارها
+        document.getElementById('orderDetailsContent').innerHTML = content;
+        document.getElementById('orderDetailsModal').style.display = 'block';
+    }
+
+    // إغلاق النافذة المنبثقة عند الضغط في أي مكان خارجها (اختياري لزيادة سهولة الاستخدام)
+    window.onclick = function(event) {
+        var modal = document.getElementById('orderDetailsModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function openSingleOrderModal() {
+      document.getElementById('modalTitle').innerText = "إضافة طلب فردي";
+      document.getElementById('addRowBtn').style.display = 'none'; 
+      document.getElementById('gridBody').innerHTML = '';
+      addGridRow(); 
+      document.getElementById('gridModal').style.display = 'block';
+    }
+    
+    function openGridModal() {
+      document.getElementById('modalTitle').innerText = "إضافة طلبات مجمعة";
+      document.getElementById('addRowBtn').style.display = 'inline-block'; 
+      document.getElementById('gridBody').innerHTML = '';
+      for(var i=0; i<3; i++) { addGridRow(); } 
+      document.getElementById('gridModal').style.display = 'block';
+    }
+
+    function addGridRow() {
+      var tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="g-name" placeholder="اسم المستلم"></td>
+        <td><input type="text" class="g-phone" placeholder="رقم الهاتف"></td>
+        <td><input type="email" class="g-email" placeholder="Email (اختياري)"></td>
+        <td><input type="text" class="g-address" placeholder="عنوان تفصيلي"></td>
+        <td><select class="g-area">${areasOptionsHTML}</select></td>
+        <td><input type="number" class="g-price" placeholder="سعر المنتج"></td>
+        <td>
+          <select class="g-paidby">
+            <option value="على المستلم">على المستلم</option>
+            <option value="على المرسل">على المرسل</option>
+          </select>
+        </td>
+      `;
+      document.getElementById('gridBody').appendChild(tr);
+    }
+
+    function saveGridOrders() {
+      var rows = document.getElementById('gridBody').getElementsByTagName('tr');
+      var ordersToSave = [];
+
+      for(var i = 0; i < rows.length; i++) {
+        var name = rows[i].querySelector('.g-name').value.trim();
+        var phone = rows[i].querySelector('.g-phone').value.trim();
+        var email = rows[i].querySelector('.g-email').value.trim();
+        var address = rows[i].querySelector('.g-address').value.trim();
+        var area = rows[i].querySelector('.g-area').value;
+        var price = rows[i].querySelector('.g-price').value.trim();
+        var paidBy = rows[i].querySelector('.g-paidby').value;
+
+        if(name !== "" && phone !== "" && area !== "") {
+          ordersToSave.push({ name: name, phone: phone, recEmail: email, address: address, area: area, price: price, paidBy: paidBy });
+        }
+      }
+
+      if(ordersToSave.length === 0) { alert("الرجاء إدخال بيانات طلب واحد على الأقل وتأكيد اختيار المنطقة!"); return; }
+
+      var btn = document.getElementById('saveGridBtn');
+      btn.disabled = true; 
+      btn.innerText = "جاري إنشاء بوالص الشحن والحفظ (يرجى الانتظار)...";
+
+      google.script.run.withSuccessHandler(function(res) {
+        btn.disabled = false; btn.innerText = "حفظ وإرسال الطلبات";
+        if(res.success) {
+          alert("تم حفظ " + res.count + " طلب وإصدار بوالص الشحن بنجاح!");
+          document.getElementById('gridModal').style.display = 'none';
+          loadDashboard(); 
+        } else { alert("حدث خطأ: " + res.error); }
+      }).processGridOrders(ordersToSave, currentUser);
+    }
+  </script>
+</body>
+
+</html>
