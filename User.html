@@ -1,199 +1,55 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html dir="rtl" lang="ar">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>لوحة تحكم التجار - Dropex</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-low": "#f2f4f6", "background": "#f7f9fb", "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#e0e7ff", "surface-dim": "#d8dadc", "surface": "#f7f9fb", "secondary": "#ff6b35",
+            "inverse-primary": "#b6c4ff", "surface-container": "#eceef0", "on-surface": "#191c1e", "on-error": "#ffffff",
+            "primary": "#0a1e4d", "surface-container-highest": "#e0e3e5", "outline-variant": "#c5c5d3",
+            "outline": "#757682", "surface-variant": "#e0e3e5", "error": "#ba1a1a", "on-primary": "#ffffff",
+            "on-secondary": "#ffffff", "surface-tint": "#0a1e4d", "surface-bright": "#f7f9fb", "surface-container-high": "#e6e8ea"
+          },
+          fontFamily: { "ibm-plex-arabic": ["IBM Plex Sans Arabic", "sans-serif"] }
+        }
+      }
+    }
+  </script>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 20px;
-      color: #333;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background-color: #f7f9fb;
+      color: #191c1e;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .header h2 {
-      color: #2c3e50;
-      margin: 0;
-    }
-
-    #loginSection {
-      max-width: 400px;
-      margin: 50px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    #loginSection input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-
-    #loginSection button {
-      background-color: #e67e22;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .error-msg {
-      color: #e74c3c;
-      margin-top: 10px;
-      font-weight: bold;
+    .no-scrollbar::-webkit-scrollbar {
       display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
     #dashboardContent {
       display: none;
-    }
-
-    .cards-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: white;
-      flex: 1;
-      min-width: 140px;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      border-bottom: 4px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .card.blue {
-      border-color: #3498db;
-    }
-
-    .card.green {
-      border-color: #2ecc71;
-    }
-
-    .card.red {
-      border-color: #e74c3c;
-    }
-
-    .card.purple {
-      border-color: #9b59b6;
-    }
-
-    .card.orange {
-      border-color: #e67e22;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 13px;
-      color: #7f8c8d;
-    }
-
-    .card .value {
-      font-size: 22px;
-      font-weight: bold;
-      margin: 5px 0 0 0;
-      color: #2c3e50;
-    }
-
-    .owed-amount {
-      color: #27ae60 !important;
-      font-size: 26px !important;
-    }
-
-    .actions-bar {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-action {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      color: white;
-    }
-
-    .btn-add {
-      background-color: #2980b9;
-    }
-
-    .btn-upload {
-      background-color: #8e44ad;
-    }
-
-    .table-container {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      overflow-x: auto;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: right;
-      font-size: 14px;
-    }
-
-    th,
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background-color: #f8f9fa;
-    }
-
-    .badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 11px;
-      color: white;
-    }
-
-    .badge.delivered {
-      background-color: #2ecc71;
-    }
-
-    .badge.pending {
-      background-color: #f39c12;
-    }
-
-    .badge.returned {
-      background-color: #e74c3c;
     }
 
     .modal {
@@ -205,198 +61,207 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-      background: #fff;
-      margin: 2% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 95%;
-      max-width: 1000px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .close {
-      float: left;
-      font-size: 24px;
-      cursor: pointer;
-      color: #aaa;
-    }
-
-    .grid-table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
-    }
-
-    .grid-table th {
-      background: #34495e;
-      color: white;
-      padding: 8px;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .grid-table td {
-      padding: 5px;
-    }
-
-    .grid-table input,
-    .grid-table select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      box-sizing: border-box;
-      font-size: 12px;
-    }
-
-    .grid-btn {
-      background: #27ae60;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 15px;
-      font-weight: bold;
-      width: 100%;
-    }
-
-    .add-row-btn {
-      background: #34495e;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
 
-<body>
+<body class="bg-background text-on-surface">
 
-  <div class="header">
-    <h2>بوابة التجار والعملاء</h2>
-  </div>
-
-  <div id="loginSection">
-    <h3>تسجيل الدخول</h3>
-    <input type="email" id="userEmail" placeholder="البريد الإلكتروني">
-    <input type="password" id="userPass" placeholder="كلمة المرور">
-    <button onclick="loginUser()" id="loginBtn">دخول</button>
-    <div id="errorMsg" class="error-msg"></div>
+  <!-- Login Section -->
+  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
+      <h2 class="text-3xl font-bold text-primary mb-6">تسجيل الدخول - Dropex</h2>
+      <input type="email" id="userEmail" placeholder="البريد الإلكتروني"
+        class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 mb-4 text-sm focus:ring-2 focus:ring-secondary">
+      <input type="password" id="userPass" placeholder="كلمة المرور"
+        class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 mb-4 text-sm focus:ring-2 focus:ring-secondary">
+      <button onclick="loginUser()" id="loginBtn"
+        class="w-full bg-secondary text-white py-3 rounded-xl font-bold shadow-lg hover:bg-secondary/90 transition-all">دخول</button>
+      <div id="errorMsg" class="text-error text-sm font-bold mt-4 hidden"></div>
+    </div>
   </div>
 
   <div id="dashboardContent">
-    <h3 style="color:#2c3e50; margin-top:0;">مرحباً، <span id="userNameTxt"></span></h3>
+    <header
+      class="w-full h-16 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/50 flex justify-between items-center px-8">
+      <div class="flex items-center gap-6">
+        <div class="text-primary font-bold text-xl uppercase tracking-widest">Dropex <span
+            class="text-secondary text-xs">PORTAL</span></div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-left rtl:text-right">
+          <p class="text-xs font-bold font-ibm-plex-arabic" id="userNameTxt"></p>
+          <p class="text-[10px] text-outline uppercase">التاجر</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+      </div>
+    </header>
 
-    <div class="cards-container">
-      <div class="card blue">
-        <h3>إجمالي الشحنات</h3>
-        <p class="value" id="st-total">0</p>
+    <main class="min-h-screen pb-12 p-8 max-w-[1440px] mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+        <div>
+          <span class="text-xs uppercase tracking-[0.05em] text-outline font-semibold">نظرة عامة على اللوحة</span>
+          <h2 class="text-4xl font-bold text-primary mt-2">لوحة تحكم التاجر</h2>
+        </div>
+        <div class="flex gap-4">
+          <button onclick="openSingleOrderModal()"
+            class="bg-white border text-primary px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
+            <span class="material-symbols-outlined" data-icon="add">add</span> طلب فردي
+          </button>
+          <button onclick="openGridModal()"
+            class="bg-secondary text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-3 shadow-lg shadow-secondary/20 hover:scale-[1.02] transition-all">
+            <span class="material-symbols-outlined" data-icon="post_add">post_add</span> إضافة طلبات مجمعة
+          </button>
+        </div>
       </div>
-      <div class="card green">
-        <h3>الواصل</h3>
-        <p class="value" id="st-del">0</p>
-      </div>
-      <div class="card red">
-        <h3>المرتجع</h3>
-        <p class="value" id="st-ret">0</p>
-      </div>
-      <div class="card orange">
-        <h3>الرصيد المستحق لك</h3>
-        <p class="value owed-amount" id="st-owed">0 ج.م</p>
-      </div>
-      <div class="card purple">
-        <h3>إجمالي المبيعات (منذ البداية)</h3>
-        <p class="value" id="st-history">0 ج.م</p>
-      </div>
-    </div>
 
-    <div class="actions-bar">
-      <div>
-        <button class="btn-action btn-upload" onclick="openGridModal()">📋 إضافة طلبات مجمعة (جدول)</button>
+      <div class="grid grid-cols-12 gap-6 mb-12">
+        <div
+          class="col-span-12 lg:col-span-4 bg-primary p-6 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[180px]">
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-secondary/10 rounded-full blur-3xl"></div>
+          <div><span class="text-white/80 text-sm font-medium uppercase tracking-widest">إجمالي الشحنات</span>
+            <h3 class="text-5xl font-bold text-white mt-4" id="st-total">0</h3>
+          </div>
+        </div>
+        <div
+          class="col-span-12 md:col-span-6 lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-4"><span
+              class="material-symbols-outlined text-green-600">check_circle</span></div>
+          <span class="text-outline text-xs uppercase font-bold tracking-wider">الواصل</span>
+          <h4 class="text-3xl font-bold text-green-600 mt-2" id="st-del">0</h4>
+        </div>
+        <div
+          class="col-span-12 md:col-span-6 lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center mb-4"><span
+              class="material-symbols-outlined text-red-600">cancel</span></div>
+          <span class="text-outline text-xs uppercase font-bold tracking-wider">المرتجع</span>
+          <h4 class="text-3xl font-bold text-red-600 mt-2" id="st-ret">0</h4>
+        </div>
+        <div
+          class="col-span-12 md:col-span-6 lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-secondary/20 ring-1 ring-secondary/20 flex flex-col justify-between">
+          <div class="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center mb-4"><span
+              class="material-symbols-outlined text-secondary">account_balance_wallet</span></div>
+          <span class="text-outline text-xs uppercase font-bold tracking-wider">الرصيد المستحق لك</span>
+          <h4 class="text-2xl font-bold text-secondary mt-2" id="st-owed">0 ج.م</h4>
+        </div>
+        <div
+          class="col-span-12 md:col-span-6 lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-4"><span
+              class="material-symbols-outlined text-slate-600">history</span></div>
+          <span class="text-outline text-xs uppercase font-bold tracking-wider">إجمالي المبيعات</span>
+          <h4 class="text-xl font-bold text-primary mt-2" id="st-history">0 ج.م</h4>
+        </div>
       </div>
-    </div>
 
-    <div class="table-container">
-      <h3>شحناتي الأخيرة</h3>
-      <div style="overflow-x: auto;">
-        <!-- لجعل الجدول يدعم التمرير الأفقي في الشاشات الصغيرة -->
-        <table>
-          <thead>
-            <tr>
-              <th>رقم التتبع</th>
-              <th>رمز البن</th>
-              <th>المستلم</th>
-              <th>الحالة</th>
-              <th>سعر المنتج</th>
-              <th>المستحق لك</th>
-              <th>بوليصة PDF</th>
-              <th>تفاصيل إضافية</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTableBody"></tbody>
-        </table>
+      <div class="grid grid-cols-12 gap-8 items-start">
+        <div class="col-span-12 lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-100">
+          <div class="p-6 border-b border-slate-100">
+            <h3 class="text-xl font-bold text-primary">شحناتي الأخيرة</h3>
+          </div>
+          <div class="overflow-x-auto no-scrollbar">
+            <table class="w-full text-right">
+              <thead>
+                <tr class="bg-slate-50/50">
+                  <th class="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">التتبع / رمز بن</th>
+                  <th class="px-4 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">المستلم</th>
+                  <th class="px-4 py-4 text-[10px] font-bold text-outline uppercase tracking-wider text-center">الحالة
+                  </th>
+                  <th class="px-4 py-4 text-[10px] font-bold text-outline uppercase tracking-wider text-center">سعر
+                    المنتج</th>
+                  <th class="px-4 py-4 text-[10px] font-bold text-outline uppercase tracking-wider text-center">بوليصة
+                    PDF</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider text-center">الإجراء
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <h3 class="font-bold text-lg text-primary mb-6">حجم الشحن (توضيحي)</h3>
+          <div class="flex items-end justify-between h-48 gap-2">
+            <div class="bg-primary/5 w-full rounded-t-lg h-[40%] hover:bg-secondary cursor-pointer transition-colors">
+            </div>
+            <div class="bg-primary/5 w-full rounded-t-lg h-[60%] hover:bg-secondary cursor-pointer transition-colors">
+            </div>
+            <div class="bg-primary/5 w-full rounded-t-lg h-[45%] hover:bg-secondary cursor-pointer transition-colors">
+            </div>
+            <div class="bg-primary/5 w-full rounded-t-lg h-[85%] hover:bg-secondary cursor-pointer transition-colors">
+            </div>
+            <div
+              class="bg-secondary w-full rounded-t-lg h-[95%] hover:bg-secondary/80 cursor-pointer transition-colors">
+            </div>
+            <div class="bg-primary/5 w-full rounded-t-lg h-[70%] hover:bg-secondary cursor-pointer transition-colors">
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 
   <div id="gridModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="document.getElementById('gridModal').style.display='none'">×</span>
-      <h3 style="margin-top: 0;" id="modalTitle">إضافة طلبات</h3>
-      <p style="font-size:13px; color:#7f8c8d;">أدخل بيانات المستلم. سيتم إصدار بوليصة PDF لكل طلب تلقائياً.</p>
-
-      <div style="overflow-x: auto;">
-        <table class="grid-table" id="ordersGrid">
+    <div class="bg-white m-auto mt-[5%] p-6 rounded-xl w-[95%] max-w-5xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4 border-b pb-4">
+        <div>
+          <h3 class="text-xl font-bold text-primary" id="modalTitle">إضافة طلبات</h3>
+          <p class="text-xs text-outline mt-1">أدخل بيانات المستلم. سيتم إصدار بوليصة PDF لكل طلب تلقائياً.</p>
+        </div>
+        <span class="text-3xl text-outline hover:text-error cursor-pointer"
+          onclick="document.getElementById('gridModal').style.display='none'">&times;</span>
+      </div>
+      <div class="overflow-x-auto pb-4">
+        <table class="w-full text-right border-collapse">
           <thead>
-            <tr>
-              <th>اسم المستلم</th>
-              <th>رقم الهاتف</th>
-              <th>إيميل المستلم (اختياري)</th>
-              <th>العنوان بالتفصيل</th>
-              <th>منطقة المستلم</th>
-              <th>سعر المنتج</th>
-              <th>التوصيل على من؟</th>
+            <tr class="bg-surface-container-high">
+              <th class="p-2 text-xs text-on-surface font-bold">اسم المستلم</th>
+              <th class="p-2 text-xs text-on-surface font-bold">الهاتف</th>
+              <th class="p-2 text-xs text-on-surface font-bold">الإيميل</th>
+              <th class="p-2 text-xs text-on-surface font-bold">العنوان التفصيلي</th>
+              <th class="p-2 text-xs text-on-surface font-bold">المنطقة</th>
+              <th class="p-2 text-xs text-on-surface font-bold">سعر المنتج</th>
+              <th class="p-2 text-xs text-on-surface font-bold">التوصيل على من؟</th>
             </tr>
           </thead>
-          <tbody id="gridBody">
-          </tbody>
+          <tbody id="gridBody"></tbody>
         </table>
       </div>
-
-      <button class="add-row-btn" onclick="addGridRow()" id="addRowBtn">+ إضافة صف جديد</button>
-      <button class="grid-btn" id="saveGridBtn" onclick="saveGridOrders()">حفظ وإرسال الطلبات</button>
+      <div class="mt-4 flex gap-4">
+        <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/90"
+          onclick="addGridRow()" id="addRowBtn">+ إضافة صف جديد</button>
+        <button class="bg-secondary text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-secondary/90 w-full"
+          id="saveGridBtn" onclick="saveGridOrders()">حفظ وإرسال الطلبات</button>
+      </div>
     </div>
   </div>
-  <!-- نافذة التفاصيل الإضافية المنبثقة -->
-  <div id="orderDetailsModal" class="modal"
-    style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6);">
-    <div class="modal-content"
-      style="background-color:#fff; margin:10% auto; padding:20px; border:1px solid #888; width:90%; max-width:450px; border-radius:10px; text-align:right; direction:rtl; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-      <span onclick="document.getElementById('orderDetailsModal').style.display='none'" style="color:#aaa; float:left; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
-      <h3 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #ecf0f1; padding-bottom:10px;">تفاصيل الشحنة</h3>
-      <div id="orderDetailsContent" style="line-height:2; font-size:15px; color:#34495e;">
-        <!-- سيتم حقن البيانات هنا بواسطة الجافاسكريبت -->
+
+  <div id="orderDetailsModal" class="modal">
+    <div class="bg-white m-auto mt-[10%] p-6 rounded-xl w-[90%] max-w-md shadow-xl">
+      <div class="flex justify-between items-center mb-4 border-b pb-4">
+        <h3 class="text-lg font-bold text-primary">تفاصيل الشحنة</h3>
+        <span class="text-2xl text-outline hover:text-error cursor-pointer"
+          onclick="document.getElementById('orderDetailsModal').style.display='none'">&times;</span>
       </div>
+      <div id="orderDetailsContent" class="space-y-3 text-sm text-on-surface"></div>
     </div>
   </div>
 
   <script>
     var currentUser = null;
-    var areasOptionsHTML = '<option value="">..اختر المنطقة..</option>'; 
+    var areasOptionsHTML = '<option value="">..اختر المنطقة..</option>';
 
-    window.onload = function() {
-      google.script.run.withSuccessHandler(function(areas) {
-        areas.forEach(function(area) { 
-          areasOptionsHTML += '<option value="' + area.name + '">' + area.name + '</option>'; 
-        });
-      }).getAreasAndPrices();
+    window.onload = function () {
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function (areas) {
+          areas.forEach(function (area) {
+            areasOptionsHTML += '<option value="' + area.name + '">' + area.name + '</option>';
+          });
+        }).getAreasAndPrices();
+      }
     };
 
     function loginUser() {
@@ -404,142 +269,117 @@
       var pass = document.getElementById('userPass').value.trim();
       var btn = document.getElementById('loginBtn');
       var err = document.getElementById('errorMsg');
-      if(!email || !pass) { err.innerText = "أدخل الإيميل والباسورد"; err.style.display="block"; return; }
-      
-      btn.disabled = true; btn.innerText = "جاري التحقق..."; err.style.display="none";
+      if (!email || !pass) { err.innerText = "أدخل الإيميل والباسورد"; err.style.display = "block"; return; }
 
-      google.script.run.withSuccessHandler(function(res) {
-        if(res.success) {
-          currentUser = res.userData;
-          document.getElementById('loginSection').style.display = 'none';
-          document.getElementById('userNameTxt').innerText = currentUser.name;
-          document.getElementById('dashboardContent').style.display = 'block';
-          loadDashboard();
-        } else {
-          err.innerText = res.error; err.style.display="block";
-          btn.disabled = false; btn.innerText = "دخول";
-        }
-      }).userLogin(email, pass);
+      btn.disabled = true; btn.innerText = "جاري التحقق..."; err.style.display = "none";
+
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function (res) {
+          if (res.success) {
+            currentUser = res.userData;
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userNameTxt').innerText = currentUser.name;
+            document.getElementById('dashboardContent').style.display = 'block';
+            loadDashboard();
+          } else {
+            err.innerText = res.error; err.style.display = "block";
+            btn.disabled = false; btn.innerText = "دخول";
+          }
+        }).userLogin(email, pass);
+      }
     }
 
-        // متغير عالمي لحفظ الطلبات حتى نتمكن من عرض تفاصيلها في النافذة المنبثقة
-    var globalOrdersList = []; 
+    var globalOrdersList = [];
 
     function loadDashboard() {
-      google.script.run
-        .withSuccessHandler(function(res) {
-          if(res.success) {
-            document.getElementById('st-total').innerText = res.stats.totalOrders;
-            document.getElementById('st-del').innerText = res.stats.deliveredOrders;
-            document.getElementById('st-ret').innerText = res.stats.returnedOrders;
-            document.getElementById('st-owed').innerText = res.stats.currentOwed + ' ج.م';
-            document.getElementById('st-history').innerText = res.stats.totalHistoricalAmount + ' ج.م';
-            
-            // حفظ البيانات في المتغير العالمي
-            globalOrdersList = res.stats.ordersList; 
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run
+          .withSuccessHandler(function (res) {
+            if (res.success) {
+              document.getElementById('st-total').innerText = res.stats.totalOrders;
+              document.getElementById('st-del').innerText = res.stats.deliveredOrders;
+              document.getElementById('st-ret').innerText = res.stats.returnedOrders;
+              document.getElementById('st-owed').innerText = res.stats.currentOwed + ' ج.م';
+              document.getElementById('st-history').innerText = res.stats.totalHistoricalAmount + ' ج.م';
 
-            var tbody = '';
-            res.stats.ordersList.forEach(function(o, index) { // لاحظ إضافة index هنا
-              var badge = "badge pending";
-              if(o.status === "تم التوصيل") badge = "badge delivered";
-              else if(o.status === "مرتجع") badge = "badge returned";
-              
-              var pdfLink = o.waybillUrl ? '<a href="'+o.waybillUrl+'" target="_blank" style="color:#2980b9; font-weight:bold; text-decoration:none;">عرض</a>' : '<span style="color:#bdc3c7; font-weight:bold;">—</span>';
+              globalOrdersList = res.stats.ordersList;
+              var tbody = '';
+              res.stats.ordersList.forEach(function (o, index) {
+                var badge = "bg-orange-100 text-orange-700";
+                if (o.status === "تم التوصيل") badge = "bg-green-100 text-green-700";
+                else if (o.status === "مرتجع") badge = "bg-red-100 text-red-700";
 
-              // بناء صف الجدول المصغر
-              tbody += '<tr>';
-              tbody += '<td style="white-space: nowrap;">' + o.id + '</td>';
-              tbody += '<td style="color:#e74c3c; font-weight:bold;">' + o.pin + '</td>';
-              tbody += '<td>' + o.receiver + '</td>';
-              tbody += '<td style="white-space: nowrap;"><span class="' + badge + '">' + o.status + '</span></td>';
-              tbody += '<td style="white-space: nowrap;">' + o.productPrice + ' ج.م</td>';
-              
-              var netColor = o.merchantNet < 0 ? "#c0392b" : "#16a085";
-              tbody += '<td style="color:' + netColor + '; font-weight:bold; white-space: nowrap;">' + o.merchantNet + ' ج.م</td>';
-              
-              tbody += '<td>' + pdfLink + '</td>';
-              
-              // زر "تفاصيل أكثر" يرسل رقم الـ index للدالة الجديدة
-              tbody += '<td><button onclick="showOrderDetails(' + index + ')" style="background:#34495e; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;">تفاصيل أكثر 🔽</button></td>';
-              
-              tbody += '</tr>';
-            });
-            
-            // تم تغيير colspan إلى 8 ليتناسب مع عدد الأعمدة الجديد
-            document.getElementById('ordersTableBody').innerHTML = tbody || '<tr><td colspan="8" style="text-align:center;">لا توجد شحنات بعد</td></tr>';
-          }
-        })
-        .withFailureHandler(function(error) {
-          alert("حدث خطأ أثناء جلب البيانات: " + error);
-        })
-        .getUserDashboardStats(currentUser.email, currentUser.name);
+                var pdfLink = o.waybillUrl ? '<a href="' + o.waybillUrl + '" target="_blank" class="text-blue-600 font-bold hover:underline">عرض</a>' : '<span class="text-slate-300">—</span>';
+
+                tbody += '<tr class="hover:bg-slate-50 transition-colors">';
+                tbody += '<td class="px-6 py-4"><div class="font-bold text-primary text-sm">' + o.id + '</div><div class="text-[10px] text-error font-bold mt-1">' + o.pin + '</div></td>';
+                tbody += '<td class="px-4 py-4 text-sm whitespace-nowrap">' + o.receiver + '</td>';
+                tbody += '<td class="px-4 py-4 text-center"><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase ' + badge + '">' + o.status + '</span></td>';
+                tbody += '<td class="px-4 py-4 text-center text-sm">' + o.productPrice + ' ج.م</td>';
+
+                var netColor = o.merchantNet < 0 ? "text-error" : "text-green-600";
+                tbody += '<td class="px-4 py-4 text-center font-bold text-sm ' + netColor + '">' + o.merchantNet + ' ج.م</td>';
+                tbody += '<td class="px-4 py-4 text-center">' + pdfLink + '</td>';
+                tbody += '<td class="px-6 py-4 text-center"><button onclick="showOrderDetails(' + index + ')" class="text-outline hover:text-secondary bg-surface-container p-2 rounded-lg transition-colors"><span class="material-symbols-outlined" data-icon="visibility">visibility</span></button></td>';
+                tbody += '</tr>';
+              });
+
+              document.getElementById('ordersTableBody').innerHTML = tbody || '<tr><td colspan="7" class="text-center py-6 text-outline">لا توجد شحنات بعد</td></tr>';
+            }
+          })
+          .withFailureHandler(function (error) { alert("خطأ في البيانات: " + error); })
+          .getUserDashboardStats(currentUser.email, currentUser.name);
+      }
     }
 
-    // ==========================================
-    // الدالة الجديدة لفتح النافذة المنبثقة بالتفاصيل
-    // ==========================================
     function showOrderDetails(index) {
-        // جلب بيانات الطلب المحدد من المتغير العالمي
-        var o = globalOrdersList[index];
-        
-        // تجهيز الروابط
-        var podLink = o.podImage ? '<a href="'+o.podImage+'" target="_blank" style="color:#27ae60; font-weight:bold; text-decoration:none;">🖼️ عرض صورة الاستلام</a>' : '<span style="color:#bdc3c7;">لا يوجد</span>';
-        var locLink = o.location ? '<a href="'+o.location+'" target="_blank" style="color:#d35400; font-weight:bold; text-decoration:none;">📍 فتح الموقع على الخريطة</a>' : '<span style="color:#bdc3c7;">لا يوجد</span>';
-        var paidByColor = o.paidBy === "على المرسل" ? "#c0392b" : "#2980b9";
+      var o = globalOrdersList[index];
+      var podLink = o.podImage ? '<a href="' + o.podImage + '" target="_blank" class="text-green-600 font-bold flex items-center gap-2"><span class="material-symbols-outlined">image</span> عرض صورة الاستلام</a>' : '<span class="text-slate-400">لا يوجد</span>';
+      var locLink = o.location ? '<a href="' + o.location + '" target="_blank" class="text-secondary font-bold flex items-center gap-2"><span class="material-symbols-outlined">location_on</span> الخريطة</a>' : '<span class="text-slate-400">لا يوجد</span>';
+      var paidByColor = o.paidBy === "على المرسل" ? "text-error bg-error/10" : "text-primary bg-primary/10";
 
-        // بناء محتوى النافذة المنبثقة
-        var content = `
-            <div style="background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:10px;">
-                <strong>العنوان بالتفصيل:</strong><br>
-                ${o.address}
-            </div>
-            <p><strong>التوصيل على:</strong> <span style="color:${paidByColor}; font-weight:bold; background:#ecf0f1; padding:2px 8px; border-radius:4px;">${o.paidBy || 'غير محدد'}</span></p>
-            <p><strong>سعر البك أب:</strong> <span style="font-weight:bold;">${o.pickupPrice} ج.م</span></p>
-            <hr style="border:0; border-top:1px solid #ecf0f1; margin:15px 0;">
-            <p>${podLink}</p>
-            <p>${locLink}</p>
+      var content = `
+            <div class="bg-surface-container-low p-4 rounded-lg"><strong>العنوان بالتفصيل:</strong><br><span class="text-outline">${o.address}</span></div>
+            <div class="flex justify-between items-center bg-white border p-3 rounded-lg"><strong>التوصيل على:</strong> <span class="px-2 py-1 rounded text-xs font-bold ${paidByColor}">${o.paidBy || 'غير محدد'}</span></div>
+            <div class="flex justify-between items-center bg-white border p-3 rounded-lg"><strong>سعر البك أب:</strong> <span class="font-bold">${o.pickupPrice} ج.م</span></div>
+            <div class="pt-4 border-t border-slate-100 flex justify-between">${podLink} ${locLink}</div>
         `;
-        
-        // وضع المحتوى داخل النافذة وإظهارها
-        document.getElementById('orderDetailsContent').innerHTML = content;
-        document.getElementById('orderDetailsModal').style.display = 'block';
+      document.getElementById('orderDetailsContent').innerHTML = content;
+      document.getElementById('orderDetailsModal').style.display = 'block';
     }
 
-    // إغلاق النافذة المنبثقة عند الضغط في أي مكان خارجها (اختياري لزيادة سهولة الاستخدام)
-    window.onclick = function(event) {
-        var modal = document.getElementById('orderDetailsModal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
+    window.onclick = function (event) {
+      if (event.target == document.getElementById('orderDetailsModal')) { document.getElementById('orderDetailsModal').style.display = "none"; }
     }
 
     function openSingleOrderModal() {
       document.getElementById('modalTitle').innerText = "إضافة طلب فردي";
-      document.getElementById('addRowBtn').style.display = 'none'; 
+      document.getElementById('addRowBtn').style.display = 'none';
       document.getElementById('gridBody').innerHTML = '';
-      addGridRow(); 
+      addGridRow();
       document.getElementById('gridModal').style.display = 'block';
     }
-    
+
     function openGridModal() {
       document.getElementById('modalTitle').innerText = "إضافة طلبات مجمعة";
-      document.getElementById('addRowBtn').style.display = 'inline-block'; 
+      document.getElementById('addRowBtn').style.display = 'inline-block';
       document.getElementById('gridBody').innerHTML = '';
-      for(var i=0; i<3; i++) { addGridRow(); } 
+      for (var i = 0; i < 3; i++) { addGridRow(); }
       document.getElementById('gridModal').style.display = 'block';
     }
 
     function addGridRow() {
       var tr = document.createElement('tr');
+      tr.className = "border-b border-slate-100";
       tr.innerHTML = `
-        <td><input type="text" class="g-name" placeholder="اسم المستلم"></td>
-        <td><input type="text" class="g-phone" placeholder="رقم الهاتف"></td>
-        <td><input type="email" class="g-email" placeholder="Email (اختياري)"></td>
-        <td><input type="text" class="g-address" placeholder="عنوان تفصيلي"></td>
-        <td><select class="g-area">${areasOptionsHTML}</select></td>
-        <td><input type="number" class="g-price" placeholder="سعر المنتج"></td>
-        <td>
-          <select class="g-paidby">
+        <td class="p-1"><input type="text" class="g-name w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary" placeholder="الاسم"></td>
+        <td class="p-1"><input type="text" class="g-phone w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary" placeholder="الهاتف"></td>
+        <td class="p-1"><input type="email" class="g-email w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary" placeholder="اختياري"></td>
+        <td class="p-1"><input type="text" class="g-address w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary" placeholder="العنوان"></td>
+        <td class="p-1"><select class="g-area w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary">${areasOptionsHTML}</select></td>
+        <td class="p-1"><input type="number" class="g-price w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary" placeholder="السعر"></td>
+        <td class="p-1">
+          <select class="g-paidby w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary">
             <option value="على المستلم">على المستلم</option>
             <option value="على المرسل">على المرسل</option>
           </select>
@@ -551,8 +391,7 @@
     function saveGridOrders() {
       var rows = document.getElementById('gridBody').getElementsByTagName('tr');
       var ordersToSave = [];
-
-      for(var i = 0; i < rows.length; i++) {
+      for (var i = 0; i < rows.length; i++) {
         var name = rows[i].querySelector('.g-name').value.trim();
         var phone = rows[i].querySelector('.g-phone').value.trim();
         var email = rows[i].querySelector('.g-email').value.trim();
@@ -561,25 +400,25 @@
         var price = rows[i].querySelector('.g-price').value.trim();
         var paidBy = rows[i].querySelector('.g-paidby').value;
 
-        if(name !== "" && phone !== "" && area !== "") {
+        if (name !== "" && phone !== "" && area !== "") {
           ordersToSave.push({ name: name, phone: phone, recEmail: email, address: address, area: area, price: price, paidBy: paidBy });
         }
       }
-
-      if(ordersToSave.length === 0) { alert("الرجاء إدخال بيانات طلب واحد على الأقل وتأكيد اختيار المنطقة!"); return; }
+      if (ordersToSave.length === 0) { alert("يرجى إدخال بيانات طلب واحد على الأقل وتأكيد المنطقة!"); return; }
 
       var btn = document.getElementById('saveGridBtn');
-      btn.disabled = true; 
-      btn.innerText = "جاري إنشاء بوالص الشحن والحفظ (يرجى الانتظار)...";
+      btn.disabled = true; btn.innerText = "جاري الحفظ...";
 
-      google.script.run.withSuccessHandler(function(res) {
-        btn.disabled = false; btn.innerText = "حفظ وإرسال الطلبات";
-        if(res.success) {
-          alert("تم حفظ " + res.count + " طلب وإصدار بوالص الشحن بنجاح!");
-          document.getElementById('gridModal').style.display = 'none';
-          loadDashboard(); 
-        } else { alert("حدث خطأ: " + res.error); }
-      }).processGridOrders(ordersToSave, currentUser);
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function (res) {
+          btn.disabled = false; btn.innerText = "حفظ وإرسال الطلبات";
+          if (res.success) {
+            alert("تم حفظ " + res.count + " طلب وإصدار بوالص الشحن بنجاح!");
+            document.getElementById('gridModal').style.display = 'none';
+            loadDashboard();
+          } else { alert("خطأ: " + res.error); }
+        }).processGridOrders(ordersToSave, currentUser);
+      }
     }
   </script>
 </body>

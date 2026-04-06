@@ -1,825 +1,773 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html dir="rtl" lang="ar">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم الإدارة - Dropex</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>لوحة الإدارة - Dropex</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#f7f9fb",
+                        "surface": "#ffffff",
+                        "primary": "#0a2240",
+                        "tertiary": "#ff5500",
+                        "error": "#ba1a1a",
+                    },
+                    fontFamily: { "ibm": ["IBM Plex Sans Arabic", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: #f7f9fb;
+        }
 
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-    .header h2 {
-      color: #2c3e50;
-      margin: 0;
-    }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
 
-    #loginSection {
-      max-width: 400px;
-      margin: 50px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
 
-    #loginSection input {
-      width: 90%;
-      padding: 12px;
-      margin: 15px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-      text-align: center;
-      box-sizing: border-box;
-    }
+        /* Modal Transitions */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 34, 64, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    #loginSection button {
-      background-color: #34495e;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      width: 100%;
-      font-weight: bold;
-    }
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: slideIn 0.3s ease-out forwards;
+        }
 
-    .error-msg {
-      color: #e74c3c;
-      margin-top: 10px;
-      font-weight: bold;
-      display: none;
-    }
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
 
-    .cards-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: white;
-      flex: 1;
-      min-width: 220px;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      text-align: center;
-      border-bottom: 4px solid #ddd;
-    }
-
-    .card.blue {
-      border-color: #3498db;
-    }
-
-    .card.green {
-      border-color: #2ecc71;
-    }
-
-    .card.orange {
-      border-color: #f39c12;
-    }
-
-    .card.teal {
-      border-color: #1abc9c;
-    }
-
-    .card.purple {
-      border-color: #9b59b6;
-    }
-
-    .card.dark-green {
-      border-color: #16a085;
-    }
-
-    .card.red {
-      border-color: #e74c3c;
-    }
-
-    .card.navy {
-      border-color: #34495e;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 15px;
-      color: #7f8c8d;
-    }
-
-    .card .value {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 10px 0 0 0;
-      color: #2c3e50;
-    }
-
-    .search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .search-bar input,
-    .search-bar select {
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    .search-bar input {
-      flex: 3;
-      min-width: 200px;
-    }
-
-    .search-bar select {
-      flex: 1;
-      min-width: 150px;
-      background-color: white;
-    }
-
-    .btn-settle {
-      background-color: #8e44ad;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
-      min-width: 150px;
-    }
-
-    .table-container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: right;
-    }
-
-    th,
-    td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background-color: #f8f9fa;
-      color: #333;
-    }
-
-    tr:hover {
-      background-color: #f1f2f6;
-    }
-
-    .badge {
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      color: white;
-    }
-
-    .badge.delivered {
-      background-color: #2ecc71;
-    }
-
-    .badge.pending {
-      background-color: #f39c12;
-    }
-
-    .badge.out {
-      background-color: #3498db;
-    }
-
-    .badge.returned {
-      background-color: #e74c3c;
-    }
-
-    .btn-edit {
-      background-color: #f39c12;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .btn-info {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-left: 5px;
-      font-weight: bold;
-    }
-
-    #loader {
-      text-align: center;
-      padding: 50px;
-      font-size: 18px;
-      color: #7f8c8d;
-      display: none;
-    }
-
-    #dashboardContent {
-      display: none;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      overflow: auto;
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 5% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      text-align: right;
-      position: relative;
-    }
-
-    .modal-content input,
-    .modal-content select {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-
-    .close {
-      color: #aaa;
-      float: left;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .btn-save {
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-  </style>
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 
-<body>
+<body class="text-slate-800 overflow-hidden h-screen flex">
 
-  <div class="header">
-    <h2>لوحة تحكم الإدارة - Dropex</h2>
-  </div>
-
-  <div id="loginSection">
-    <h3>تسجيل الدخول للإدارة</h3>
-    <input type="password" id="adminPass" placeholder="أدخل كلمة مرور الإدارة" onkeypress="handleEnter(event)">
-    <button id="loginBtn" onclick="checkAdminPassword()">دخول</button>
-    <div id="errorMsg" class="error-msg"></div>
-  </div>
-
-  <div id="loader">جاري تحميل الإحصائيات...</div>
-
-  <div id="dashboardContent">
-    <div class="cards-container">
-      <div class="card blue">
-        <h3>إجمالي الشحنات</h3>
-        <p class="value" id="stat-total">0</p>
-      </div>
-      <div class="card green">
-        <h3>تم التوصيل</h3>
-        <p class="value" id="stat-delivered">0</p>
-      </div>
-      <div class="card orange">
-        <h3>قيد الانتظار</h3>
-        <p class="value" id="stat-pending">0</p>
-      </div>
-      <div class="card teal">
-        <h3>خرج للتسليم</h3>
-        <p class="value" id="stat-outForDelivery">0</p>
-      </div>
-
-      <div class="card dark-green">
-        <h3>محصلات اليوم</h3>
-        <p class="value" id="stat-todayCollected">0</p>
-      </div>
-      <div class="card purple">
-        <h3>إجمالي المحصلات</h3>
-        <p class="value" id="stat-amount">0</p>
-      </div>
-      <div class="card red">
-        <h3>صافي اليوم</h3>
-        <p class="value" id="stat-todayNet">0</p>
-      </div>
-      <div class="card navy">
-        <h3>الصافي الإجمالي</h3>
-        <p class="value" id="stat-totalNet">0</p>
-      </div>
-    </div>
-
-    <div class="search-bar">
-      <button class="btn-settle" style="background-color: #2ecc71;" onclick="openAddUserModal()">➕ إضافة تاجر جديد</button>
-      <button class="btn-settle" onclick="openSettlementModal()">💰 تصفية حساب تاجر</button>
-      <input type="text" id="searchInput" placeholder="ابحث برقم التتبع، المرسل، أو المستلم..." onkeyup="filterOrders()">
-      <select id="statusFilter" onchange="filterOrders()">
-        <option value="all">-- كل الحالات --</option>
-        <option value="قيد الانتظار">قيد الانتظار</option>
-        <option value="خرج للتسليم">خرج للتسليم</option>
-        <option value="تم التوصيل">تم التوصيل</option>
-        <option value="مرتجع">مرتجع</option>
-      </select>
-    </div>
-
-    <div class="table-container">
-      <h3>قائمة الشحنات</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>رقم الشحنة</th>
-            <th>المرسل</th>
-            <th>المستلم</th>
-            <th>المندوب</th>
-            <th>سعر التوصيل</th>
-            <th>صافي الربح</th>
-            <th>الحالة</th>
-            <th style="min-width: 140px;">إجراءات</th>
-          </tr>
-        </thead>
-        <tbody id="recentOrdersTable"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- نافذة التعديل الشاملة للآدمن -->
-  <div id="editModal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-      <span class="close" onclick="closeModal('editModal')">&times;</span>
-      <h3 style="border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">تعديل الشحنة:
-        <span id="modalTrackId" style="color: #e74c3c;"></span></h3>
-      <input type="hidden" id="modalRowIndex">
-
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <!-- القسم الأول: تفاصيل الطلب والحالة -->
-        <div style="flex: 1; min-width: 250px; background: #f9f9f9; padding: 10px; border-radius: 5px;">
-          <h4 style="margin-top: 0; color: #2980b9;">بيانات الطلب الأساسية</h4>
-
-          <label>حالة الطلب:</label>
-          <select id="modalStatusSelect">
-            <option value="قيد الانتظار">قيد الانتظار</option>
-            <option value="خرج للتسليم">خرج للتسليم</option>
-            <option value="تم التوصيل">تم التوصيل</option>
-            <option value="مرتجع">مرتجع</option>
-          </select>
-
-          <label>سعر المنتج (ج.م):</label>
-          <input type="number" id="modalProductPrice" value="0">
-
-          <label>سعر التوصيل (ج.م):</label>
-          <input type="number" id="modalDeliveryCost" value="0" oninput="calculateNetProfit()">
-
-          <label>التوصيل على من؟:</label>
-          <select id="modalPaidBySelect">
-            <option value="على المستلم">على المستلم</option>
-            <option value="على المرسل">على المرسل</option>
-          </select>
-
-          <label>سعر البك أب (ج.م):</label>
-          <input type="number" id="modalPickupPrice" value="0" oninput="calculateNetProfit()">
+    <!-- SideNavBar -->
+    <aside class="w-20 lg:w-72 bg-white border-l border-slate-100 h-screen z-50 flex flex-col transition-all shrink-0">
+        <div class="p-6 flex items-center justify-center lg:justify-start gap-3">
+            <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary font-bold">admin_panel_settings</span>
+            </div>
+            <div class="hidden lg:block">
+                <h1 class="text-xl font-black text-primary tracking-widest leading-none">DROPEX</h1>
+                <p class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest mt-1">نظام الإدارة</p>
+            </div>
         </div>
 
-        <!-- القسم الثاني: المندوب والمصاريف -->
-        <div
-          style="flex: 1; min-width: 250px; background: #fdfefe; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
-          <h4 style="margin-top: 0; color: #e67e22;">التوصيل والمصاريف</h4>
+        <nav class="flex-1 px-4 mt-6 space-y-2 overflow-y-auto no-scrollbar">
+            <a class="flex items-center gap-4 px-4 py-3 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/20"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="hidden lg:block text-sm font-bold tracking-wide">الرئيسية</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition"
+                href="#">
+                <span class="material-symbols-outlined">local_shipping</span>
+                <span class="hidden lg:block text-sm font-medium">الشحنات</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition"
+                href="#">
+                <span class="material-symbols-outlined">store</span>
+                <span class="hidden lg:block text-sm font-medium">المتاجر</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition"
+                href="#">
+                <span class="material-symbols-outlined">person_pin_circle</span>
+                <span class="hidden lg:block text-sm font-medium">السائقين</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition"
+                href="#">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <span class="hidden lg:block text-sm font-medium">التحليلات</span>
+            </a>
+        </nav>
+    </aside>
 
-          <label>تعيين مندوب التوصيل:</label>
-          <select id="modalCourierSelect">
-            <option value="">-- اختر المندوب --</option>
-          </select>
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-background relative">
 
-          <label>مصاريف البنزين (ج.م):</label>
-          <input type="number" id="modalGas" value="0" oninput="calculateNetProfit()">
-
-          <label>مصروفات أخرى(ج.م):</label>
-          <input type="number" id="modalMaintenance" value="0" oninput="calculateNetProfit()">
-
-          <div
-            style="background: #e8f8f5; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: center; border: 1px dashed #2ecc71;">
-            <strong>صافي ربح الشركة المتوقع: </strong><br>
-            <span id="modalNetProfit" style="color: #27ae60; font-size: 24px; font-weight: bold;">0</span> ج.م
-          </div>
+        <!-- Login Overlay -->
+        <div id="loginSection"
+            class="absolute inset-0 bg-background/95 backdrop-blur z-50 flex items-center justify-center p-6">
+            <div class="bg-white p-10 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-sm text-center">
+                <div
+                    class="w-16 h-16 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <span class="material-symbols-outlined text-4xl">admin_panel_settings</span>
+                </div>
+                <h2 class="text-2xl font-black text-primary tracking-tight mb-2">تسجيل الدخول (آدمن)</h2>
+                <p class="text-sm text-slate-500 mb-8">يرجى إدخال كلمة مرور الإدارة للوصول.</p>
+                <input type="password" id="adminPass" placeholder="كلمة المرور"
+                    class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-center text-lg focus:ring-2 focus:ring-primary transition-all mb-4"
+                    onkeypress="if(event.key === 'Enter') checkAdminPassword()">
+                <button id="loginBtn" onclick="checkAdminPassword()"
+                    class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5">دخول
+                    آمن</button>
+                <div id="errorMsg" class="hidden text-error font-bold mt-4 text-sm bg-red-50 p-2 rounded-lg"></div>
+            </div>
         </div>
-      </div>
 
-      <button class="btn-save" onclick="saveOrderUpdates()" id="saveBtn">حفظ التعديلات الشاملة</button>
-    </div>
-  </div>
+        <!-- Topbar -->
+        <header
+            class="h-16 shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200 flex justify-between items-center px-8 z-40">
+            <div class="font-black text-primary text-xl">إدارة النظام المركزية</div>
+            <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-slate-400">notifications</span>
+                <div
+                    class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                    AD</div>
+            </div>
+        </header>
 
-  <!-- نافذة التفاصيل الإضافية للآدمن -->
-  <div id="infoModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('infoModal')">&times;</span>
-      <h3 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #ecf0f1; padding-bottom:10px;">تفاصيل الشحنة</h3>
-      <div id="infoModalContent" style="line-height:2; font-size:15px; color:#34495e;">
-        <!-- سيتم الحقن بواسطة الجافاسكريبت -->
-      </div>
-    </div>
-  </div>
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 no-scrollbar hidden">
 
-  <!-- نافذة التصفية -->
-  <div id="settlementModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('settlementModal')">&times;</span>
-      <h3 style="color: #8e44ad; margin-top: 0;">💰 تصفية حساب تاجر</h3>
-      <p style="font-size: 13px; color: #7f8c8d; line-height: 1.5;">سيتم تصفير الرصيد المستحق للتاجر المختار بناءً على
-        الطلبات التي "تم توصيلها" فقط ولم تتم تصفيتها من قبل.</p>
+            <!-- Header Actions -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-black text-primary tracking-tight">الإحصائيات العامة</h1>
+                    <p class="text-sm text-slate-500 mt-1">نظرة شاملة على الأرقام والمحصلات</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="openAddUserModal()"
+                        class="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-primary/90 transition shadow-lg shadow-primary/20">
+                        <span class="material-symbols-outlined text-lg">person_add</span> إضافة تاجر
+                    </button>
+                    <button onclick="openSettlementModal()"
+                        class="bg-tertiary text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-tertiary/90 transition shadow-lg shadow-tertiary/20">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span> تصفية حساب
+                    </button>
+                </div>
+            </div>
 
-      <label>اختر التاجر:</label>
-      <select id="merchantSettleSelect">
-        <option value="">-- جاري التحميل... --</option>
-      </select>
+            <!-- 8 Stat Cards Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- Row 1: Operations -->
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-primary/30 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div
+                            class="p-2 bg-slate-50 text-slate-500 rounded-lg group-hover:bg-primary/5 group-hover:text-primary transition">
+                            <span class="material-symbols-outlined text-xl">list_alt</span></div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black text-primary" id="stat-total">0</h3>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">إجمالي الشحنات</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-green-500/30 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div
+                            class="p-2 bg-slate-50 text-slate-500 rounded-lg group-hover:bg-green-50 group-hover:text-green-500 transition">
+                            <span class="material-symbols-outlined text-xl">check_circle</span></div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black text-primary" id="stat-delivered">0</h3>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">تم التوصيل</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-amber-500/30 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div
+                            class="p-2 bg-slate-50 text-slate-500 rounded-lg group-hover:bg-amber-50 group-hover:text-amber-500 transition">
+                            <span class="material-symbols-outlined text-xl">hourglass_empty</span></div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black text-primary" id="stat-pending">0</h3>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">قيد الانتظار / المخزن</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-blue-500/30 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div
+                            class="p-2 bg-slate-50 text-slate-500 rounded-lg group-hover:bg-blue-50 group-hover:text-blue-500 transition">
+                            <span class="material-symbols-outlined text-xl">local_shipping</span></div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black text-primary" id="stat-outForDelivery">0</h3>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">خرج للتوصيل</p>
+                    </div>
+                </div>
+                <!-- Row 2: Financials -->
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-primary/30 transition relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="p-2 bg-slate-50 text-slate-500 rounded-lg"><span
+                                class="material-symbols-outlined text-xl">payments</span></div><span
+                            class="text-[10px] font-bold bg-green-100 text-green-700 px-2 rounded-full hidden">إجمالي</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black text-primary truncate"><span id="stat-amount">0</span><span
+                                class="text-sm">ج.م</span></h3>
+                        <p class="text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider">إجمالي ما تم تحصيله
+                            (بضاعة)</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:border-primary/30 transition relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="p-2 bg-slate-50 text-slate-500 rounded-lg"><span
+                                class="material-symbols-outlined text-xl">today</span></div><span
+                            class="text-[10px] font-bold bg-primary/10 text-primary px-2 rounded-full">اليوم</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black text-primary truncate"><span
+                                id="stat-todayCollected">0</span><span class="text-sm">ج.م</span></h3>
+                        <p class="text-[0.65rem] font-bold text-slate-500 uppercase tracking-wider">التحصيل اليوم</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-primary to-slate-800 p-5 rounded-2xl shadow-xl flex flex-col justify-between group text-white">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="p-2 bg-white/10 rounded-lg text-white"><span
+                                class="material-symbols-outlined text-xl">account_balance</span></div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black truncate"><span id="stat-totalNet">0</span><span
+                                class="text-sm">ج.م</span></h3>
+                        <p class="text-[0.65rem] font-bold text-slate-300 uppercase tracking-wider">إجمالي صافي ربح
+                            دروبكس</p>
+                    </div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-tertiary to-orange-500 p-5 rounded-2xl shadow-xl flex flex-col justify-between group text-white">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="p-2 bg-white/10 rounded-lg text-white"><span
+                                class="material-symbols-outlined text-xl">trending_up</span></div><span
+                            class="text-[10px] font-bold bg-white/20 text-white px-2 rounded-full">اليوم</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black truncate"><span id="stat-todayNet">0</span><span
+                                class="text-sm">ج.م</span></h3>
+                        <p class="text-[0.65rem] font-bold text-white/80 uppercase tracking-wider">صافي أرباح اليوم</p>
+                    </div>
+                </div>
+            </div>
 
-      <button class="btn-save" onclick="executeSettlement()" id="executeSettleBtn" style="background-color: #8e44ad;">تصفية الحساب الآن</button>
-    </div>
-  </div>
+            <!-- Table Section -->
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col h-[600px]">
+                <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h3 class="text-lg font-black text-primary flex items-center gap-2"><span
+                            class="material-symbols-outlined text-tertiary">table_view</span> إدارة الشحنات الشاملة</h3>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                            <input type="text" id="searchInput" placeholder="بحث عام (رقم، اسم، هاتف)..."
+                                class="w-full bg-surface-container-high border-none rounded-xl pr-10 text-sm focus:ring-2 focus:ring-primary h-10"
+                                onkeyup="filterOrders()">
+                        </div>
+                        <select id="statusFilter"
+                            class="bg-surface-container-high border-none rounded-xl text-sm focus:ring-2 focus:ring-primary h-10"
+                            onchange="filterOrders()">
+                            <option value="all">كل الحالات</option>
+                            <option value="تم الإنشاء">تم الإنشاء</option>
+                            <option value="في المخزن">في المخزن</option>
+                            <option value="خرج للتوصيل">خرج للتوصيل</option>
+                            <option value="تم التوصيل">تم التوصيل</option>
+                            <option value="مرتجع">مرتجع</option>
+                            <option value="ملغي">ملغي</option>
+                        </select>
+                    </div>
+                </div>
 
-  <!-- نافذة إضافة تاجر جديد -->
-  <div id="addUserModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('addUserModal')">&times;</span>
-      <h3 style="color: #2ecc71; margin-top: 0; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">➕ إضافة تاجر (عميل) جديد</h3>
-      
-      <p style="font-size: 13px; color: #7f8c8d; line-height: 1.5;">قم بإدخال بيانات التاجر لإنشاء حساب له ليتمكن من تسجيل الدخول وإضافة شحناته.</p>
-
-      <label>اسم البراند / العميل:</label>
-      <input type="text" id="newUserName" placeholder="أدخل اسم البراند أو التاجر">
-
-      <label>البريد الإلكتروني (الإيميل):</label>
-      <input type="email" id="newUserEmail" placeholder="example@domain.com">
-
-      <label>كلمة المرور:</label>
-      <input type="text" id="newUserPassword" placeholder="كلمة المرور للدخول">
-
-      <label>رقم الهاتف:</label>
-      <input type="text" id="newUserPhone" placeholder="رقم هاتف التاجر">
-
-      <label>المحافظة:</label>
-      <input type="text" id="newUserArea" placeholder="مثال: القاهرة، الجيزة...">
-
-      <label>العنوان التفصيلي:</label>
-      <input type="text" id="newUserAddress" placeholder="اسم الشارع، رقم العمارة، إلخ...">
-
-      <button class="btn-save" onclick="saveNewUser()" id="saveUserBtn" style="background-color: #2ecc71;">إنشاء الحساب</button>
-    </div>
-  </div>
-
-  <script>
-    var allCouriers = [];
-    var globalOrders = []; 
-
-    function handleEnter(e) {
-      if (e.key === "Enter") checkAdminPassword();
-    }
-
-    function checkAdminPassword() {
-      var pass = document.getElementById('adminPass').value;
-      var errorDiv = document.getElementById('errorMsg');
-      var btn = document.getElementById('loginBtn');
-      
-      if(!pass) { errorDiv.innerText = "الرجاء إدخال كلمة المرور!"; errorDiv.style.display = "block"; return; }
-      
-      btn.disabled = true; btn.innerText = "جاري التحقق..."; errorDiv.style.display = "none";
-      
-      google.script.run.withSuccessHandler(function(response) {
-        if (response.error) {
-          errorDiv.innerText = response.error; errorDiv.style.display = "block";
-          btn.disabled = false; btn.innerText = "دخول";
-        } else {
-          allCouriers = response.couriersList; 
-          globalOrders = response.stats.recentOrders; 
-          
-          populateCouriersDropdown();
-          
-          document.getElementById('loginSection').style.display = 'none';
-          document.getElementById('dashboardContent').style.display = 'block';
-          
-          document.getElementById('stat-total').innerText = response.stats.totalOrders;
-          document.getElementById('stat-delivered').innerText = response.stats.deliveredOrders;
-          document.getElementById('stat-pending').innerText = response.stats.pendingOrders;
-          document.getElementById('stat-outForDelivery').innerText = response.stats.outForDelivery;
-          
-          document.getElementById('stat-amount').innerText = response.stats.totalCollectedAmount.toLocaleString();
-          document.getElementById('stat-todayCollected').innerText = response.stats.todayCollectedAmount.toLocaleString();
-          document.getElementById('stat-totalNet').innerText = response.stats.totalNetProfit.toLocaleString();
-          document.getElementById('stat-todayNet').innerText = response.stats.todayNetProfit.toLocaleString();
-          
-          renderTable(globalOrders);
-        }
-      }).getDashboardStats(pass);
-    }
-
-    function filterOrders() {
-      var searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      var statusFilter = document.getElementById('statusFilter').value;
-      
-      var filtered = globalOrders.filter(function(order) {
-        var matchesSearch = order.id.toLowerCase().includes(searchTerm) || 
-                            order.sender.toLowerCase().includes(searchTerm) || 
-                            order.receiver.toLowerCase().includes(searchTerm);
-                            
-        var matchesStatus = (statusFilter === "all" || order.status === statusFilter);
-        
-        return matchesSearch && matchesStatus;
-      });
-      
-      renderTable(filtered);
-    }
-
-    function renderTable(ordersArray) {
-      var tableHTML = '';
-      if (ordersArray.length === 0) {
-        tableHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد شحنات مطابقة للبحث.</td></tr>';
-      } else {
-        ordersArray.forEach(function(order) {
-          var badgeClass = "badge pending";
-          if(order.status === "تم التوصيل") badgeClass = "badge delivered";
-          else if(order.status === "خرج للتسليم") badgeClass = "badge out";
-          else if(order.status === "مرتجع") badgeClass = "badge returned";
-          
-          tableHTML += '<tr>';
-          tableHTML += '<td><strong>' + order.id + '</strong></td>';
-          tableHTML += '<td>' + order.sender + '</td>';
-          tableHTML += '<td>' + order.receiver + '</td>';
-          tableHTML += '<td>' + (order.courier || 'لم يعين بعد') + '</td>';
-          tableHTML += '<td>' + order.deliveryCost + '</td>';
-          tableHTML += '<td><strong style="color:#27ae60;">' + (order.netProfit || 0) + '</strong></td>';
-          tableHTML += '<td><span class="' + badgeClass + '">' + order.status + '</span></td>';
-          
-          // دمج بيانات الطلب لتمريرها للزراير
-          var orderDataStr = encodeURIComponent(JSON.stringify(order));
-          
-          tableHTML += '<td style="white-space: nowrap;">';
-          tableHTML += '<button class="btn-info" onclick="openInfoModal(\'' + orderDataStr + '\')">تفاصيل</button>';
-          tableHTML += '<button class="btn-edit" onclick="openModal(\'' + orderDataStr + '\')">تعديل</button>';
-          tableHTML += '</td>';
-          tableHTML += '</tr>';
-        });
-      }
-      document.getElementById('recentOrdersTable').innerHTML = tableHTML;
-    }
-
-    function populateCouriersDropdown() {
-      var select = document.getElementById("modalCourierSelect");
-      var html = '<option value="">-- اختر المندوب --</option>';
-      allCouriers.forEach(function(c) { html += '<option value="' + c + '">' + c + '</option>'; });
-      select.innerHTML = html;
-    }
-
-    // دوال النوافذ المنبثقة
-    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
-    // إغلاق النافذة عند الضغط خارجها
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = "none";
-      }
-    }
-
-    // ------------------------------------------------
-    // قسم عرض تفاصيل الشحنة (الآدمن)
-    // ------------------------------------------------
-    function openInfoModal(orderDataEncoded) {
-      var o = JSON.parse(decodeURIComponent(orderDataEncoded));
-
-      var podLink = o.podImage ? '<a href="'+o.podImage+'" target="_blank" style="color:#27ae60; font-weight:bold; text-decoration:none;">🖼️ عرض صورة الاستلام</a>' : '<span style="color:#bdc3c7;">لا توجد صورة استلام</span>';
-      var locLink = o.location ? '<a href="'+o.location+'" target="_blank" style="color:#d35400; font-weight:bold; text-decoration:none;">📍 فتح الموقع على الخريطة</a>' : '<span style="color:#bdc3c7;">لا يوجد موقع مسجل</span>';
-      var pdfLink = o.waybillUrl ? '<a href="'+o.waybillUrl+'" target="_blank" style="color:#2980b9; font-weight:bold; text-decoration:none;">📄 عرض بوليصة PDF</a>' : '<span style="color:#bdc3c7;">لا توجد بوليصة</span>';
-
-      var paidByColor = o.paidBy === "على المرسل" ? "#c0392b" : "#2980b9";
-      var netColor = o.merchantNet < 0 ? "#c0392b" : "#16a085";
-
-      var content = `
-        <p><strong>رمز البن (PIN):</strong> <span style="color:#e74c3c; font-weight:bold;">${o.pin || 'غير متوفر'}</span></p>
-        <div style="background:#f9f9f9; padding:10px; border-radius:5px; margin-bottom:10px;">
-            <strong>العنوان بالتفصيل:</strong><br>
-            ${o.address || 'غير متوفر'}
+                <div class="flex-1 overflow-x-auto p-0">
+                    <table class="w-full text-right text-sm">
+                        <thead
+                            class="bg-slate-50 text-slate-500 font-bold sticky top-0 z-10 shadow-sm border-b border-slate-100 uppercase text-[11px] tracking-wider">
+                            <tr>
+                                <th class="py-4 px-6">رقم الشحنة</th>
+                                <th class="py-4 px-6">المرسل (التاجر)</th>
+                                <th class="py-4 px-6">المستلم</th>
+                                <th class="py-4 px-6">المندوب</th>
+                                <th class="py-4 px-6">سعر التوصيل</th>
+                                <th class="py-4 px-6">صافي الربح</th>
+                                <th class="py-4 px-6">الحالة</th>
+                                <th class="py-4 px-6 text-center">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersTable" class="divide-y divide-slate-50">
+                            <!-- rows injected via js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <p><strong>سعر المنتج:</strong> ${o.productPrice} ج.م</p>
-        <p><strong>التوصيل على:</strong> <span style="color:${paidByColor}; font-weight:bold; background:#ecf0f1; padding:2px 8px; border-radius:4px;">${o.paidBy || 'غير محدد'}</span></p>
-        <p><strong>سعر البك أب:</strong> <span style="font-weight:bold;">${o.pickupPrice} ج.م</span></p>
-        <p><strong>الصافي المستحق للتاجر:</strong> <span style="color:${netColor}; font-weight:bold;">${o.merchantNet} ج.م</span></p>
-        <hr style="border:0; border-top:1px solid #ecf0f1; margin:15px 0;">
-        <p>${podLink}</p>
-        <p>${locLink}</p>
-        <p>${pdfLink}</p>
-      `;
-      
-      document.getElementById('infoModalContent').innerHTML = content;
-      document.getElementById('infoModal').style.display = 'block';
-    }
+    </main>
 
-    // ------------------------------------------------
-    // قسم تعديل الشحنة الشامل
-    // ------------------------------------------------
-    function openModal(orderDataEncoded) {
-      var order = JSON.parse(decodeURIComponent(orderDataEncoded));
-      document.getElementById('modalTrackId').innerText = order.id;
-      document.getElementById('modalRowIndex').value = order.rowIndex;
-      
-      // تعبئة البيانات الأساسية والحالة
-      document.getElementById('modalStatusSelect').value = order.status || "قيد الانتظار";
-      document.getElementById('modalProductPrice').value = order.productPrice || 0;
-      document.getElementById('modalDeliveryCost').value = order.deliveryCost || 0;
-      document.getElementById('modalPaidBySelect').value = order.paidBy || "على المستلم";
-      document.getElementById('modalPickupPrice').value = order.pickupPrice || 0;
-      
-      // تعبئة بيانات المندوب والمصاريف
-      document.getElementById('modalCourierSelect').value = order.courier || "";
-      document.getElementById('modalGas').value = order.gas || 0;
-      document.getElementById('modalMaintenance').value = order.maintenance || 0;
-      
-      calculateNetProfit();
-      document.getElementById('editModal').style.display = 'block';
-    }
+    <!-- MODALS -->
 
-    function calculateNetProfit() {
-      // جلب الإيرادات (سعر التوصيل + سعر البك أب)
-      var deliveryCost = parseFloat(document.getElementById('modalDeliveryCost').value) || 0;
-      var pickupPrice = parseFloat(document.getElementById('modalPickupPrice').value) || 0;
-      
-      // جلب المصروفات (البنزين + المصروفات الأخرى)
-      var gas = parseFloat(document.getElementById('modalGas').value) || 0;
-      var expenses = parseFloat(document.getElementById('modalMaintenance').value) || 0;
-      
-      // المعادلة الجديدة: (التوصيل + البك أب) ناقص (البنزين + المصروفات)
-      var net = (deliveryCost + pickupPrice) - (gas + expenses);
-      
-      // عرض الناتج في الشاشة
-      document.getElementById('modalNetProfit').innerText = net.toFixed(2);
-    }
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal" onclick="if(event.target===this)closeModal('editModal')">
+        <div class="modal-content !max-w-3xl">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                <h3 class="text-xl font-black text-primary">تعديل الشحنة: <span id="modalTrackId"
+                        class="text-tertiary"></span></h3>
+                <button onclick="closeModal('editModal')" class="text-slate-400 hover:text-error transition"><span
+                        class="material-symbols-outlined">close</span></button>
+            </div>
+            <input type="hidden" id="modalRowIndex">
 
-    function saveOrderUpdates() {
-      var rowIndex = document.getElementById('modalRowIndex').value;
-      
-      // جلب القيم من واجهة المستخدم
-      var status = document.getElementById('modalStatusSelect').value;
-      var productPrice = document.getElementById('modalProductPrice').value;
-      var deliveryCost = document.getElementById('modalDeliveryCost').value;
-      var paidBy = document.getElementById('modalPaidBySelect').value;
-      var pickupPrice = document.getElementById('modalPickupPrice').value;
-      
-      var courier = document.getElementById('modalCourierSelect').value;
-      var gas = document.getElementById('modalGas').value;
-      var maint = document.getElementById('modalMaintenance').value;
-      var netProfit = document.getElementById('modalNetProfit').innerText;
-      
-      var btn = document.getElementById('saveBtn');
-      btn.disabled = true; btn.innerText = "جاري الحفظ...";
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Order Details -->
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <h4 class="text-sm font-bold text-primary mb-4 flex items-center gap-2"><span
+                            class="material-symbols-outlined text-base">info</span>بيانات الطلب</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 mb-1 block">الحالة</label>
+                            <select id="modalStatusSelect"
+                                class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary focus:border-primary px-3 py-2">
+                                <option value="تم الإنشاء">تم الإنشاء</option>
+                                <option value="في المخزن">في المخزن</option>
+                                <option value="خرج للتوصيل">خرج للتوصيل</option>
+                                <option value="تم التوصيل">تم التوصيل</option>
+                                <option value="مرتجع">مرتجع</option>
+                                <option value="ملغي">ملغي</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر المنتج</label>
+                                <input type="number" id="modalProductPrice"
+                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">التوصيل على:</label>
+                                <select id="modalPaidBySelect"
+                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
+                                    <option value="على المستلم">المستلم</option>
+                                    <option value="على المرسل">المرسل</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر التوصيل</label>
+                                <input type="number" id="modalDeliveryCost" oninput="calculateNetProfit()"
+                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر التغليف/البيك أب</label>
+                                <input type="number" id="modalPickupPrice" oninput="calculateNetProfit()"
+                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      // إرسال جميع البيانات للباك إند
-      google.script.run.withSuccessHandler(function(res) {
-        btn.disabled = false; btn.innerText = "حفظ التعديلات الشاملة";
-        if(res.success) {
-          closeModal('editModal');
-          checkAdminPassword(); // تحديث اللوحة فوراً لرؤية التغييرات
-        } else {
-          alert("خطأ: " + res.error);
+                <!-- Delivery & Expenses -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="text-sm font-bold text-tertiary mb-4 flex items-center gap-2"><span
+                            class="material-symbols-outlined text-base">two_wheeler</span>المندوب والمصاريف</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 mb-1 block">تخصيص المندوب</label>
+                            <select id="modalCourierSelect"
+                                class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2"></select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">مصاريف البنزين</label>
+                                <input type="number" id="modalGas" oninput="calculateNetProfit()"
+                                    class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-primary px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">مصاريف أخرى</label>
+                                <input type="number" id="modalMaintenance" oninput="calculateNetProfit()"
+                                    class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-primary px-3 py-2">
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-xl text-center">
+                            <p class="text-[0.6rem] font-bold text-green-700 uppercase tracking-widest mb-1">صافي ربح
+                                الشركة المتوقع</p>
+                            <p class="text-3xl font-black text-green-600"><span id="modalNetProfit">0</span> <span
+                                    class="text-sm">ج.م</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="saveBtn" onclick="saveOrderUpdates()"
+                class="w-full mt-6 bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary/90 transition shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">save</span> حفظ جميع التعديلات
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')">
+        <div class="modal-content !max-w-md">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="font-black text-primary flex items-center gap-2"><span
+                        class="material-symbols-outlined">description</span>تفاصيل الشحنة</h3>
+                <button onclick="closeModal('infoModal')" class="text-slate-400 hover:text-error transition"><span
+                        class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="infoModalContent" class="space-y-4 text-sm mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Settlement Modal -->
+    <div id="settlementModal" class="modal" onclick="if(event.target===this)closeModal('settlementModal')">
+        <div class="modal-content !max-w-md">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="font-black text-tertiary flex items-center gap-2"><span
+                        class="material-symbols-outlined">account_balance_wallet</span>تصفية حساب تاجر</h3>
+                <button onclick="closeModal('settlementModal')" class="text-slate-400 hover:text-error transition"><span
+                        class="material-symbols-outlined">close</span></button>
+            </div>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">سيتم تصفير الرصيد المستحق للتاجر المختار بناءً على
+                الطلبات التي "تم توصيلها" أو المرتجعة فقط ولم تتم تصفيتها من قبل.</p>
+
+            <label class="text-xs font-bold text-slate-600 mb-2 block">اختر التاجر:</label>
+            <select id="merchantSettleSelect"
+                class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-tertiary px-4 py-3 mb-6"></select>
+
+            <button id="executeSettleBtn" onclick="executeSettlement()"
+                class="w-full bg-tertiary text-white font-bold py-3 rounded-xl hover:bg-tertiary/90 transition shadow-lg shadow-tertiary/20 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">done_all</span> تأكيد التصفية
+            </button>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal" onclick="if(event.target===this)closeModal('addUserModal')">
+        <div class="modal-content !max-w-md">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="font-black text-green-600 flex items-center gap-2"><span
+                        class="material-symbols-outlined">person_add</span>إضافة تاجر جديد</h3>
+                <button onclick="closeModal('addUserModal')" class="text-slate-400 hover:text-error transition"><span
+                        class="material-symbols-outlined">close</span></button>
+            </div>
+            <div class="space-y-3 mt-4">
+                <input type="text" id="newUserName" placeholder="اسم البراند أو العميل"
+                    class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                <input type="email" id="newUserEmail" placeholder="البريد الإلكتروني"
+                    class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                <input type="text" id="newUserPassword" placeholder="كلمة المرور"
+                    class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                <input type="text" id="newUserPhone" placeholder="رقم الهاتف"
+                    class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="newUserArea" placeholder="المحافظة"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                    <input type="text" id="newUserAddress" placeholder="العنوان التفصيلي"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                </div>
+                <button id="saveUserBtn" onclick="saveNewUser()"
+                    class="w-full mt-4 bg-green-500 text-white font-bold py-3 rounded-xl hover:bg-green-600 transition shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">add_circle</span> إنشاء الحساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var allCouriers = [];
+        var globalOrders = [];
+
+        function checkAdminPassword() {
+            var pass = document.getElementById('adminPass').value;
+            var errorDiv = document.getElementById('errorMsg');
+            var btn = document.getElementById('loginBtn');
+
+            if (!pass) { errorDiv.innerText = "الرجاء إدخال كلمة المرور!"; errorDiv.style.display = "block"; return; }
+
+            btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm block mx-auto">sync</span>';
+            errorDiv.style.display = "none";
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (response) {
+                    if (response.error) {
+                        errorDiv.classList.remove('hidden'); errorDiv.innerText = response.error; errorDiv.style.display = "block";
+                        btn.disabled = false; btn.innerText = "دخول آمن";
+                    } else {
+                        allCouriers = response.couriersList || [];
+                        globalOrders = response.stats.recentOrders || [];
+
+                        populateCouriersDropdown();
+
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('dashboardContent').style.display = 'block';
+                        document.getElementById('dashboardContent').classList.add('animate-[slideIn_0.4s_ease-out]');
+
+                        document.getElementById('stat-total').innerText = response.stats.totalOrders || 0;
+                        document.getElementById('stat-delivered').innerText = response.stats.deliveredOrders || 0;
+                        document.getElementById('stat-pending').innerText = response.stats.pendingOrders || 0;
+                        document.getElementById('stat-outForDelivery').innerText = response.stats.outForDelivery || 0;
+
+                        document.getElementById('stat-amount').innerText = (response.stats.totalCollectedAmount || 0).toLocaleString();
+                        document.getElementById('stat-todayCollected').innerText = (response.stats.todayCollectedAmount || 0).toLocaleString();
+                        document.getElementById('stat-totalNet').innerText = (response.stats.totalNetProfit || 0).toLocaleString();
+                        document.getElementById('stat-todayNet').innerText = (response.stats.todayNetProfit || 0).toLocaleString();
+
+                        renderTable(globalOrders);
+                    }
+                }).withFailureHandler(function (e) {
+                    btn.disabled = false; btn.innerText = "دخول آمن";
+                    errorDiv.classList.remove('hidden'); errorDiv.innerText = "خطأ خادم: " + e.message; errorDiv.style.display = "block";
+                }).getDashboardStats(pass);
+            } else {
+                // Local dev fallback
+                setTimeout(() => {
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    allCouriers = ["أحمد منصور", "سالم القحطاني"];
+                    globalOrders = [{ id: "TRK-9122", sender: "متجر الأزياء", receiver: "خالد بن الوليد", courier: "أحمد", deliveryCost: 35, netProfit: 15, status: "خرج للتوصيل" }];
+                    populateCouriersDropdown(); renderTable(globalOrders);
+                }, 800);
+            }
         }
-      }).updateOrderFromAdmin(rowIndex, courier, gas, maint, netProfit, pickupPrice, status, productPrice, deliveryCost, paidBy);
-    }
-    // ------------------------------------------------
-    // قسم تصفية حساب التاجر
-    // ------------------------------------------------
-    function openSettlementModal() {
-      var sendersList = [];
-      globalOrders.forEach(function(order) {
-        if(order.sender && sendersList.indexOf(order.sender) === -1) {
-          sendersList.push(order.sender);
+
+        function filterOrders() {
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            var statusFilter = document.getElementById('statusFilter').value;
+
+            var filtered = globalOrders.filter(function (order) {
+                var s = order.sender ? order.sender.toLowerCase() : "";
+                var r = order.receiver ? order.receiver.toLowerCase() : "";
+                var i = order.id ? order.id.toLowerCase() : "";
+                var matchesSearch = i.includes(searchTerm) || s.includes(searchTerm) || r.includes(searchTerm);
+                var matchesStatus = (statusFilter === "all" || order.status === statusFilter);
+                return matchesSearch && matchesStatus;
+            });
+            renderTable(filtered);
         }
-      });
-      
-      var select = document.getElementById('merchantSettleSelect');
-      var html = '<option value="">-- اختر التاجر لتصفية حسابه --</option>';
-      sendersList.forEach(function(s) { html += '<option value="' + s + '">' + s + '</option>'; });
-      select.innerHTML = html;
 
-      document.getElementById('settlementModal').style.display = 'block';
-    }
+        function renderTable(ordersArray) {
+            var tbody = document.getElementById('recentOrdersTable');
+            if (ordersArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 font-bold">لا توجد سجلات مطابقة.</td></tr>';
+                return;
+            }
+            var html = '';
+            ordersArray.forEach(function (order) {
+                var color = "text-slate-500 bg-slate-100";
+                var pulse = "";
+                if (order.status === "تم التوصيل") color = "text-green-600 bg-green-100";
+                else if (order.status === "خرج للتسليم" || order.status === "خرج للتوصيل") { color = "text-blue-600 bg-blue-100"; pulse = "<span class='inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping mr-1'></span>"; }
+                else if (order.status === "مرتجع") color = "text-red-600 bg-red-100";
+                else if (order.status === "ملغي") color = "text-white bg-error";
 
-    function executeSettlement() {
-      var merchantName = document.getElementById('merchantSettleSelect').value;
-      if (!merchantName) { alert("الرجاء اختيار التاجر أولاً."); return; }
-      
-      var confirmMsg = "هل أنت متأكد أنك تريد تصفية جميع حسابات التاجر (" + merchantName + ")؟";
-      if (!confirm(confirmMsg)) return;
+                html += '<tr class="group hover:bg-slate-50/50 transition border-white border-[6px] rounded-2xl">';
+                html += '<td class="py-3 px-6 font-bold text-primary">' + order.id + '</td>';
+                html += '<td class="py-3 px-6 font-medium">' + order.sender + '</td>';
+                html += '<td class="py-3 px-6 text-slate-500">' + order.receiver + '</td>';
+                html += '<td class="py-3 px-6"><span class="px-2 py-1 bg-primary/5 text-primary rounded-lg text-xs font-bold">' + (order.courier || 'لم يعين') + '</span></td>';
+                html += '<td class="py-3 px-6 font-bold text-slate-600">' + order.deliveryCost + '</td>';
+                html += '<td class="py-3 px-6 font-black text-green-600">' + (order.netProfit || 0) + '</td>';
+                html += '<td class="py-3 px-6"><span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest flex w-max items-center justify-center ' + color + '">' + pulse + order.status + '</span></td>';
 
-      var btn = document.getElementById('executeSettleBtn');
-      btn.disabled = true; btn.innerText = "جاري التصفية والتسجيل...";
-
-      google.script.run.withSuccessHandler(function(res) {
-        btn.disabled = false; btn.innerText = "تصفية الحساب الآن";
-        if(res.success) {
-          alert("تمت تصفية الحساب بنجاح!\nعدد الشحنات المصفاة: " + res.count + "\nإجمالي المبلغ المصفى: " + res.amount + " ج.م");
-          closeModal('settlementModal');
-          checkAdminPassword();
-        } else {
-          alert("حدث خطأ أثناء التصفية: " + res.error);
+                var orderDataStr = typeof order === 'object' ? encodeURIComponent(JSON.stringify(order)) : "";
+                html += '<td class="py-3 px-6 text-center">';
+                html += '<div class="flex justify-center gap-2 opacity-30 group-hover:opacity-100 transition">';
+                html += '<button onclick="openInfoModal(\'' + orderDataStr + '\')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition" title="تفاصيل"><span class="material-symbols-outlined text-[1rem]">description</span></button>';
+                html += '<button onclick="openModal(\'' + orderDataStr + '\')" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition" title="تعديل"><span class="material-symbols-outlined text-[1rem]">edit</span></button>';
+                html += '</div></td></tr>';
+            });
+            tbody.innerHTML = html;
         }
-      }).settleMerchantAccountByName(merchantName);
-    }
 
-        // ------------------------------------------------
-    // قسم إضافة تاجر جديد
-    // ------------------------------------------------
-    function openAddUserModal() {
-      // تفريغ الحقول عند فتح النافذة
-      document.getElementById('newUserName').value = '';
-      document.getElementById('newUserEmail').value = '';
-      document.getElementById('newUserPassword').value = '';
-      document.getElementById('newUserPhone').value = '';
-      document.getElementById('newUserArea').value = '';
-      document.getElementById('newUserAddress').value = '';
-
-      document.getElementById('addUserModal').style.display = 'block';
-    }
-
-    function saveNewUser() {
-      var userData = {
-        name: document.getElementById('newUserName').value,
-        email: document.getElementById('newUserEmail').value,
-        password: document.getElementById('newUserPassword').value,
-        phone: document.getElementById('newUserPhone').value,
-        area: document.getElementById('newUserArea').value,
-        address: document.getElementById('newUserAddress').value
-      };
-
-      // التحقق من تعبئة البيانات الأساسية
-      if (!userData.name || !userData.email || !userData.password || !userData.phone) {
-        alert("يرجى تعبئة جميع الحقول الأساسية (الاسم، الإيميل، كلمة المرور، الهاتف).");
-        return;
-      }
-
-      var btn = document.getElementById('saveUserBtn');
-      btn.disabled = true;
-      btn.innerText = "جاري الإنشاء...";
-
-      // إرسال البيانات للباك إند
-      google.script.run.withSuccessHandler(function(res) {
-        btn.disabled = false;
-        btn.innerText = "إنشاء الحساب";
-
-        if (res.success) {
-          alert("تم إنشاء حساب التاجر بنجاح!");
-          closeModal('addUserModal');
-        } else {
-          alert("حدث خطأ: " + res.error);
+        function populateCouriersDropdown() {
+            var select = document.getElementById("modalCourierSelect");
+            if (!select) return;
+            var html = '<option value="">-- اختر المندوب --</option>';
+            allCouriers.forEach(function (c) { html += '<option value="' + c + '">' + c + '</option>'; });
+            select.innerHTML = html;
         }
-      }).createNewUser(userData);
-    }
-  </script>
+
+        function openModal(itemStr) {
+            var order = JSON.parse(decodeURIComponent(itemStr));
+            document.getElementById('modalTrackId').innerText = order.id;
+            document.getElementById('modalRowIndex').value = order.rowIndex;
+            document.getElementById('modalStatusSelect').value = order.status || "قيد الانتظار";
+            document.getElementById('modalProductPrice').value = order.productPrice || 0;
+            document.getElementById('modalDeliveryCost').value = order.deliveryCost || 0;
+            document.getElementById('modalPaidBySelect').value = order.paidBy || "على المستلم";
+            document.getElementById('modalPickupPrice').value = order.pickupPrice || 0;
+
+            document.getElementById('modalCourierSelect').value = order.courier || "";
+            document.getElementById('modalGas').value = order.gas || 0;
+            document.getElementById('modalMaintenance').value = order.maintenance || 0;
+
+            calculateNetProfit();
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function calculateNetProfit() {
+            var d = parseFloat(document.getElementById('modalDeliveryCost').value) || 0;
+            var p = parseFloat(document.getElementById('modalPickupPrice').value) || 0;
+            var g = parseFloat(document.getElementById('modalGas').value) || 0;
+            var m = parseFloat(document.getElementById('modalMaintenance').value) || 0;
+            document.getElementById('modalNetProfit').innerText = ((d + p) - (g + m)).toFixed(2);
+        }
+
+        function saveOrderUpdates() {
+            var btn = document.getElementById('saveBtn');
+            btn.disabled = true; btn.innerText = "جاري الحفظ...";
+
+            var args = [
+                document.getElementById('modalRowIndex').value,
+                document.getElementById('modalCourierSelect').value,
+                document.getElementById('modalGas').value,
+                document.getElementById('modalMaintenance').value,
+                document.getElementById('modalNetProfit').innerText,
+                document.getElementById('modalPickupPrice').value,
+                document.getElementById('modalStatusSelect').value,
+                document.getElementById('modalProductPrice').value,
+                document.getElementById('modalDeliveryCost').value,
+                document.getElementById('modalPaidBySelect').value
+            ];
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (res) {
+                    btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">save</span> حفظ جميع التعديلات';
+                    if (res.success) { closeModal('editModal'); checkAdminPassword(); }
+                    else { alert("خطأ: " + res.error); }
+                }).updateOrderFromAdmin(...args);
+            } else {
+                setTimeout(() => { closeModal('editModal'); btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">save</span> حفظ جميع التعديلات'; }, 400);
+            }
+        }
+
+        function openInfoModal(itemStr) {
+            var o = JSON.parse(decodeURIComponent(itemStr));
+            var podLink = o.podImage ? '<a href="' + o.podImage + '" target="_blank" class="text-green-600 font-bold flex items-center gap-1 hover:underline"><span class="material-symbols-outlined text-sm">image</span> عرض صورة الاستلام</a>' : '<span class="text-slate-400 text-xs">لا توجد صورة استلام</span>';
+            var locLink = o.location ? '<a href="' + o.location + '" target="_blank" class="text-tertiary font-bold flex items-center gap-1 hover:underline"><span class="material-symbols-outlined text-sm">pin_drop</span> فتح الموقع على الخريطة</a>' : '<span class="text-slate-400 text-xs">لا يوجد موقع مسجل</span>';
+            var pdfLink = o.waybillUrl ? '<a href="' + o.waybillUrl + '" target="_blank" class="text-blue-600 font-bold flex items-center gap-1 hover:underline"><span class="material-symbols-outlined text-sm">picture_as_pdf</span> عرض بوليصة PDF</a>' : '<span class="text-slate-400 text-xs">لا توجد بوليصة</span>';
+
+            var content = `
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <span class="text-[0.65rem] font-bold text-slate-400 uppercase">الرمز السري (PIN)</span>
+                <p class="font-black text-error text-lg">${o.pin || '---'}</p>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <span class="text-[0.65rem] font-bold text-slate-400 uppercase">سعر المنتج</span>
+                <p class="font-black text-primary">${o.productPrice} ج.م</p>
+            </div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+            <span class="text-[0.65rem] font-bold text-slate-400 uppercase">العنوان</span>
+            <p class="font-medium text-sm text-slate-700 leading-relaxed">${o.address || 'غير متوفر'}</p>
+        </div>
+        <div class="flex justify-between items-center bg-green-50 p-4 rounded-xl border border-green-100 mb-4">
+            <span class="font-bold text-sm text-green-800">الصافي للمتجر:</span>
+            <span class="font-black text-xl text-green-600 ${o.merchantNet < 0 ? '!text-error' : ''}">${o.merchantNet} ج.م</span>
+        </div>
+        <div class="flex flex-col gap-3 py-3 border-t border-slate-100">
+            ${podLink} ${locLink} ${pdfLink}
+        </div>
+        `;
+            document.getElementById('infoModalContent').innerHTML = content;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function openSettlementModal() {
+            var senders = [...new Set(globalOrders.map(o => o.sender).filter(s => s))];
+            var select = document.getElementById('merchantSettleSelect');
+            var html = '<option value="">-- اختر التاجر --</option>';
+            senders.forEach(s => html += '<option value="' + s + '">' + s + '</option>');
+            select.innerHTML = html;
+            document.getElementById('settlementModal').style.display = 'flex';
+        }
+
+        function executeSettlement() {
+            var m = document.getElementById('merchantSettleSelect').value;
+            if (!m) { alert("الرجاء اختيار التاجر."); return; }
+            if (!confirm("تأكيد تصفية جميع حسابات التاجر (" + m + ")؟")) return;
+
+            var btn = document.getElementById('executeSettleBtn');
+            btn.disabled = true; btn.innerText = "جاري التصفية...";
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (res) {
+                    btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> تأكيد التصفية';
+                    if (res.success) {
+                        alert("نجاح! عدد الشحنات المصفاة: " + res.count + "\nبإجمالي مبلغ: " + res.amount + " ج.م");
+                        closeModal('settlementModal'); checkAdminPassword();
+                    } else { alert("خطأ: " + res.error); }
+                }).settleMerchantAccountByName(m);
+            } else { setTimeout(() => { closeModal('settlementModal'); btn.disabled = false; }, 400); }
+        }
+
+        function openAddUserModal() {
+            ['newUserName', 'newUserEmail', 'newUserPassword', 'newUserPhone', 'newUserArea', 'newUserAddress'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('addUserModal').style.display = 'flex';
+        }
+
+        function saveNewUser() {
+            var d = {
+                name: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                password: document.getElementById('newUserPassword').value,
+                phone: document.getElementById('newUserPhone').value,
+                area: document.getElementById('newUserArea').value,
+                address: document.getElementById('newUserAddress').value
+            };
+            if (!d.name || !d.email || !d.password || !d.phone) { alert("يرجى ملء البيانات الأساسية!"); return; }
+
+            var btn = document.getElementById('saveUserBtn');
+            btn.disabled = true; btn.innerText = "جاري الحفظ...";
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (res) {
+                    btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">add_circle</span> إنشاء الحساب';
+                    if (res.success) { alert("تم الإنشاء بنجاح"); closeModal('addUserModal'); } else { alert("خطأ: " + res.error); }
+                }).createNewUser(d);
+            } else { setTimeout(() => { closeModal('addUserModal'); btn.disabled = false; }, 400); }
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
 </body>
 
 </html>

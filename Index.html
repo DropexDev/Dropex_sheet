@@ -1,373 +1,393 @@
 <!DOCTYPE html>
-<html dir="rtl">
-
+<html dir="rtl" lang="ar">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تتبع الشحنة - Dropex</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .header h1 {
-      color: #e67e22;
-      margin: 0;
-      font-size: 36px;
-      letter-spacing: 2px;
-    }
-
-    .header p {
-      color: #7f8c8d;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 80%;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
-      text-align: center;
-      margin-bottom: 15px;
-      outline: none;
-      transition: border 0.3s;
-    }
-
-    input:focus {
-      border-color: #e67e22;
-    }
-
-    button {
-      background-color: #e67e22;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      width: 80%;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #d35400;
-    }
-
-    /* شريط التقدم */
-    .progress-container {
-      margin: 30px 0;
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .progress-container::before {
-      content: '';
-      position: absolute;
-      top: 15px;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: #eee;
-      z-index: 1;
-    }
-
-    .progress-bar {
-      position: absolute;
-      top: 15px;
-      right: 0;
-      height: 4px;
-      background: #2ecc71;
-      z-index: 2;
-      transition: width 0.4s ease;
-    }
-
-    .step {
-      position: relative;
-      z-index: 3;
-      text-align: center;
-      width: 33.33%;
-    }
-
-    .step .circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: #eee;
-      margin: 0 auto 5px;
-      line-height: 30px;
-      font-weight: bold;
-      color: white;
-      border: 4px solid #fff;
-      transition: background 0.4s;
-    }
-
-    .step.active .circle {
-      background: #2ecc71;
-    }
-
-    .step.error .circle {
-      background: #e74c3c;
-    }
-
-    .step .label {
-      font-size: 13px;
-      color: #34495e;
-      font-weight: bold;
-    }
-
-    .step .time {
-      font-size: 11px;
-      color: #7f8c8d;
-      margin-top: 5px;
-      min-height: 15px;
-    }
-
-    .detail-row {
-      margin-bottom: 12px;
-      font-size: 15px;
-      text-align: right;
-      padding-right: 10px;
-    }
-
-    .detail-row strong {
-      color: #2c3e50;
-    }
-
-    #errorMsg {
-      color: #e74c3c;
-      margin-top: 15px;
-      font-weight: bold;
-      display: none;
-      text-align: center;
-    }
-
-    #publicCard,
-    #authCard,
-    #privateCard {
-      display: none;
-    }
-
-    .section-title {
-      text-align: right;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 10px;
-      color: #2c3e50;
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-  </style>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>تتبع الشحنة - Dropex</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-low": "#f2f4f6", "background": "#f8f9fb", "inverse-on-surface": "#eff1f3",
+                        "on-tertiary": "#ffffff", "error-container": "#ffdad6", "secondary-container": "#e0e4f5",
+                        "surface-container-lowest": "#ffffff", "primary-fixed": "#d6e2ff", "surface-dim": "#d8dadc",
+                        "inverse-surface": "#2d3133", "surface": "#f8f9fb", "secondary": "#5a5e71", "inverse-primary": "#b1c5ff",
+                        "surface-container": "#eceef0", "on-surface": "#191c1e", "on-error-container": "#93000a",
+                        "tertiary": "#ff5c00", "on-tertiary-container": "#ffffff", "on-error": "#ffffff",
+                        "primary-container": "#0a1e3b", "primary": "#0a1e3b", "surface-container-highest": "#e0e3e5",
+                        "on-surface-variant": "#444651", "outline-variant": "#c5c5d3", "outline": "#757682",
+                        "surface-variant": "#e0e3e5", "error": "#ba1a1a", "on-primary": "#ffffff", "surface-tint": "#0a1e3b",
+                        "surface-bright": "#f8f9fb", "on-background": "#191c1e", "surface-container-high": "#e6e8ea"
+                    },
+                    fontFamily: {
+                        'ibm-plex-arabic': ['IBM Plex Sans Arabic', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .progress-line-active { background: linear-gradient(to left, #0a1e3b, #ff5c00); transition: width 0.8s ease-in-out; }
+    </style>
 </head>
+<body class="bg-background text-on-surface overflow-x-hidden">
+    <!-- TopNavBar -->
+    <nav class="w-full h-20 sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/50 flex justify-between items-center px-8 shadow-sm">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-black text-primary tracking-widest">DROPEX</span>
+            </div>
+            <div class="hidden md:flex gap-8 font-ibm-plex-arabic text-sm font-bold uppercase tracking-wide mr-4">
+                <a class="text-slate-500 hover:text-primary transition-all py-2" href="#">الرئيسية</a>
+                <a class="text-primary border-b-2 border-tertiary py-2" href="#">تتبع الشحنة</a>
+                <a class="text-slate-500 hover:text-primary transition-all py-2" href="#">الدعم الفني</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex gap-1">
+                <button class="p-2 text-slate-500 hover:text-tertiary transition-all"><span class="material-symbols-outlined">help_outline</span></button>
+            </div>
+        </div>
+    </nav>
 
-<body>
+    <main class="max-w-[1440px] mx-auto px-8 py-12 flex flex-col gap-12">
+        <!-- Hero Tracking Search -->
+        <section class="flex flex-col gap-8 max-w-3xl mx-auto text-center items-center w-full">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-primary font-ibm-plex-arabic leading-tight">
+                تتبع شحنتك <span class="text-tertiary">بخطوة</span> <br/>
+                <span class="text-on-surface-variant font-medium text-xl md:text-2xl mt-2 block">دقة متناهية في كل ميل.</span>
+            </h1>
+            <div class="w-full relative flex flex-col sm:flex-row gap-4 p-3 bg-white rounded-2xl shadow-xl shadow-primary/5 border border-slate-100 mt-4">
+                <div class="flex-1 relative flex items-center pr-4">
+                    <span class="material-symbols-outlined text-tertiary ml-3">local_shipping</span>
+                    <input id="trackInput" class="w-full bg-transparent border-none focus:ring-0 text-lg font-ibm-plex-arabic" placeholder="أدخل رقم الشحنة (مثلاً: TRK-000001)" type="text"/>
+                </div>
+                <button id="trackBtn" onclick="trackOrder()" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:bg-tertiary active:scale-95 shadow-lg shadow-primary/20">
+                    <span>تتبع الآن</span>
+                </button>
+            </div>
+            <div id="errorMsg" class="text-error font-bold hidden bg-error-container/50 px-6 py-2 rounded-lg"></div>
+        </section>
 
-  <div class="header">
-    <h1>Dropex</h1>
-    <p>تتبع شحنتك بسهولة وأمان</p>
-  </div>
+        <!-- Dashboard (Hidden initially) -->
+        <div id="trackingDashboard" class="grid grid-cols-1 lg:grid-cols-12 gap-8 hidden">
+            <!-- Left: Map & Progress -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                <!-- Live Map View -->
+                <div class="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-surface-container-high group border-4 border-white shadow-2xl">
+                    <img class="w-full h-full object-cover grayscale-[30%] brightness-90 group-hover:scale-105 transition-transform duration-[5000ms]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcZvQjIlNay_AzF-v3gXOZtrSRoBHyWYSpvzG9jJs9yBk_NJ8cLGYUHUB5kBdlVTBmtDrGpZZuLucKtgtDveXIRQkvYgl_Bf2GdOEBgR0KzUzU9owEqMfSzVU7nXGM1kMUI0byedlpZ9mq337aw2wFBxgZEyq5mK0ey_wesIupkfqucnQ0rOASbUo29eCYpUK5OH7tfNNxYCwEY9J70jLmSyoqn32d3AUNvkCL9BWXnhpcGqaXgi3oyFG4BJY1QFjU6kRZ3VHD4Ac"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent pointer-events-none"></div>
+                    
+                    <div class="absolute top-8 left-8 right-8 flex justify-between items-start pointer-events-none">
+                        <div class="bg-primary/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-white/10">
+                            <p class="text-[0.6rem] uppercase tracking-widest font-bold text-tertiary mb-1">الموقع التقريبي</p>
+                            <p class="text-sm font-bold text-white">المنطقة اللوجستية</p>
+                        </div>
+                    </div>
 
-  <!-- مربع البحث -->
-  <div class="card">
-    <input type="text" id="trackInput" placeholder="أدخل رقم التتبع (مثل TRK-000001)">
-    <button id="trackBtn" onclick="trackOrder()">تتبع حالة الشحنة</button>
-    <div id="errorMsg"></div>
-  </div>
+                    <!-- Floating Courier Info Card (Shows after PIN verify) -->
+                    <div id="courierCard" class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl flex items-center gap-4 border border-slate-100 hidden">
+                        <div class="relative">
+                            <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-3xl">person</span>
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <div>
+                            <p class="text-[0.6rem] uppercase font-black text-outline">مندوب التوصيل</p>
+                            <p class="text-sm font-bold text-primary" id="privCourierTxt">أحمد منصور</p>
+                        </div>
+                        <a href="#" id="privPhoneBtn" class="mr-2 w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center hover:bg-tertiary transition-colors" title="اتصال">
+                            <span class="material-symbols-outlined">call</span>
+                        </a>
+                    </div>
+                </div>
 
-  <!-- الكارت العام (يظهر للجميع) -->
-  <div class="card" id="publicCard">
-    <h3 class="section-title">حالة الشحنة: <span id="resTrackId" style="color:#e67e22;"></span></h3>
+                <!-- 4 Steps Visual Progress Bar -->
+                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 overflow-x-auto">
+                    <div class="flex justify-between relative min-w-[500px]">
+                        <!-- Background line -->
+                        <div class="absolute top-6 left-12 right-12 h-[3px] bg-slate-100 -z-0"></div>
+                        <!-- Active Line -->
+                        <div id="activeProgressBar" class="absolute top-6 right-12 h-[3px] progress-line-active -z-0" style="width: 0%;"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step1">
+                            <div id="step1Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_box</span>
+                            </div>
+                            <div class="text-center">
+                                <p id="step1Title" class="text-sm font-bold text-slate-400">تم الإنشاء</p>
+                                <p id="step1Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step2">
+                            <div id="step2Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+                            </div>
+                            <div class="text-center">
+                                <p id="step2Title" class="text-sm font-bold text-slate-400">في المخزن</p>
+                                <p id="step2Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step3">
+                            <div id="step3Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
+                                <span class="material-symbols-outlined">local_shipping</span>
+                            </div>
+                            <div class="text-center">
+                                <p id="step3Title" class="text-sm font-bold text-slate-400">خرج للتوصيل</p>
+                                <p id="step3Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
+                            </div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step4">
+                            <div id="step4Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
+                                <span class="material-symbols-outlined">home</span>
+                            </div>
+                            <div class="text-center">
+                                <p id="step4Title" class="text-sm font-bold text-slate-400">تم الاستلام</p>
+                                <p id="step4Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
-      <div class="step" id="step1">
-        <div class="circle">1</div>
-        <div class="label">تم الإستلام</div>
-        <div class="time" id="time1"></div>
-      </div>
-      <div class="step" id="step2">
-        <div class="circle">2</div>
-        <div class="label">خرج للتسليم</div>
-        <div class="time" id="time2"></div>
-      </div>
-      <div class="step" id="step3">
-        <div class="circle">3</div>
-        <div class="label" id="step3Label">تم التوصيل</div>
-        <div class="time" id="time3"></div>
-      </div>
-    </div>
-  </div>
+            <!-- Right: Details & Summary -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                <!-- Live Summary -->
+                <div class="bg-primary rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-start mb-6 relative z-10">
+                        <div>
+                            <p class="text-[0.7rem] uppercase tracking-[0.2em] font-bold text-tertiary mb-1">رقم التتبع</p>
+                            <p class="text-2xl font-black" id="resTrackId">TRACK-ID</p>
+                        </div>
+                        <span class="material-symbols-outlined text-4xl text-tertiary opacity-80">qr_code_2</span>
+                    </div>
+                    <div class="space-y-4 relative z-10">
+                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                            <span class="material-symbols-outlined text-tertiary text-lg">calendar_today</span>
+                            <span class="text-xs font-medium">تاريخ الإنشاء: <b class="text-white" id="pubDateAdded">--</b></span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                            <span class="material-symbols-outlined text-tertiary text-lg">update</span>
+                            <span class="text-xs font-medium">آخر تحديث: <b class="text-white" id="pubLastUpdate">--</b></span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                            <span class="material-symbols-outlined text-tertiary text-lg">info</span>
+                            <span class="text-xs font-medium">الحالة: <b class="text-white bg-tertiary/20 px-2 py-0.5 rounded" id="pubStatus">--</b></span>
+                        </div>
+                    </div>
+                </div>
 
-  <!-- كارت التحقق (لإظهار البيانات الحساسة) -->
-  <div class="card" id="authCard">
-    <h4 style="color: #34495e; margin-top: 0;">لعرض تفاصيل الشحنة والمندوب</h4>
-    <p style="font-size: 13px; color: #7f8c8d;">يرجى إدخال الرقم السري الخاص بهذه الشحنة</p>
-    <input type="password" id="pinInput" placeholder="أدخل الرقم السري">
-    <button id="authBtn" onclick="verifyPin()">عرض التفاصيل الحساسة</button>
-    <div id="pinErrorMsg" style="color: #e74c3c; margin-top: 10px; font-weight: bold; display: none;"></div>
-  </div>
+                <!-- Auth Card -->
+                <div id="authCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 flex flex-col gap-4">
+                    <h3 class="text-lg font-black text-primary border-r-4 border-tertiary pr-3">بيانات سرية</h3>
+                    <p class="text-xs text-outline leading-relaxed">لعرض تفاصيل المستلم والمبلغ المطلوب واسم المندوب، يرجى إدخال الرقم السري (PIN) الخاص بهذه الشحنة.</p>
+                    <input type="password" id="pinInput" placeholder="أدخل الرقم السري" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-tertiary transition-all">
+                    <button id="authBtn" onclick="verifyPin()" class="bg-tertiary text-white w-full py-3 rounded-xl font-bold shadow-lg shadow-tertiary/20 hover:bg-tertiary/90 transition-all text-sm">عرض التفاصيل الحساسة</button>
+                    <div id="pinErrorMsg" class="text-error text-xs font-bold text-center hidden mt-1"></div>
+                </div>
 
-  <!-- الكارت الخاص (يظهر بعد الرقم السري) -->
-  <div class="card" id="privateCard">
-    <h3 class="section-title">تفاصيل الشحنة والتوصيل</h3>
-    <div class="detail-row"><strong>من (المرسل):</strong> <span id="privSender"></span></div>
-    <div class="detail-row"><strong>مبلغ التحصيل:</strong> <span id="privAmount"></span> ج.م</div>
-    <div class="detail-row"><strong>العنوان:</strong> <span id="privAddress"></span></div>
+                <!-- Private Details (Hidden initially) -->
+                <div id="privateCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 flex-col gap-4 hidden">
+                    <h3 class="text-lg font-black text-primary border-r-4 border-tertiary pr-3 mb-2">التفاصيل الكاملة</h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
+                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">المرسل (متجر)</strong>
+                            <div id="privSender" class="text-primary font-bold text-sm">--</div>
+                        </div>
+                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
+                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">مبلغ التحصيل المطلوب</strong>
+                            <div class="text-tertiary font-bold text-lg"><span id="privAmount">0</span> <span class="text-xs">ج.م</span></div>
+                        </div>
+                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
+                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">عنوان التوصيل</strong>
+                            <div id="privAddress" class="text-primary font-bold text-sm leading-relaxed">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-
-    <div class="detail-row"><strong>مندوب التوصيل:</strong> <span id="privCourier"></span></div>
-    <div class="detail-row"><strong>رقم هاتف المندوب:</strong>
-      <span id="privPhone" style="color: #2980b9; font-weight: bold; direction: ltr; display: inline-block;"></span>
-    </div>
-  </div>
-
-  <script>
-    // تنسيق التاريخ ليظهر بشكل جميل مع الوقت
-    function formatDate(dateStr) {
-      if (!dateStr) return "";
-      var d = new Date(dateStr);
-      if (isNaN(d.getTime())) return "";
-      return d.toLocaleDateString('ar-EG') + " " + d.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
-    }
-
-    // الدالة الأولى: جلب البيانات العامة فقط
-    function trackOrder() {
-      var trackId = document.getElementById('trackInput').value.trim();
-      var btn = document.getElementById('trackBtn');
-      var errorDiv = document.getElementById('errorMsg');
-      
-      if(!trackId) { errorDiv.innerText = "الرجاء إدخال رقم التتبع!"; errorDiv.style.display = "block"; return; }
-      
-      btn.disabled = true; btn.innerText = "جاري البحث..."; 
-      errorDiv.style.display = "none"; 
-      
-      // إخفاء الكروت السابقة
-      document.getElementById('publicCard').style.display = "none";
-      document.getElementById('authCard').style.display = "none";
-      document.getElementById('privateCard').style.display = "none";
-      document.getElementById('pinInput').value = ""; // تفريغ الرقم السري القديم
-      
-      google.script.run.withSuccessHandler(function(jsonResponse) {
-        btn.disabled = false; btn.innerText = "تتبع حالة الشحنة";
-        var response = JSON.parse(jsonResponse);
-        
-        if (response.error) {
-          errorDiv.innerText = response.error; errorDiv.style.display = "block";
-        } else {
-          displayPublicData(response.data);
-          // إظهار مربع إدخال الرقم السري
-          document.getElementById('authCard').style.display = "block";
+    <script>
+        function formatDate(dateStr) {
+            if (!dateStr) return "";
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return "";
+            return d.toLocaleDateString('ar-EG') + " " + d.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
         }
-      }).getOrderStatus(trackId, null); // نرسل null للرقم السري في البداية
-    }
 
-    // عرض شريط التقدم والتواريخ
-    function displayPublicData(data) {
-      document.getElementById('resTrackId').innerText = data.id;
-      
-      var step1 = document.getElementById('step1');
-      var step2 = document.getElementById('step2');
-      var step3 = document.getElementById('step3');
-      var bar = document.getElementById('progressBar');
-      var step3Label = document.getElementById('step3Label');
-      
-      // تفريغ التواريخ
-      document.getElementById('time1').innerText = formatDate(data.dateAdded);
-      document.getElementById('time2').innerText = "";
-      document.getElementById('time3').innerText = "";
-      
-      step1.classList.remove('active', 'error');
-      step2.classList.remove('active', 'error');
-      step3.classList.remove('active', 'error');
-      
-      step1.classList.add('active'); 
-      
-      if (data.status === "قيد الانتظار") {
-        bar.style.width = "0%";
-      } 
-      else if (data.status === "خرج للتسليم") {
-        bar.style.width = "50%";
-        step2.classList.add('active');
-        document.getElementById('time2').innerText = formatDate(data.lastUpdate);
-      } 
-      else if (data.status === "تم التوصيل") {
-        bar.style.width = "100%";
-        step2.classList.add('active');
-        step3.classList.add('active');
-        step3Label.innerText = "تم التوصيل";
-        document.getElementById('time3').innerText = formatDate(data.lastUpdate);
-      } 
-      else if (data.status === "مرتجع") {
-        bar.style.width = "100%";
-        step2.classList.add('active');
-        step3.classList.add('error'); 
-        step3Label.innerText = "مرتجع";
-        document.getElementById('time3').innerText = formatDate(data.lastUpdate);
-      }
-
-      document.getElementById('publicCard').style.display = 'block';
-    }
-
-    // الدالة الثانية: إرسال الرقم السري لجلب البيانات الخاصة
-    function verifyPin() {
-      var trackId = document.getElementById('trackInput').value.trim();
-      var pinCode = document.getElementById('pinInput').value.trim();
-      var btn = document.getElementById('authBtn');
-      var pinErrorDiv = document.getElementById('pinErrorMsg');
-
-      if(!pinCode) { pinErrorDiv.innerText = "الرجاء إدخال الرقم السري!"; pinErrorDiv.style.display = "block"; return; }
-
-      btn.disabled = true; btn.innerText = "جاري التحقق...";
-      pinErrorDiv.style.display = "none";
-
-      google.script.run.withSuccessHandler(function(jsonResponse) {
-        btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
-        var response = JSON.parse(jsonResponse);
-
-        if (response.error) {
-          pinErrorDiv.innerText = response.error; pinErrorDiv.style.display = "block";
-        } else {
-          // إخفاء كارت تسجيل الدخول وإظهار البيانات
-          document.getElementById('authCard').style.display = "none";
-          displayPrivateData(response.privateData);
+        function trackOrder() {
+            var trackId = document.getElementById('trackInput').value.trim();
+            var btn = document.getElementById('trackBtn');
+            var errorDiv = document.getElementById('errorMsg');
+            
+            if(!trackId) { errorDiv.innerText = "الرجاء إدخال رقم التتبع!"; errorDiv.style.display = "block"; return; }
+            
+            btn.disabled = true; 
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> <span>جاري البحث...</span>';
+            errorDiv.style.display = "none"; 
+            
+            document.getElementById('trackingDashboard').style.display = "none";
+            document.getElementById('privateCard').style.display = "none";
+            document.getElementById('courierCard').style.display = "none";
+            document.getElementById('authCard').style.display = "flex";
+            document.getElementById('pinInput').value = ""; 
+            
+            if(typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function(jsonResponse) {
+                    btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span>';
+                    var response = JSON.parse(jsonResponse);
+                    
+                    if (response.error) {
+                        errorDiv.innerText = response.error; errorDiv.style.display = "block";
+                    } else {
+                        displayPublicData(response.data);
+                        document.getElementById('trackingDashboard').style.display = "grid";
+                    }
+                }).getOrderStatus(trackId, null);
+            } else {
+                // Local dev fallback
+                setTimeout(() => {
+                    btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span>';
+                    displayPublicData({
+                        id: trackId, status: "خرج للتوصيل", dateAdded: new Date(), lastUpdate: new Date()
+                    });
+                    document.getElementById('trackingDashboard').style.display = "grid";
+                }, 800);
+            }
         }
-      }).getOrderStatus(trackId, pinCode);
-    }
 
-    // عرض البيانات الحساسة بعد التحقق
-    function displayPrivateData(privateData) {
-      document.getElementById('privSender').innerText = privateData.sender;
-      document.getElementById('privAmount').innerText = privateData.amount;
-      document.getElementById('privAddress').innerText = privateData.address;
-      document.getElementById('privCourier').innerText = privateData.courier;
-      document.getElementById('privPhone').innerText = privateData.courierPhone;
-      
-      document.getElementById('privateCard').style.display = 'block';
-    }
-  </script>
+        function setStepStyle(stepId, state, customText, dateText, isPulsing) {
+            var icon = document.getElementById(stepId + 'Icon');
+            var title = document.getElementById(stepId + 'Title');
+            var date = document.getElementById(stepId + 'Date');
+            
+            // reset
+            icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400";
+            title.className = "text-sm font-bold text-slate-400";
+            title.innerText = customText || title.innerText;
+            date.innerText = dateText || "";
+            icon.innerHTML = icon.innerHTML.replace('animate-pulse', '');
+
+            if (state === 'done') {
+                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-primary text-white shadow-lg shadow-primary/20";
+                icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check</span>';
+                title.className = "text-sm font-bold text-primary";
+            } else if (state === 'current') {
+                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-tertiary text-white shadow-lg shadow-tertiary/30" + (isPulsing ? " animate-pulse" : "");
+                title.className = "text-sm font-bold text-primary";
+            } else if (state === 'error') {
+                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-error text-white shadow-lg shadow-error/30";
+                icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">cancel</span>';
+                title.className = "text-sm font-bold text-error";
+            }
+        }
+
+        function displayPublicData(data) {
+            document.getElementById('resTrackId').innerText = data.id;
+            document.getElementById('pubDateAdded').innerText = formatDate(data.dateAdded);
+            document.getElementById('pubLastUpdate').innerText = formatDate(data.lastUpdate) || "لم يتم التحديث";
+            document.getElementById('pubStatus').innerText = data.status;
+            
+            var s = data.status;
+            var w = "0%";
+            var states = ["pending", "pending", "pending", "pending"];
+            var title4 = "تم الاستلام";
+            var latestDate = formatDate(data.lastUpdate);
+            
+            // States map based on exact naming
+            if (s === "قيد الانتظار" || s === "تم الإنشاء") {
+                w = "0%"; states = ["current", "pending", "pending", "pending"];
+            } else if (s === "في المخزن") {
+                w = "33%"; states = ["done", "current", "pending", "pending"];
+            } else if (s === "خرج للتسليم" || s === "خرج للتوصيل") {
+                w = "66%"; states = ["done", "done", "current", "pending"];
+            } else if (s === "تم التوصيل") {
+                w = "100%"; states = ["done", "done", "done", "done"];
+                title4 = "تم التوصيل";
+            } else if (s === "مرتجع") {
+                w = "100%"; states = ["done", "done", "done", "error"];
+                title4 = "مرتجع";
+            } else if (s === "ملغي") {
+                // Determine width based on where it got mostly cancelled? 
+                // Let's just make it full red or halfway. We'll set 100% and error state
+                w = "100%"; states = ["error", "error", "error", "error"];
+                title4 = "ملغي";
+            }
+
+            document.getElementById('activeProgressBar').style.width = w;
+            
+            setStepStyle('step1', states[0], "تم الإنشاء", states[0]==='done'?formatDate(data.dateAdded):"");
+            setStepStyle('step2', states[1], "في المخزن", states[1]==='done'?latestDate:"");
+            setStepStyle('step3', states[2], "خرج للتوصيل", states[2]==='done'?latestDate:"", states[2]==='current');
+            
+            var d4 = (states[3]==='done'||states[3]==='error') ? latestDate : "متوقع قريباً";
+            setStepStyle('step4', states[3], title4, d4);
+        }
+
+        function verifyPin() {
+            var trackId = document.getElementById('trackInput').value.trim();
+            var pinCode = document.getElementById('pinInput').value.trim();
+            var btn = document.getElementById('authBtn');
+            var pinErrorDiv = document.getElementById('pinErrorMsg');
+
+            if(!pinCode) { pinErrorDiv.innerText = "الرجاء إدخال الرقم السري!"; pinErrorDiv.style.display = "block"; return; }
+
+            btn.disabled = true; btn.innerText = "جاري التحقق...";
+            pinErrorDiv.style.display = "none";
+
+            if(typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function(jsonResponse) {
+                    btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
+                    var response = JSON.parse(jsonResponse);
+
+                    if (response.error) {
+                        pinErrorDiv.innerText = response.error; pinErrorDiv.style.display = "block";
+                    } else {
+                        document.getElementById('authCard').style.display = "none";
+                        displayPrivateData(response.privateData);
+                    }
+                }).getOrderStatus(trackId, pinCode);
+            } else {
+                 setTimeout(() => {
+                    btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
+                    document.getElementById('authCard').style.display = "none";
+                    displayPrivateData({
+                        sender: "متجر الأزياء الحديثة", amount: "550", address: "شارع الرياض، حي المربّع، أمام المسجد", courier: "محمود سلامة", courierPhone: "0501234567"
+                    });
+                }, 800);
+            }
+        }
+
+        function displayPrivateData(privateData) {
+            document.getElementById('privSender').innerText = privateData.sender;
+            document.getElementById('privAmount').innerText = privateData.amount;
+            document.getElementById('privAddress').innerText = privateData.address;
+            document.getElementById('privCourierTxt').innerText = privateData.courier || "لم يعين بعد";
+            
+            if(privateData.courierPhone && privateData.courierPhone !== "غير متوفر") {
+                document.getElementById('privPhoneBtn').href = "tel:" + privateData.courierPhone;
+                document.getElementById('privPhoneBtn').style.display = 'flex';
+            } else {
+                document.getElementById('privPhoneBtn').style.display = 'none';
+            }
+            
+            document.getElementById('privateCard').style.display = 'flex';
+            document.getElementById('courierCard').style.display = 'flex';
+        }
+    </script>
 </body>
-
 </html>

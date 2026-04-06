@@ -137,7 +137,7 @@ function createNewOrder(formObj) {
     var rowData = new Array(29).fill("");
     rowData[0] = newTrackId; rowData[1] = String(formObj.senderEmail).trim().toLowerCase();
     rowData[2] = String(formObj.senderName).trim(); rowData[3] = formObj.receiverName;
-    rowData[4] = "قيد الانتظار"; rowData[5] = dateAdded;
+    rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
     rowData[6] = formObj.productPrice; rowData[7] = formObj.deliveryCost;
     rowData[8] = formObj.deliveryPaidBy; rowData[9] = 0;
     rowData[10] = waybillUrl;
@@ -276,10 +276,10 @@ function getDashboardStats(password) {
           stats.todayNetProfit += netProfit;
         }
       }
-      else if (status == "خرج للتسليم") {
+      else if (status == "خرج للتسليم" || status == "خرج للتوصيل") {
         stats.outForDelivery++;
       }
-      else if (status == "قيد الانتظار") {
+      else if (status == "قيد الانتظار" || status == "تم الإنشاء" || status == "في المخزن") {
         stats.pendingOrders++;
       }
 
@@ -467,7 +467,7 @@ function getUserDashboardStats(email, name) {
           stats.currentOwed += merchantNet;
         }
       }
-      else if (status === "قيد الانتظار" || status === "خرج للتسليم") {
+      else if (status === "قيد الانتظار" || status === "تم الإنشاء" || status === "خرج للتسليم" || status === "خرج للتوصيل" || status === "في المخزن") {
         stats.pendingOrders++;
         // الطلبات المعلقة لا تدخل في الحسابات المالية حتى يتم حسم حالتها
       }
@@ -601,7 +601,7 @@ function processGridOrders(ordersArray, userData) {
       var rowData = new Array(29).fill("");
       rowData[0] = newTrackId; rowData[1] = String(userData.email).trim().toLowerCase();
       rowData[2] = String(userData.name).trim(); rowData[3] = recName;
-      rowData[4] = "قيد الانتظار"; rowData[5] = dateAdded;
+      rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
       rowData[6] = productPrice; rowData[7] = deliveryCost;
       rowData[8] = deliveryPaidBy; rowData[10] = waybillUrl;
       rowData[11] = String(userData.phone).trim();
