@@ -9,6 +9,8 @@ function doGet(e) {
     return HtmlService.createHtmlOutputFromFile('Admin').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } else if (page == 'user') {
     return HtmlService.createHtmlOutputFromFile('User').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  } else if (page == 'tracking') {
+    return HtmlService.createHtmlOutputFromFile('Tracking').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } else {
     return HtmlService.createHtmlOutputFromFile('Index').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   }

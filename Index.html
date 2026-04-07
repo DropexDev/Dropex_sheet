@@ -94,11 +94,10 @@
 </a>
 <div class="hidden md:flex gap-8 items-center">
 <a class="text-[#ff5722] font-bold border-b-2 border-[#ff5722] pb-1 transition-colors duration-300" href="#" onclick="navigateTo('home')">الرئيسية</a>
-<a class="text-[#1a1c1e] font-medium hover:text-[#ff5722] transition-colors duration-300" href="#" onclick="document.getElementById('trackInput').focus()">تتبع الشحنة</a>
+<a class="text-[#1a1c1e] font-medium hover:text-[#ff5722] transition-colors duration-300" href="#" onclick="navigateTo('tracking')">تتبع الشحنة</a>
 </div>
 </div>
 <div class="flex gap-4">
-<button class="text-[#1a1c1e] font-medium hover:text-[#ff5722] transition-colors duration-300 px-4 py-2" onclick="navigateTo('courier')">دخول السائقين</button>
 <button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold scale-95 active:scale-90 transition-transform shadow-lg shadow-primary/10" onclick="navigateTo('user')">بوابة التجار</button>
 </div>
 </div>
@@ -181,7 +180,7 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
 <!-- Merchant Portal Card -->
-<a class="md:col-span-8 group relative overflow-hidden rounded-[2rem] bg-surface-container-low p-10 flex flex-col justify-between min-h-[400px] transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('user')">
+<a class="md:col-span-12 group relative overflow-hidden rounded-[2rem] bg-surface-container-low p-10 flex flex-col justify-between min-h-[400px] transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('user')">
 <div class="absolute top-0 left-0 w-full h-full z-0 opacity-10 group-hover:opacity-20 transition-opacity">
 <img class="w-full h-full object-cover" data-alt="Professional logistics manager using a high-end tablet in a clean white warehouse office with automated shelves background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAszwY4TC7BEbU-QIFVdtNVtdS09-eqIIXibKmkACrU_lMXBjBo7SnbV0AqdpBbRPL6h8ZIf8UuUou7aGbm4N8pgOqRaHyyC23qPNpMzSZo_EGas_uDKM-A2mI0iWUEM2tArJkHmOTy-XpTd8ZOuVdrQl_JtEEYVgjw6FnBhs09cJBpGOZ_1zvuQNwdANu2S4HI5Jur5fC0OACuV5m6dUhn0DFdJNMOlhiwAYdawlYD0iUTpPvecrgWBgvmr2hkQxFWnKkjGqVCT_8"/>
 </div>
@@ -199,46 +198,6 @@
 <div class="w-10 h-10 rounded-full border border-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
 <span class="material-symbols-outlined text-sm">arrow_back</span>
 </div>
-</div>
-</a>
-<!-- Driver Portal Card -->
-<a class="md:col-span-4 group relative overflow-hidden rounded-[2rem] bg-primary p-10 flex flex-col justify-between transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('courier')">
-<div class="relative z-10">
-<div class="bg-white/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm">
-<span class="material-symbols-outlined text-secondary-container text-3xl">directions_car</span>
-</div>
-<h3 class="text-2xl font-black text-white mb-4">تطبيق السائقين</h3>
-<p class="text-on-primary-container text-sm leading-relaxed">
-                                انضم إلى فريقنا من المحترفين وابدأ في كسب الأرباح مع مرونة كاملة في الوقت.
-                            </p>
-</div>
-<div class="relative z-10 flex items-center gap-4 text-white font-bold">
-<span>ابدأ القيادة</span>
-<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-secondary-container transition-all">
-<span class="material-symbols-outlined text-sm">arrow_back</span>
-</div>
-</div>
-</a>
-<!-- Admin Dashboard Card -->
-<a class="md:col-span-12 group relative overflow-hidden rounded-[2rem] bg-surface-container-high p-12 flex items-center justify-between transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('admin')">
-<div class="flex-1 space-y-4">
-<h3 class="text-3xl font-black text-primary">لوحة التحكم الإدارية</h3>
-<p class="text-on-surface-variant max-w-xl text-lg">
-                                تحكم كامل في العمليات اللوجستية، إدارة الأساطيل، والتحليلات المتقدمة لدعم اتخاذ القرار.
-                            </p>
-<div class="pt-4 flex gap-6">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-green-500"></span>
-<span class="text-xs font-bold text-outline">نظام ذكاء اصطناعي</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-blue-500"></span>
-<span class="text-xs font-bold text-outline">تقارير لحظية</span>
-</div>
-</div>
-</div>
-<div class="hidden md:block">
-<span class="material-symbols-outlined text-primary/10 text-9xl">dashboard_customize</span>
 </div>
 </a>
 </div>
