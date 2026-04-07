@@ -1,347 +1,307 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html dir="rtl">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
-    <title>بوابة المندوب | Dropex</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "background": "#f7f9fb",
-                        "primary": "#00234b",
-                        "accent": "#ff6b00",
-                        "primary-fixed": "#ffe9df",
-                        "error": "#ba1a1a",
-                    },
-                    fontFamily: { "sans": ["IBM Plex Sans Arabic", "sans-serif"] }
-                }
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المندوبين - Dropex</title>
     <style>
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: #f7f9fb; -webkit-tap-highlight-color: transparent;}
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        /* Smooth transitions */
-        .page-enter { animation: fadeInUp 0.4s ease-out forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        /* Disabled button state */
-        .btn-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #ecf0f1;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .login-screen {
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #2c3e50;
+            text-align: right;
+        }
+
+        h2,
+        h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        p {
+            margin: 8px 0;
+            color: #34495e;
+            font-size: 15px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 90%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn-login {
+            padding: 10px 20px;
+            background: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 90%;
+        }
+
+        .btn-deliver {
+            flex: 1;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-return {
+            flex: 1;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-disabled {
+            background: #95a5a6 !important;
+            cursor: not-allowed;
+        }
+
+        .receiver-box {
+            background-color: #e8f6fd;
+            border-right: 4px solid #2980b9;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+        }
+
+        .btn-receiver-tel {
+            background: #2980b9;
+        }
+
+        .sender-box {
+            background-color: #fdf3e8;
+            border-right: 4px solid #d35400;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+        }
+
+        .btn-sender-tel {
+            background: #d35400;
+        }
+
+        .contact-btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            font-size: 13px;
+            margin-left: 5px;
+            display: inline-block;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .wa-btn {
+            background: #25D366;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-area,
+        .reason-area {
+            margin: 15px 0 10px 0;
+            border: 1px dashed #7f8c8d;
+            padding: 10px;
+            border-radius: 5px;
+            background: #fdfdfd;
+        }
+
+        .amount-tag {
+            color: #c0392b;
+            font-weight: bold;
+            font-size: 18px;
+            background: #fadbd8;
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            text-align: center;
+            border: 1px solid #e74c3c;
+            margin: 15px 0;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .welcome-msg {
+            text-align: center;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            color: #7f8c8d;
+            font-size: 13px;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body class="text-slate-800 overflow-x-hidden antialiased flex flex-col items-center min-h-screen">
 
-    <!-- Login Overlay -->
-    <div id="loginSection" class="fixed inset-0 bg-primary z-50 flex items-center justify-center p-6">
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Decorative blur blobs -->
-            <div class="absolute -top-40 -right-40 w-96 h-96 bg-accent/20 rounded-full blur-[100px]"></div>
-            <div class="absolute -bottom-40 -left-60 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px]"></div>
-        </div>
-        <div class="w-full max-w-[360px] relative z-10 page-enter">
-            <div class="text-center mb-10 text-white">
-                <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[1.5rem] border border-white/10 mx-auto flex items-center justify-center mb-6 shadow-2xl">
-                    <span class="material-symbols-outlined text-4xl text-accent" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-                </div>
-                <h1 class="text-3xl font-black tracking-widest mb-1 shadow-black/50 drop-shadow-md">DROPEX</h1>
-                <p class="text-[0.65rem] text-white/60 uppercase tracking-[0.2em] font-bold">بوابة السائقين • Driver Portal</p>
-            </div>
-            
-            <div class="bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-[2.5rem] shadow-2xl border border-white">
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">email</span>
-                            <input type="email" id="emailInput" placeholder="البريد الإلكتروني" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') courierLogin()">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
-                            <input type="password" id="passInput" placeholder="كلمة المرور" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') courierLogin()">
-                        </div>
-                    </div>
-                </div>
-                <button id="loginBtn" onclick="courierLogin()" class="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex justify-center items-center gap-2">
-                    دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>
-                </button>
-                <p id="loginError" class="text-error text-center text-xs font-bold mt-4 bg-red-50 p-2 rounded-lg hidden"></p>
-            </div>
+<body>
+
+    <div id="loginSection" class="login-screen">
+        <h2>بوابة المندوبين</h2>
+        <input type="email" id="emailInput" placeholder="أدخل الإيميل الخاص بك"><br>
+        <input type="password" id="passInput" placeholder="أدخل الرقم السري"><br>
+        <button class="btn-login" onclick="login()" id="loginBtn">دخول</button>
+        <p id="loginError" style="color:red; display:none;"></p>
+    </div>
+
+    <div id="dashboard">
+        <h3 id="welcomeText" class="welcome-msg"></h3>
+        <h3 style="text-align:center; color: #2980b9;">📦 الشحنات المطلوب توصيلها</h3>
+        <div id="ordersList">
+            <p style="text-align:center;">جاري التحميل...</p>
         </div>
     </div>
 
-    <!-- Main Dashboard Container -->
-    <div id="dashboard" class="hidden flex-col h-[100dvh] w-full max-w-md bg-background relative sm:border-x sm:border-slate-200 overflow-hidden shadow-2xl">
-        
-        <!-- Header -->
-        <header class="bg-white px-6 py-4 flex justify-between items-center z-20 shrink-0 border-b border-slate-100">
-            <div>
-                <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest leading-none mb-1">في الخدمة الآن</p>
-                <h2 id="welcomeText" class="text-base font-black text-primary leading-none">الكابتن</h2>
-            </div>
-            <div class="flex items-center gap-3">
-                <button class="w-10 h-10 rounded-full border border-slate-100 bg-slate-50 text-slate-500 flex items-center justify-center hover:bg-slate-100 transition-colors">
-                    <span class="material-symbols-outlined text-xl">notifications</span>
-                </button>
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDQu811P4gHhPOE3-MoXGzQ0SVqyXgjJCiBSiLZlyXQDwhiZAf7I1YV4bwI8A8H2r6uTHSstSXqvEDiBcCeJN6zEi4k70HWq6_5481sY5HgS1JDFPK0ZvbmnK5YfGh6db6t12kQFdyGIAO2tA594ypnnc0pp1Hn8P3RbQv8mZ6UBvPgwQRNGe4SZ_u_4dwZJwNUPn8YkqMZf9aeNi_SQsyy62uxVNA5b3EEBJiTG2YhVPWSfOi7-RCEUTCAiiRLToM7OGC1v5Bk_0" alt="Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-accent p-0.5">
-            </div>
-        </header>
-
-        <!-- Static Map/Status Header -->
-        <div class="h-44 relative shrink-0 z-10 w-full overflow-hidden bg-slate-200">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRhbh-XLGauvJoqUPtDEA2ptJdpFawQUwUPS8rGBzVAOYZC50pOyfc3sANJTIhuwm0l2vLx-S29jQN2RcD40E40ksRQki3kGvtsGHuAiH5PjqOCB5Y9pZpW-J-ePHsNNgXkPeYekKEjttSn9mc7LxIi8a_jz6AP7imiLc6edHSgB047S4BuitY8Q_ePgKrCTaOvnV-DsfyqQdjeWpFmgvzFPp5fCrQUmnk0fahx9HyCald6J6Lz4Wb3hRv-P25bpHBWb2Y2CwbbsM" class="w-full h-full object-cover opacity-80 grayscale-[20%]">
-            <div class="absolute inset-0 bg-gradient-to-b from-primary/30 to-background"></div>
-            
-            <div class="absolute bottom-6 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-white flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shadow-inner border border-green-100">
-                        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">share_location</span>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-primary mb-0.5">وحدة الـ GPS متصلة</p>
-                        <p class="text-[0.55rem] text-slate-500 uppercase font-bold tracking-widest">مستعد لتلقي/تحديث الطلبات</p>
-                    </div>
-                </div>
-                <div class="relative flex items-center justify-center w-6 h-6 mr-2">
-                    <div class="absolute w-full h-full bg-green-500/20 rounded-full animate-ping"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Orders Scroll Area -->
-        <div class="flex-1 overflow-y-auto w-full px-4 relative z-20 pb-20 no-scrollbar">
-            <div class="flex justify-between items-end mb-4 px-1 pt-2">
-                <h3 class="text-sm font-black text-primary border-r-4 border-accent pr-2 uppercase">الطلبات المجدولة</h3>
-                <span class="text-[10px] font-bold bg-primary-fixed text-accent px-2 py-1 rounded-md">التحديث فوري</span>
-            </div>
-            
-            <div id="ordersList" class="space-y-5 pb-6">
-                <!-- Data will be populated here -->
-            </div>
-        </div>
-
-        <!-- Sticky Bottom Navigation (Decorative/App-feel) -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-slate-100 flex justify-around items-center px-4 py-3 z-30 pb-safe">
-            <button class="flex flex-col items-center gap-1 text-accent">
-                <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">package</span>
-                <span class="text-[9px] font-bold uppercase">المهام</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition" onclick="refreshOrders()">
-                <span class="material-symbols-outlined text-2xl">sync</span>
-                <span class="text-[9px] font-bold uppercase">تحديث</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition" onclick="alert('سجل العمليات قريباً')">
-                <span class="material-symbols-outlined text-2xl">history</span>
-                <span class="text-[9px] font-bold uppercase">السجل</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-error hover:text-red-700 transition" onclick="document.getElementById('dashboard').style.display='none'; document.getElementById('loginSection').style.display='flex';">
-                <span class="material-symbols-outlined text-2xl">logout</span>
-                <span class="text-[9px] font-bold uppercase">خروج</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- JS Logic -->
     <script>
         var currentCourier = "";
 
-        // دالة بناء رابط الواتساب
-        function getWaLink(phone) {
-            let num = String(phone).trim();
-            return num.startsWith('0') ? '2' + num : num;
-        }
-
-        // دالة تسجيل الدخول
-        function courierLogin() {
-            try {
-                var email = document.getElementById('emailInput').value.trim();
-                var pass = document.getElementById('passInput').value.trim();
-                var btn = document.getElementById('loginBtn');
-                var err = document.getElementById('loginError');
-                
-                if(!email || !pass) {
-                    err.innerText = "الرجاء إدخال الإيميل والرقم السري.";
-                    err.style.display = 'block';
-                    return;
-                }
-
-                btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-xl">sync</span> جاري التحقق...';
-                btn.disabled = true;
-                err.style.display = 'none';
-
-                if(typeof google !== 'undefined' && google.script) {
-                    google.script.run.withSuccessHandler(function(response) {
-                        btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
-                        btn.disabled = false;
-                        
-                        if (response.error) {
-                            err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = response.error;
-                        } else {
-                            currentCourier = response.courierName;
-                            document.getElementById('loginSection').style.display = 'none';
-                            document.getElementById('dashboard').style.display = 'flex';
-                            document.getElementById('welcomeText').innerText = "كابتن " + currentCourier;
-                            renderOrders(response.orders);
-                        }
-                    }).withFailureHandler(function(e) {
-                        btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
-                        btn.disabled = false;
-                        err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = "خطأ في الاتصال بالخادم: " + e.message;
-                    }).getCourierOrders(email, pass);
-                } 
-            } catch(errObj) {
-                alert('خطأ برمجي: ' + errObj.message);
-            }
-        }
-
-        // دالة تحديث الطلبات بدون الخروج من الحساب
-        function refreshOrders() {
+        function login() {
+            // إزالة المسافات الزائدة قبل الإرسال لتجنب الأخطاء
             var email = document.getElementById('emailInput').value.trim();
             var pass = document.getElementById('passInput').value.trim();
-            var list = document.getElementById('ordersList');
-            
-            if(!email || !pass) return;
+            var btn = document.getElementById('loginBtn');
 
-            list.innerHTML = `
-            <div class="flex flex-col justify-center items-center h-48 opacity-70">
-                <span class="material-symbols-outlined animate-spin text-5xl text-primary mb-3">sync</span>
-                <p class="text-sm font-bold text-slate-500">جاري جلب الطلبات الحديثة...</p>
-            </div>`;
-
-            if(typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(function(response) {
-                    if (response.error) {
-                        alert("خطأ: " + response.error);
-                    } else {
-                        renderOrders(response.orders);
-                    }
-                }).withFailureHandler(function(e) {
-                    alert("فشل تحديث الطلبات، تحقق من اتصال الإنترنت.");
-                }).getCourierOrders(email, pass);
+            if (!email || !pass) {
+                document.getElementById('loginError').innerText = "الرجاء إدخال الإيميل والرقم السري.";
+                document.getElementById('loginError').style.display = 'block';
+                return;
             }
+
+            btn.innerText = "جاري التحقق...";
+            btn.disabled = true;
+
+            google.script.run.withSuccessHandler(function (response) {
+                btn.innerText = "دخول";
+                btn.disabled = false;
+
+                if (response.error) {
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('loginError').innerText = response.error;
+                } else {
+                    currentCourier = response.courierName;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('welcomeText').innerText = "مرحباً بك يا " + currentCourier;
+                    renderOrders(response.orders);
+                }
+            }).getCourierOrders(email, pass);
         }
 
-        // دالة عرض الطلبات
         function renderOrders(orders) {
             var list = document.getElementById('ordersList');
             var html = "";
 
             if (orders.length === 0) {
-                list.innerHTML = `
-                <div class="flex flex-col justify-center items-center h-48 opacity-60">
-                    <span class="material-symbols-outlined text-6xl text-slate-300 mb-2">assignment_turned_in</span>
-                    <p class="text-sm font-bold text-slate-400">لا توجد طلبات نشطة. عمل رائع!</p>
-                </div>`;
+                list.innerHTML = '<p style="text-align:center; color:#7f8c8d;">لا توجد شحنات معلقة حالياً في عهدتك. شغل ممتاز! 👏</p>';
                 return;
             }
 
-            orders.forEach(function(o) {
-                let recWa = getWaLink(o.receiverPhone);
-                let senWa = getWaLink(o.senderPhone);
+            orders.forEach(function (o) {
+                html += '<div class="card" id="card-' + o.row + '">';
+                html += '<h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">رقم الشحنة: <span style="color:#e67e22">' + o.id + '</span></h3>';
 
-                html += `
-                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 page-enter" style="animation-delay: 0.1s" id="card-${o.row}">
-                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-50">
-                        <div class="flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs material-symbols-outlined">inventory_2</span>
-                            <span class="font-black text-primary text-sm">${o.id}</span>
-                        </div>
-                        <span class="px-3 py-1.5 bg-primary-fixed text-accent text-[9px] font-black rounded-full uppercase tracking-widest truncate max-w-[130px] shadow-inner border border-accent/10">شحنة نشطة</span>
-                    </div>
+                var recPhoneStr = String(o.receiverPhone);
+                var recWaNumber = recPhoneStr.startsWith('0') ? '2' + recPhoneStr : recPhoneStr;
 
-                    <div class="space-y-3 mb-5">
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-accent text-lg">person</span>
-                                    <div>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">المستلم (الزبون)</p>
-                                        <p class="text-sm font-bold text-primary leading-tight">${o.receiver}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="text-[11px] font-medium text-slate-500 pr-7 leading-relaxed mb-3">${o.address}</p>
-                            
-                            <div class="flex gap-2 pr-7">
-                                <a href="tel:${o.receiverPhone}" class="flex-1 h-9 rounded-xl border border-slate-200 bg-white text-primary flex items-center justify-center gap-1 shadow-sm hover:bg-slate-50 transition text-[10px] font-bold"><span class="material-symbols-outlined text-[1rem]">call</span> اتصال</a>
-                                <a href="https://wa.me/${recWa}" target="_blank" class="flex-1 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-1 shadow-sm shadow-[#25D366]/20 hover:opacity-90 transition text-[10px] font-bold"><span class="material-symbols-outlined text-[1rem]">chat</span> واتساب</a>
-                            </div>
-                        </div>
+                html += '<div class="receiver-box">';
+                html += '<p><span class="info-label">👤 المستلم (الزبون):</span><br><strong>' + o.receiver + '</strong></p>';
+                html += '<p><span class="info-label">📍 العنوان:</span><br>' + o.address + '</p>';
+                html += '<p><span class="info-label">📱 رقم الهاتف:</span> ' + recPhoneStr + '</p>';
+                html += '<div>';
+                html += '<a href="tel:' + recPhoneStr + '" class="contact-btn btn-receiver-tel">📞 اتصال</a>';
+                html += '<a href="https://wa.me/' + recWaNumber + '" target="_blank" class="contact-btn wa-btn">💬 واتس المستلم</a>';
+                html += '</div></div>';
 
-                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-1 h-full bg-slate-300"></div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-slate-400 text-lg">store</span>
-                                    <div>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">الراسل (المتجر)</p>
-                                        <p class="text-sm font-bold text-primary leading-tight">${o.sender}</p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <a href="tel:${o.senderPhone}" class="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-600 flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[1rem]">call</span></a>
-                                    <a href="https://wa.me/${senWa}" target="_blank" class="w-9 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center shadow-sm shadow-[#25D366]/20"><span class="material-symbols-outlined text-[1rem]">chat</span></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                var senPhoneStr = String(o.senderPhone);
+                var senWaNumber = senPhoneStr.startsWith('0') ? '2' + senPhoneStr : senPhoneStr;
 
-                    <div class="bg-red-50 border border-red-100 p-4 rounded-2xl mb-5 text-center shadow-sm relative overflow-hidden">
-                        <span class="material-symbols-outlined absolute -left-4 -bottom-4 text-6xl text-red-100 opacity-50">payments</span>
-                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest w-full text-center relative z-10 w-full mb-1">المطلوب تحصيله</p>
-                        <p class="text-3xl font-black text-red-600 relative z-10 w-full mb-0 leading-tight">${o.amount} <span class="text-xs">ج.م</span></p>
-                    </div>
+                html += '<div class="sender-box">';
+                html += '<p><span class="info-label">🏪 الراسل (المتجر/البائع):</span><br><strong>' + o.sender + '</strong></p>';
+                html += '<div>';
+                html += '<a href="tel:' + senPhoneStr + '" class="contact-btn btn-sender-tel">📞 اتصال</a>';
+                html += '<a href="https://wa.me/' + senWaNumber + '" target="_blank" class="contact-btn wa-btn">💬 واتس الراسل</a>';
+                html += '</div></div>';
 
-                    <div class="p-4 rounded-2xl border-[3px] border-accent/20 bg-accent/5 mb-5 space-y-4">
-                        <div class="relative">
-                            <label class="text-[11px] font-bold text-accent flex items-center gap-1 mb-2"><span class="material-symbols-outlined text-[1rem] text-accent">add_a_photo</span>التقط صورة التسليم (إجباري)</label>
-                            <div class="relative w-full h-12 border-2 border-dashed border-accent/40 rounded-xl bg-white flex items-center justify-center overflow-hidden">
-                                <span class="text-xs font-bold text-accent/80 flex items-center gap-2"><span class="material-symbols-outlined text-[1.2rem]">camera_alt</span> اضغط لالتقاط الصورة</span>
-                                <input type="file" id="file-${o.row}" accept="image/*" capture="environment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            </div>
-                        </div>
+                html += '<div class="amount-tag">💰 المطلوب تحصيله:<br><span style="font-size: 24px;">' + o.amount + ' ج.م</span></div>';
 
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-500 flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-[0.9rem]">edit_note</span>سبب الارتجاع (مطلوب للارتجاع)</label>
-                            <input type="text" id="reason-${o.row}" placeholder="اكتب السبب بوضوح هنا..." class="w-full bg-white border border-slate-200 rounded-xl text-xs py-3 px-4 focus:ring-1 focus:ring-primary shadow-sm leading-relaxed">
-                        </div>
-                    </div>
+                html += '<div class="upload-area">';
+                html += '<label style="color:#2c3e50; font-weight:bold;">📸 صورة إثبات التسليم أو المرتجع (إجبارية):</label><br>';
+                html += '<input type="file" id="file-' + o.row + '" accept="image/*" capture="camera" style="margin-top:8px; width: 100%;">';
+                html += '</div>';
 
-                    <div class="flex gap-3">
-                        <button class="flex-1 py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition shadow-lg shadow-primary/20 text-xs" id="btnDel-${o.row}" onclick="processAction(${o.row}, 'delivered')">
-                            <span class="material-symbols-outlined text-[1.1rem]">task_alt</span> إتمام التوصيل
-                        </button>
-                        <button class="flex-1 py-4 bg-white border-2 border-error text-error rounded-2xl font-bold flex items-center justify-center gap-1.5 hover:bg-error/5 transition text-xs" id="btnRet-${o.row}" onclick="processAction(${o.row}, 'returned')">
-                            <span class="material-symbols-outlined text-[1.1rem]">cancel</span> تسجيل كمرتجع
-                        </button>
-                    </div>
-                </div>`;
+                html += '<div class="reason-area">';
+                html += '<label>📝 سبب المرتجع (مطلوب في حال الإرجاع فقط):</label><br>';
+                html += '<input type="text" id="reason-' + o.row + '" placeholder="اكتب السبب هنا..." style="margin-top:8px;">';
+                html += '</div>';
+
+                html += '<div class="action-buttons">';
+                html += '<button class="btn-deliver" id="btnDel-' + o.row + '" onclick="processAction(' + o.row + ', \'delivered\')">إتمام التسليم ✓</button>';
+                html += '<button class="btn-return" id="btnRet-' + o.row + '" onclick="processAction(' + o.row + ', \'returned\')">مرتجع ✗</button>';
+                html += '</div>';
+
+                html += '</div>';
             });
 
             list.innerHTML = html;
         }
 
-        // دالة ضغط الصورة
         function compressImage(file, callback) {
             var reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 var img = new Image();
-                img.onload = function() {
+                img.onload = function () {
                     var canvas = document.createElement('canvas');
-                    var MAX_WIDTH = 800; 
+                    var MAX_WIDTH = 800;
                     var scaleSize = MAX_WIDTH / img.width;
-                    if (img.width > MAX_WIDTH) { canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; } 
+                    if (img.width > MAX_WIDTH) { canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; }
                     else { canvas.width = img.width; canvas.height = img.height; }
                     var ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    var dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.6);
                     callback(dataUrl);
                 }
                 img.src = event.target.result;
@@ -349,88 +309,90 @@
             reader.readAsDataURL(file);
         }
 
-        // دالة معالجة الأزرار (تم التعديل لتجنب فخ الـ GPS)
         function processAction(row, actionType) {
             var fileInput = document.getElementById('file-' + row);
             var reasonInput = document.getElementById('reason-' + row).value.trim();
             var btnDel = document.getElementById('btnDel-' + row);
             var btnRet = document.getElementById('btnRet-' + row);
 
-            if (fileInput.files.length === 0) { 
-                alert("⚠️ لا يمكنك تجاوز هذه الخطوة: يجب إرفاق صورة إثبات الاستلام أو صورة لمكان التسليم كمرتجع!"); 
-                return; 
-            }
-            
-            if (actionType === 'returned' && reasonInput === "") { 
-                alert("⚠️ للتسجيل كمرتجع: يجب أن تكتب السبب بوضوح في المربع المخصص!"); 
-                document.getElementById('reason-' + row).focus();
-                return; 
+            // 1. التأكد من رفع الصورة أولاً (مهم جداً)
+            if (fileInput.files.length === 0) {
+                alert("⚠️ تنبيه: لا يمكنك إتمام العملية بدون إرفاق صورة الإثبات!");
+                return;
             }
 
+            // 2. التأكد من كتابة سبب المرتجع
+            if (actionType === 'returned' && reasonInput === "") {
+                alert("⚠️ تنبيه: الرجاء كتابة سبب الإرجاع في المربع المخصص!");
+                return;
+            }
+
+            // 3. تغيير شكل الأزرار لمنع الضغط مرتين
+            btnDel.disabled = true; btnRet.disabled = true;
             btnDel.classList.add('btn-disabled'); btnRet.classList.add('btn-disabled');
+
             var activeBtn = (actionType === 'delivered') ? btnDel : btnRet;
-            activeBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> سحب الموقع...';
+            activeBtn.innerText = "📍 جاري سحب الموقع...";
 
             var uploadedFile = fileInput.files[0];
-            var locationData = { lat: "", lng: "" }; // قيمة افتراضية في حال فشل الـ GPS
 
+            // 4. إجبار المندوب على أخذ الموقع (GPS)
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
-                        activeBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">cloud_upload</span> رفع البيانات...';
+                    function (position) {
+                        // في حال نجاح سحب الموقع
+                        var locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        activeBtn.innerText = "⏳ جاري رفع البيانات...";
                         prepareDataAndUpload(row, actionType, uploadedFile, reasonInput, locationData);
-                    }, 
-                    function(error) { 
-                        var errorMsg = "حدث خطأ في تحديد الموقع.";
-                        if(error.code == 1) errorMsg = "لا توجد صلاحية للـ GPS، يرجى تفعيله من إعدادات المتصفح وإعادة المحاولة!";
-                        else if(error.code == 2) errorMsg = "لا يمكن التقاط إشارة الـ GPS. تأكد من تفعيله وتحديث الصفحة.";
-                        else if(error.code == 3) errorMsg = "إشارة الـ GPS ضعيفة (انتهى الوقت). يرجى التوجه لمكان مفتوح والمحاولة مرة أخرى.";
-                        alert("❌ إجراء إلزامي: " + errorMsg);
-                        resetButtons(row);
                     },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
+                    function (error) {
+                        // في حال فشل سحب الموقع أو المندوب رفض إعطاء الصلاحية
+                        resetButtons(row); // إعادة تشغيل الأزرار
+                        var errorMsg = "حدث خطأ غير معروف.";
+                        if (error.code == 1) errorMsg = "لقد رفضت صلاحية الوصول للموقع! يرجى السماح للمتصفح بالوصول للـ GPS.";
+                        else if (error.code == 2) errorMsg = "الـ GPS غير مفعل في هاتفك، يرجى تشغيله والمحاولة مرة أخرى.";
+                        else if (error.code == 3) errorMsg = "انتهى وقت محاولة جلب الموقع (الإنترنت أو الـ GPS ضعيف).";
+
+                        alert("❌ لا يمكن إتمام الطلب: " + errorMsg);
+                    },
+                    // رفع مدة الانتظار لـ 10 ثواني لضمان سحب الموقع بدقة
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
-            } else { 
-                alert("❌ جهازك لا يدعم خاصية تحديد الموقع المطلوبة لإتمام العملية.");
+            } else {
+                alert("متصفحك لا يدعم تحديد الموقع (GPS).");
                 resetButtons(row);
             }
         }
 
-        // دالة الرفع إلى الخادم (تم إضافة معالجة الأخطاء)
         function prepareDataAndUpload(row, actionType, file, reason, locationData) {
-            compressImage(file, function(compressedBase64) {
-                var filename = "POD_" + actionType + "_" + row + "_" + new Date().getTime() + ".jpg";
-                
-                if(typeof google !== 'undefined' && google.script) {
-                    google.script.run
-                    .withSuccessHandler(function(res) {
-                        if(res.success) {
-                            alert("✅ تمت العملية بنجاح! تم التحديث.");
-                            document.getElementById('card-' + row).style.display = 'none';
-                        } else {
-                            alert("خطأ: " + res.error); 
-                            resetButtons(row);
-                        }
-                    })
-                    .withFailureHandler(function(error) {
-                        // معالجة الخطأ لتجنب تعليق الزر
-                        alert("❌ فشل الاتصال بالخادم، الرجاء المحاولة مرة أخرى.");
-                        resetButtons(row);
-                    })
-                    .processCourierUpdate(row, actionType, compressedBase64, filename, reason, locationData);
-                }
-            });
+            if (file) {
+                compressImage(file, function (compressedBase64) {
+                    var filename = "POD_" + actionType + "_" + row + "_" + new Date().getTime() + ".jpg";
+                    sendToBackend(row, actionType, compressedBase64, filename, reason, locationData);
+                });
+            }
         }
 
-        // دالة استعادة حالة الأزرار
+        function sendToBackend(row, actionType, imageData, filename, reason, locationData) {
+            google.script.run.withSuccessHandler(function (res) {
+                if (res.success) {
+                    alert("تم تسجيل العملية بنجاح! 🚀");
+                    document.getElementById('card-' + row).style.display = 'none';
+                } else {
+                    alert("خطأ: " + res.error);
+                    resetButtons(row);
+                }
+            }).processCourierUpdate(row, actionType, imageData, filename, reason, locationData);
+        }
+
         function resetButtons(row) {
             var btnDel = document.getElementById('btnDel-' + row);
             var btnRet = document.getElementById('btnRet-' + row);
+            btnDel.disabled = false; btnRet.disabled = false;
             btnDel.classList.remove('btn-disabled'); btnRet.classList.remove('btn-disabled');
-            btnDel.innerHTML = '<span class="material-symbols-outlined text-[1.1rem]">task_alt</span> إتمام التوصيل';
-            btnRet.innerHTML = '<span class="material-symbols-outlined text-[1.1rem]">cancel</span> تسجيل كمرتجع';
+            btnDel.innerText = "إتمام التسليم ✓"; btnRet.innerText = "مرتجع ✗";
         }
     </script>
 </body>
+
 </html>
