@@ -1,393 +1,721 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>تتبع الشحنة - Dropex</title>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dropex - الشريك اللوجستي</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Kufi+Arabic:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        "surface-container-low": "#f2f4f6", "background": "#f8f9fb", "inverse-on-surface": "#eff1f3",
-                        "on-tertiary": "#ffffff", "error-container": "#ffdad6", "secondary-container": "#e0e4f5",
-                        "surface-container-lowest": "#ffffff", "primary-fixed": "#d6e2ff", "surface-dim": "#d8dadc",
-                        "inverse-surface": "#2d3133", "surface": "#f8f9fb", "secondary": "#5a5e71", "inverse-primary": "#b1c5ff",
-                        "surface-container": "#eceef0", "on-surface": "#191c1e", "on-error-container": "#93000a",
-                        "tertiary": "#ff5c00", "on-tertiary-container": "#ffffff", "on-error": "#ffffff",
-                        "primary-container": "#0a1e3b", "primary": "#0a1e3b", "surface-container-highest": "#e0e3e5",
-                        "on-surface-variant": "#444651", "outline-variant": "#c5c5d3", "outline": "#757682",
-                        "surface-variant": "#e0e3e5", "error": "#ba1a1a", "on-primary": "#ffffff", "surface-tint": "#0a1e3b",
-                        "surface-bright": "#f8f9fb", "on-background": "#191c1e", "surface-container-high": "#e6e8ea"
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e9e8eb",
+                        "surface-bright": "#faf9fc",
+                        "inverse-primary": "#adc8f0",
+                        "surface-container-highest": "#e3e2e5",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#d2e4ff",
+                        "on-primary-fixed-variant": "#2d486a",
+                        "on-surface-variant": "#43474e",
+                        "on-primary-fixed": "#001c38",
+                        "outline": "#74777f",
+                        "on-tertiary-fixed-variant": "#244871",
+                        "surface-container": "#eeedf0",
+                        "surface": "#faf9fc",
+                        "on-tertiary-fixed": "#001c38",
+                        "on-tertiary-container": "#7294c1",
+                        "tertiary-container": "#002c52",
+                        "inverse-on-surface": "#f1f0f3",
+                        "on-surface": "#1a1c1e",
+                        "on-primary-container": "#7994b9",
+                        "secondary-fixed-dim": "#ffb5a0",
+                        "primary-container": "#0d2c4c",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d3e4ff",
+                        "background": "#faf9fc",
+                        "surface-tint": "#456083",
+                        "on-secondary-container": "#541100",
+                        "inverse-surface": "#2f3033",
+                        "on-error": "#ffffff",
+                        "on-background": "#1a1c1e",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#dad9dd",
+                        "tertiary-fixed-dim": "#a6c9f8",
+                        "surface-variant": "#e3e2e5",
+                        "tertiary": "#00172f",
+                        "on-secondary-fixed-variant": "#862200",
+                        "on-secondary-fixed": "#3b0900",
+                        "secondary-fixed": "#ffdbd1",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "primary": "#001730",
+                        "secondary": "#b02f00",
+                        "outline-variant": "#c3c6cf",
+                        "surface-container-low": "#f4f3f6",
+                        "secondary-container": "#ff5722",
+                        "primary-fixed-dim": "#adc8f0",
+                        "error-container": "#ffdad6"
                     },
-                    fontFamily: {
-                        'ibm-plex-arabic': ['IBM Plex Sans Arabic', 'sans-serif']
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Kufi Arabic", "Inter", "sans-serif"],
+                        "body": ["Noto Kufi Arabic", "Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
                     }
-                }
-            }
+                },
+            },
         }
     </script>
-    <style>
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+<style>
+        body { font-family: 'Noto Kufi Arabic', sans-serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .progress-line-active { background: linear-gradient(to left, #0a1e3b, #ff5c00); transition: width 0.8s ease-in-out; }
+        .kinetic-strip { border-right: 4px solid #ff5722; }
+        .glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .progress-line-active { background: linear-gradient(to left, #001730, #ff5722); transition: width 0.8s ease-in-out; }
     </style>
 </head>
-<body class="bg-background text-on-surface overflow-x-hidden">
-    <!-- TopNavBar -->
-    <nav class="w-full h-20 sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/50 flex justify-between items-center px-8 shadow-sm">
-        <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl font-black text-primary tracking-widest">DROPEX</span>
-            </div>
-            <div class="hidden md:flex gap-8 font-ibm-plex-arabic text-sm font-bold uppercase tracking-wide mr-4">
-                <a class="text-slate-500 hover:text-primary transition-all py-2" href="#">الرئيسية</a>
-                <a class="text-primary border-b-2 border-tertiary py-2" href="#">تتبع الشحنة</a>
-                <a class="text-slate-500 hover:text-primary transition-all py-2" href="#">الدعم الفني</a>
-            </div>
-        </div>
-        <div class="flex items-center gap-6">
-            <div class="flex gap-1">
-                <button class="p-2 text-slate-500 hover:text-tertiary transition-all"><span class="material-symbols-outlined">help_outline</span></button>
-            </div>
-        </div>
-    </nav>
+<body class="bg-surface text-on-surface selection:bg-secondary-container/30 overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#faf9fc]/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(13,44,76,0.04)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-12">
+<a class="text-2xl font-black tracking-tighter text-[#001730] flex items-center gap-2" href="#" onclick="navigateTo('home')">
+<img alt="Dropex Logo" class="h-8 w-auto" data-alt="Modern minimalist logo for a logistics company featuring a stylized eagle or arrow in navy and orange colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvASOEzO2j1ILo1lfwteIqH4v349AZG-wL8ed2wxwiHl4SsyTmneLwtH2--R3lDiKyjk_MG8mB9FoF6Nun80waydj3OIA15fGwZypMxzEyVp79npuaLoId84mU5ed-b2WKg0u3aEpQFzXwcpuxIJu790puRumJKnohsPro2mjYy-7ErAAhh4P04wuKmmtDvffOL6QWsdOW9U_Qb7_ud_9Ldxtqnfmpcf5wLuDHhQPU0937UgJHTz73kHKIGjKIMlVWdef2Xcwj_JM"/>
+<span>Dropex</span>
+</a>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-[#ff5722] font-bold border-b-2 border-[#ff5722] pb-1 transition-colors duration-300" href="#" onclick="navigateTo('home')">الرئيسية</a>
+<a class="text-[#1a1c1e] font-medium hover:text-[#ff5722] transition-colors duration-300" href="#" onclick="document.getElementById('trackInput').focus()">تتبع الشحنة</a>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="text-[#1a1c1e] font-medium hover:text-[#ff5722] transition-colors duration-300 px-4 py-2" onclick="navigateTo('courier')">دخول السائقين</button>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold scale-95 active:scale-90 transition-transform shadow-lg shadow-primary/10" onclick="navigateTo('user')">بوابة التجار</button>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[870px] flex items-center overflow-hidden bg-primary-container">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 mix-blend-overlay" data-alt="High-speed logistics container ship at sea during twilight with industrial lights reflecting on calm deep blue water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF2k2gPcLJgKDoxymSgx5UrLIN1qyfDgY_s0ycYzecAkwhOzYUD3iuvxeCAK-uJL7xATNyAobZxVLZCWFA3fhnlFNjsm9zNPIvYK1fuq9Bg1-ZuDfYJnXpR7qaHpS5xebGWvkjQLBIrdDxaeAOgrQDstaHjMtk4YipK1ls2_SiOYy_SC3Fzjt3HrCvjFyAq5Fu0gJO5YMPugbkJNMI4fLvPjCG7cM6B98nu5jhYjmss6ulk5ZNwf5rpLjFmCEdS7CTwtLJLWlhLsU"/>
+<div class="absolute inset-0 bg-gradient-to-l from-primary-container/90 via-primary-container/40 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<h1 class="text-5xl lg:text-7xl font-black text-white leading-[1.2] tracking-tight">
+                        شريكك اللوجستي <br/>
+<span class="text-secondary-container">الأكثر دقة وسرعة</span>
+</h1>
+<p class="text-on-primary-container text-xl max-w-lg leading-relaxed">
+                        نحن نعيد تعريف مفهوم الخدمات اللوجستية من خلال حلول ذكية، تتبع فائق الدقة، وشبكة عالمية تصلك أينما كنت.
+                    </p>
+<div class="bg-surface-container-lowest p-2 rounded-2xl flex items-center shadow-2xl max-w-xl group focus-within:ring-2 ring-secondary-container/20 transition-all">
+<div class="flex-1 flex items-center px-4">
+<span class="material-symbols-outlined text-outline-variant mr-2">package_2</span>
+<input id="trackInput" class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium placeholder:text-outline-variant py-4" placeholder="أدخل رقم التتبع الخاص بك هنا..." type="text"/>
+</div>
+<button id="trackBtn" onclick="trackOrder()" class="bg-secondary-container text-white px-10 py-4 rounded-xl font-bold hover:brightness-110 transition-all flex items-center gap-2">
+<span>تتبع الآن</span>
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+</div>
+<div id="errorMsg" class="text-error font-bold hidden bg-error-container/80 px-6 py-2 rounded-lg mt-4 max-w-xl"></div>
+</div>
+<div class="hidden lg:flex justify-end pt-8">
+<div class="relative w-80 h-96 bg-surface-container-low rounded-[3rem] p-6 shadow-2xl border-4 border-white/10 backdrop-blur-sm">
+<div class="flex justify-between items-center mb-8">
+<div class="h-10 w-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<span class="text-xs font-bold text-primary px-3 py-1 bg-primary-fixed rounded-full">تحت التوصيل</span>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<p class="text-xs text-outline font-bold">رقم الشحنة</p>
+<p class="text-lg font-black text-primary">TRK-2412-B12</p>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+<div class="w-0.5 h-12 bg-outline-variant/30"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+<div class="flex flex-col justify-between py-0.5">
+<div>
+<p class="text-xs font-bold text-primary">المركز الرئيسي - دبي</p>
+<p class="text-[10px] text-outline">تم الاستلام 10:30 ص</p>
+</div>
+<div>
+<p class="text-xs font-bold text-outline">موقع العميل - الرياض</p>
+<p class="text-[10px] text-outline">الموعد المتوقع غداً</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-    <main class="max-w-[1440px] mx-auto px-8 py-12 flex flex-col gap-12">
-        <!-- Hero Tracking Search -->
-        <section class="flex flex-col gap-8 max-w-3xl mx-auto text-center items-center w-full">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-primary font-ibm-plex-arabic leading-tight">
-                تتبع شحنتك <span class="text-tertiary">بخطوة</span> <br/>
-                <span class="text-on-surface-variant font-medium text-xl md:text-2xl mt-2 block">دقة متناهية في كل ميل.</span>
-            </h1>
-            <div class="w-full relative flex flex-col sm:flex-row gap-4 p-3 bg-white rounded-2xl shadow-xl shadow-primary/5 border border-slate-100 mt-4">
-                <div class="flex-1 relative flex items-center pr-4">
-                    <span class="material-symbols-outlined text-tertiary ml-3">local_shipping</span>
-                    <input id="trackInput" class="w-full bg-transparent border-none focus:ring-0 text-lg font-ibm-plex-arabic" placeholder="أدخل رقم الشحنة (مثلاً: TRK-000001)" type="text"/>
+<!-- Tracking Dashboard Container (Hidden initially) -->
+ <section id="trackingContainer" style="display:none;" class="max-w-7xl mx-auto px-8 py-12 relative z-20">
+    <!-- DASHBOARD INJECTED HERE VIA JS -->
+ </section>
+
+<!-- Services Bento Grid -->
+<section class="py-24 bg-surface px-8">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16 space-y-4">
+<span class="text-secondary-container font-bold tracking-widest text-sm uppercase">بواباتنا الذكية</span>
+<h2 class="text-4xl font-black text-primary">حلول متكاملة لكل الأطراف</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Merchant Portal Card -->
+<a class="md:col-span-8 group relative overflow-hidden rounded-[2rem] bg-surface-container-low p-10 flex flex-col justify-between min-h-[400px] transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('user')">
+<div class="absolute top-0 left-0 w-full h-full z-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Professional logistics manager using a high-end tablet in a clean white warehouse office with automated shelves background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAszwY4TC7BEbU-QIFVdtNVtdS09-eqIIXibKmkACrU_lMXBjBo7SnbV0AqdpBbRPL6h8ZIf8UuUou7aGbm4N8pgOqRaHyyC23qPNpMzSZo_EGas_uDKM-A2mI0iWUEM2tArJkHmOTy-XpTd8ZOuVdrQl_JtEEYVgjw6FnBhs09cJBpGOZ_1zvuQNwdANu2S4HI5Jur5fC0OACuV5m6dUhn0DFdJNMOlhiwAYdawlYD0iUTpPvecrgWBgvmr2hkQxFWnKkjGqVCT_8"/>
+</div>
+<div class="relative z-10">
+<div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mb-8">
+<span class="material-symbols-outlined text-secondary-container text-3xl" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<h3 class="text-3xl font-black text-primary mb-4">بوابة التجار</h3>
+<p class="text-on-surface-variant max-w-md leading-relaxed text-lg">
+                                قم بإدارة مخزونك، شحناتك، وفواتيرك في منصة واحدة متطورة تدعم نمو تجارتك الإلكترونية.
+                            </p>
+</div>
+<div class="relative z-10 flex items-center gap-4 text-primary font-bold">
+<span>دخول التجار</span>
+<div class="w-10 h-10 rounded-full border border-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</div>
+</div>
+</a>
+<!-- Driver Portal Card -->
+<a class="md:col-span-4 group relative overflow-hidden rounded-[2rem] bg-primary p-10 flex flex-col justify-between transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('courier')">
+<div class="relative z-10">
+<div class="bg-white/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm">
+<span class="material-symbols-outlined text-secondary-container text-3xl">directions_car</span>
+</div>
+<h3 class="text-2xl font-black text-white mb-4">تطبيق السائقين</h3>
+<p class="text-on-primary-container text-sm leading-relaxed">
+                                انضم إلى فريقنا من المحترفين وابدأ في كسب الأرباح مع مرونة كاملة في الوقت.
+                            </p>
+</div>
+<div class="relative z-10 flex items-center gap-4 text-white font-bold">
+<span>ابدأ القيادة</span>
+<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-secondary-container transition-all">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</div>
+</div>
+</a>
+<!-- Admin Dashboard Card -->
+<a class="md:col-span-12 group relative overflow-hidden rounded-[2rem] bg-surface-container-high p-12 flex items-center justify-between transition-transform hover:-translate-y-1" href="#" onclick="navigateTo('admin')">
+<div class="flex-1 space-y-4">
+<h3 class="text-3xl font-black text-primary">لوحة التحكم الإدارية</h3>
+<p class="text-on-surface-variant max-w-xl text-lg">
+                                تحكم كامل في العمليات اللوجستية، إدارة الأساطيل، والتحليلات المتقدمة لدعم اتخاذ القرار.
+                            </p>
+<div class="pt-4 flex gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs font-bold text-outline">نظام ذكاء اصطناعي</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="text-xs font-bold text-outline">تقارير لحظية</span>
+</div>
+</div>
+</div>
+<div class="hidden md:block">
+<span class="material-symbols-outlined text-primary/10 text-9xl">dashboard_customize</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Tracking Features & Visualization -->
+<section class="py-24 bg-surface-container-low overflow-hidden">
+<div class="max-w-7xl mx-auto px-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="order-2 lg:order-1 relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-secondary-container/10 rounded-full blur-3xl"></div>
+<div class="bg-white p-8 rounded-[2.5rem] shadow-xl relative z-10 border border-surface-variant/20">
+<img class="w-full rounded-2xl mb-8" data-alt="Minimalist abstract map of a metropolitan city with glowing orange routes indicating delivery paths and real-time vehicle movement" data-location="Dubai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFWVUfpIIq6fSLmAh9oJo8NqxuGeZ0IANdPeX3Q1yln-rZFtJ5VMxFmwUWSDg8PC8ng4ukBU1_idyrAApbR9ZWq0otU1eH-BN112HlmHVQJTDjtI3DbvCqiW7Fj16mihq5Ds3ZghSQye1QjWVNywIfeqGwtKwkANuLsj2iGSBueFqIlFHyrXFJ_6zfQTACEdwvTIsuoduF7FQrwNIdlB_629PE2UHFowteI_MztXpJpdLktaRD-FA9zf8Ed917h499mOCjI4XivmA"/>
+<div class="flex items-center justify-between p-4 bg-surface rounded-2xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">radar</span>
+</div>
+<div>
+<p class="text-sm font-black text-primary">تتبع مباشر وحي</p>
+<p class="text-xs text-outline">دقة تصل إلى 5 أمتار</p>
+</div>
+</div>
+<!-- a -->
+</div>
+</div>
+</div>
+<div class="order-1 lg:order-2 space-y-8">
+<span class="text-secondary-container font-bold tracking-widest text-sm uppercase">التكنولوجيا في خدمتك</span>
+<h2 class="text-4xl font-black text-primary leading-tight">شفافية كاملة <br/> في كل خطوة من الرحلة</h2>
+<div class="space-y-6">
+<div class="flex gap-6 p-6 rounded-2xl hover:bg-white transition-colors cursor-default">
+<div class="shrink-0 w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-primary mb-1">تنبيهات ذكية</h4>
+<p class="text-on-surface-variant text-sm">احصل على إشعارات فورية عبر الرسائل القصيرة والبريد الإلكتروني عند كل تحديث لحالة شحنتك.</p>
+</div>
+</div>
+<div class="flex gap-6 p-6 rounded-2xl hover:bg-white transition-colors cursor-default">
+<div class="shrink-0 w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">history</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-primary mb-1">سجل التتبع الكامل</h4>
+<p class="text-on-surface-variant text-sm">راجع الجدول الزمني الكامل لرحلة الطرد الخاص بك من المنشأ وحتى التسليم النهائي.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Business Solutions -->
+<section class="py-24 bg-surface px-8">
+<div class="max-w-7xl mx-auto bg-primary rounded-[3rem] p-16 relative overflow-hidden">
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary-container/20 blur-[120px] rounded-full"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<h2 class="text-4xl font-black text-white leading-tight">حلول متخصصة للشركات والمؤسسات الكبرى</h2>
+<p class="text-on-primary-container text-lg">
+                            نحن لا نوصل الطرود فحسب، بل نبني سلاسل إمداد متكاملة تساعد عملك على التوسع عالمياً بكفاءة واحترافية.
+                        </p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-secondary-container">check_circle</span>
+<span class="font-medium">توصيل في اليوم التالي للمدن الرئيسية</span>
+</li>
+<li class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-secondary-container">check_circle</span>
+<span class="font-medium">إدارة المرتجعات والتحصيل النقدي</span>
+</li>
+<li class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-secondary-container">check_circle</span>
+<span class="font-medium">خدمة عملاء مخصصة لكبار العملاء</span>
+</li>
+</ul>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-4 pt-8">
+<div class="aspect-square bg-white/5 backdrop-blur-md rounded-3xl p-8 flex flex-col justify-end border border-white/10">
+<p class="text-3xl font-black text-white mb-2">99.9%</p>
+<p class="text-xs text-on-primary-container">دقة التوصيل</p>
+</div>
+<div class="aspect-square bg-secondary-container rounded-3xl p-8 flex flex-col justify-end">
+<p class="text-3xl font-black text-white mb-2">50+</p>
+<p class="text-xs text-white/80">دولة نخدمها</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="aspect-square bg-white/10 backdrop-blur-md rounded-3xl p-8 flex flex-col justify-end border border-white/10">
+<p class="text-3xl font-black text-white mb-2">24/7</p>
+<p class="text-xs text-on-primary-container">دعم فني مستمر</p>
+</div>
+<div class="aspect-square bg-primary-container/60 backdrop-blur-md rounded-3xl p-8 flex flex-col justify-end border border-white/10">
+<p class="text-3xl font-black text-white mb-2">1M+</p>
+<p class="text-xs text-on-primary-container">شحنة شهرياً</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 bg-surface-container-lowest text-center">
+<div class="max-w-3xl mx-auto px-8 space-y-12">
+<h2 class="text-4xl font-black text-primary">هل أنت مستعد للانضمام إلى شبكتنا؟</h2>
+<div class="flex flex-col sm:flex-row gap-6 justify-center">
+<button class="bg-secondary-container text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl shadow-secondary-container/20 hover:scale-105 active:scale-95 transition-all" onclick="navigateTo('user')">
+                        ابدأ كتاجر الآن
+                    </button>
+<button class="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all" onclick="navigateTo('courier')">
+                        سجل كشريك توصيل
+                    </button>
+</div>
+<p class="text-outline font-medium">أكثر من 50,000 شريك يثقون بنا يومياً</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#001730] border-t border-[#0d2c4c] w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-12 max-w-screen-2xl mx-auto gap-8">
+<div class="space-y-4 text-center md:text-right">
+<a class="text-2xl font-bold text-[#ff5722]" href="#">Dropex</a>
+<p class="text-slate-400 text-sm max-w-xs">الحلول اللوجستية المتطورة للمستقبل. سرعة، دقة، وأمان في كل شحنة.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-sm font-light text-slate-400 hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm font-light text-slate-400 hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-sm font-light text-slate-400 hover:text-white transition-colors" href="#">Global Network</a>
+<a class="text-sm font-light text-slate-400 hover:text-white transition-colors" href="#">Carrier Terms</a>
+<a class="text-sm font-light text-slate-400 hover:text-white transition-colors" href="#">Sitemap</a>
+</div>
+<div class="text-sm font-light text-white opacity-80">
+                © 2024 Dropex Logistics Solutions. All rights reserved.
+            </div>
+</div>
+</footer>
+
+<div id="trackingDashboardTpl" style="display:none;">
+    <div id="trackingDashboard" class="grid grid-cols-1 lg:grid-cols-12 gap-8 hidden">
+        <!-- Left: Map & Progress -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            <!-- Live Map View -->
+            <div class="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-surface-container-high group border-4 border-white shadow-2xl">
+                <img class="w-full h-full object-cover grayscale-[30%] brightness-90 group-hover:scale-105 transition-transform duration-[5000ms]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcZvQjIlNay_AzF-v3gXOZtrSRoBHyWYSpvzG9jJs9yBk_NJ8cLGYUHUB5kBdlVTBmtDrGpZZuLucKtgtDveXIRQkvYgl_Bf2GdOEBgR0KzUzU9owEqMfSzVU7nXGM1kMUI0byedlpZ9mq337aw2wFBxgZEyq5mK0ey_wesIupkfqucnQ0rOASbUo29eCYpUK5OH7tfNNxYCwEY9J70jLmSyoqn32d3AUNvkCL9BWXnhpcGqaXgi3oyFG4BJY1QFjU6kRZ3VHD4Ac"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent pointer-events-none"></div>
+                
+                <div class="absolute top-8 left-8 right-8 flex justify-between items-start pointer-events-none">
+                    <div class="bg-primary/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-white/10">
+                        <p class="text-[0.6rem] uppercase tracking-widest font-bold text-secondary-container mb-1">الموقع التقريبي</p>
+                        <p class="text-sm font-bold text-white">المنطقة اللوجستية</p>
+                    </div>
                 </div>
-                <button id="trackBtn" onclick="trackOrder()" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:bg-tertiary active:scale-95 shadow-lg shadow-primary/20">
-                    <span>تتبع الآن</span>
-                </button>
-            </div>
-            <div id="errorMsg" class="text-error font-bold hidden bg-error-container/50 px-6 py-2 rounded-lg"></div>
-        </section>
 
-        <!-- Dashboard (Hidden initially) -->
-        <div id="trackingDashboard" class="grid grid-cols-1 lg:grid-cols-12 gap-8 hidden">
-            <!-- Left: Map & Progress -->
-            <div class="lg:col-span-8 flex flex-col gap-6">
-                <!-- Live Map View -->
-                <div class="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-surface-container-high group border-4 border-white shadow-2xl">
-                    <img class="w-full h-full object-cover grayscale-[30%] brightness-90 group-hover:scale-105 transition-transform duration-[5000ms]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcZvQjIlNay_AzF-v3gXOZtrSRoBHyWYSpvzG9jJs9yBk_NJ8cLGYUHUB5kBdlVTBmtDrGpZZuLucKtgtDveXIRQkvYgl_Bf2GdOEBgR0KzUzU9owEqMfSzVU7nXGM1kMUI0byedlpZ9mq337aw2wFBxgZEyq5mK0ey_wesIupkfqucnQ0rOASbUo29eCYpUK5OH7tfNNxYCwEY9J70jLmSyoqn32d3AUNvkCL9BWXnhpcGqaXgi3oyFG4BJY1QFjU6kRZ3VHD4Ac"/>
-                    <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent pointer-events-none"></div>
+                <!-- Floating Courier Info Card (Shows after PIN verify) -->
+                <div id="courierCard" class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl flex items-center gap-4 border border-surface-container-high hidden">
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">person</span>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div>
+                    <div>
+                        <p class="text-[0.6rem] uppercase font-black text-outline">مندوب التوصيل</p>
+                        <p class="text-sm font-bold text-primary" id="privCourierTxt">أحمد منصور</p>
+                    </div>
+                    <a href="#" id="privPhoneBtn" class="mr-2 w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center hover:bg-secondary-container transition-colors" title="اتصال">
+                        <span class="material-symbols-outlined">call</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4 Steps Visual Progress Bar -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl shadow-primary/5 border border-surface-container-high overflow-x-auto">
+                <div class="flex justify-between relative min-w-[500px]">
+                    <!-- Background line -->
+                    <div class="absolute top-6 left-12 right-12 h-[3px] bg-slate-100 -z-0"></div>
+                    <!-- Active Line -->
+                    <div id="activeProgressBar" class="absolute top-6 right-12 h-[3px] progress-line-active -z-0" style="width: 0%;"></div>
                     
-                    <div class="absolute top-8 left-8 right-8 flex justify-between items-start pointer-events-none">
-                        <div class="bg-primary/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-white/10">
-                            <p class="text-[0.6rem] uppercase tracking-widest font-bold text-tertiary mb-1">الموقع التقريبي</p>
-                            <p class="text-sm font-bold text-white">المنطقة اللوجستية</p>
+                    <!-- Step 1 -->
+                    <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step1">
+                        <div id="step1Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-surface-container-high text-outline">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_box</span>
+                        </div>
+                        <div class="text-center">
+                            <p id="step1Title" class="text-sm font-bold text-outline">تم الإنشاء</p>
+                            <p id="step1Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
                         </div>
                     </div>
-
-                    <!-- Floating Courier Info Card (Shows after PIN verify) -->
-                    <div id="courierCard" class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl flex items-center gap-4 border border-slate-100 hidden">
-                        <div class="relative">
-                            <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined text-3xl">person</span>
-                            </div>
-                            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                    <!-- Step 2 -->
+                    <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step2">
+                        <div id="step2Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-surface-container-high text-outline">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warehouse</span>
                         </div>
-                        <div>
-                            <p class="text-[0.6rem] uppercase font-black text-outline">مندوب التوصيل</p>
-                            <p class="text-sm font-bold text-primary" id="privCourierTxt">أحمد منصور</p>
-                        </div>
-                        <a href="#" id="privPhoneBtn" class="mr-2 w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center hover:bg-tertiary transition-colors" title="اتصال">
-                            <span class="material-symbols-outlined">call</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 4 Steps Visual Progress Bar -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 overflow-x-auto">
-                    <div class="flex justify-between relative min-w-[500px]">
-                        <!-- Background line -->
-                        <div class="absolute top-6 left-12 right-12 h-[3px] bg-slate-100 -z-0"></div>
-                        <!-- Active Line -->
-                        <div id="activeProgressBar" class="absolute top-6 right-12 h-[3px] progress-line-active -z-0" style="width: 0%;"></div>
-                        
-                        <!-- Step 1 -->
-                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step1">
-                            <div id="step1Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_box</span>
-                            </div>
-                            <div class="text-center">
-                                <p id="step1Title" class="text-sm font-bold text-slate-400">تم الإنشاء</p>
-                                <p id="step1Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
-                            </div>
-                        </div>
-                        <!-- Step 2 -->
-                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step2">
-                            <div id="step2Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warehouse</span>
-                            </div>
-                            <div class="text-center">
-                                <p id="step2Title" class="text-sm font-bold text-slate-400">في المخزن</p>
-                                <p id="step2Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
-                            </div>
-                        </div>
-                        <!-- Step 3 -->
-                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step3">
-                            <div id="step3Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
-                                <span class="material-symbols-outlined">local_shipping</span>
-                            </div>
-                            <div class="text-center">
-                                <p id="step3Title" class="text-sm font-bold text-slate-400">خرج للتوصيل</p>
-                                <p id="step3Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
-                            </div>
-                        </div>
-                        <!-- Step 4 -->
-                        <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step4">
-                            <div id="step4Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400">
-                                <span class="material-symbols-outlined">home</span>
-                            </div>
-                            <div class="text-center">
-                                <p id="step4Title" class="text-sm font-bold text-slate-400">تم الاستلام</p>
-                                <p id="step4Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
-                            </div>
+                        <div class="text-center">
+                            <p id="step2Title" class="text-sm font-bold text-outline">في المخزن</p>
+                            <p id="step2Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Right: Details & Summary -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
-                <!-- Live Summary -->
-                <div class="bg-primary rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <div class="flex justify-between items-start mb-6 relative z-10">
-                        <div>
-                            <p class="text-[0.7rem] uppercase tracking-[0.2em] font-bold text-tertiary mb-1">رقم التتبع</p>
-                            <p class="text-2xl font-black" id="resTrackId">TRACK-ID</p>
+                    <!-- Step 3 -->
+                    <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step3">
+                        <div id="step3Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-surface-container-high text-outline">
+                            <span class="material-symbols-outlined">local_shipping</span>
                         </div>
-                        <span class="material-symbols-outlined text-4xl text-tertiary opacity-80">qr_code_2</span>
-                    </div>
-                    <div class="space-y-4 relative z-10">
-                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
-                            <span class="material-symbols-outlined text-tertiary text-lg">calendar_today</span>
-                            <span class="text-xs font-medium">تاريخ الإنشاء: <b class="text-white" id="pubDateAdded">--</b></span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
-                            <span class="material-symbols-outlined text-tertiary text-lg">update</span>
-                            <span class="text-xs font-medium">آخر تحديث: <b class="text-white" id="pubLastUpdate">--</b></span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
-                            <span class="material-symbols-outlined text-tertiary text-lg">info</span>
-                            <span class="text-xs font-medium">الحالة: <b class="text-white bg-tertiary/20 px-2 py-0.5 rounded" id="pubStatus">--</b></span>
+                        <div class="text-center">
+                            <p id="step3Title" class="text-sm font-bold text-outline">خرج للتوصيل</p>
+                            <p id="step3Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Auth Card -->
-                <div id="authCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 flex flex-col gap-4">
-                    <h3 class="text-lg font-black text-primary border-r-4 border-tertiary pr-3">بيانات سرية</h3>
-                    <p class="text-xs text-outline leading-relaxed">لعرض تفاصيل المستلم والمبلغ المطلوب واسم المندوب، يرجى إدخال الرقم السري (PIN) الخاص بهذه الشحنة.</p>
-                    <input type="password" id="pinInput" placeholder="أدخل الرقم السري" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-tertiary transition-all">
-                    <button id="authBtn" onclick="verifyPin()" class="bg-tertiary text-white w-full py-3 rounded-xl font-bold shadow-lg shadow-tertiary/20 hover:bg-tertiary/90 transition-all text-sm">عرض التفاصيل الحساسة</button>
-                    <div id="pinErrorMsg" class="text-error text-xs font-bold text-center hidden mt-1"></div>
-                </div>
-
-                <!-- Private Details (Hidden initially) -->
-                <div id="privateCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-slate-100 flex-col gap-4 hidden">
-                    <h3 class="text-lg font-black text-primary border-r-4 border-tertiary pr-3 mb-2">التفاصيل الكاملة</h3>
-                    <div class="flex flex-col gap-3">
-                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
-                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">المرسل (متجر)</strong>
-                            <div id="privSender" class="text-primary font-bold text-sm">--</div>
+                    <!-- Step 4 -->
+                    <div class="flex flex-col items-center gap-3 relative z-10 w-1/4" id="step4">
+                        <div id="step4Icon" class="w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-surface-container-high text-outline">
+                            <span class="material-symbols-outlined">home</span>
                         </div>
-                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
-                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">مبلغ التحصيل المطلوب</strong>
-                            <div class="text-tertiary font-bold text-lg"><span id="privAmount">0</span> <span class="text-xs">ج.م</span></div>
-                        </div>
-                        <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
-                            <strong class="text-outline text-[0.65rem] uppercase block mb-1">عنوان التوصيل</strong>
-                            <div id="privAddress" class="text-primary font-bold text-sm leading-relaxed">--</div>
+                        <div class="text-center">
+                            <p id="step4Title" class="text-sm font-bold text-outline">تم الاستلام</p>
+                            <p id="step4Date" class="text-[0.7rem] text-outline font-medium h-4"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
 
-    <script>
-        function formatDate(dateStr) {
-            if (!dateStr) return "";
-            var d = new Date(dateStr);
-            if (isNaN(d.getTime())) return "";
-            return d.toLocaleDateString('ar-EG') + " " + d.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
-        }
+        <!-- Right: Details & Summary -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Live Summary -->
+            <div class="bg-primary rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-6 relative z-10">
+                    <div>
+                        <p class="text-[0.7rem] uppercase tracking-[0.2em] font-bold text-secondary-container mb-1">رقم التتبع</p>
+                        <p class="text-2xl font-black" id="resTrackId">TRACK-ID</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-secondary opacity-80">qr_code_2</span>
+                </div>
+                <div class="space-y-4 relative z-10">
+                    <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                        <span class="material-symbols-outlined text-secondary-container text-lg">calendar_today</span>
+                        <span class="text-xs font-medium">تاريخ الإنشاء: <b class="text-white" id="pubDateAdded">--</b></span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                        <span class="material-symbols-outlined text-secondary-container text-lg">update</span>
+                        <span class="text-xs font-medium">آخر تحديث: <b class="text-white" id="pubLastUpdate">--</b></span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
+                        <span class="material-symbols-outlined text-secondary-container text-lg">info</span>
+                        <span class="text-xs font-medium">الحالة: <b class="text-white bg-secondary-container/20 px-2 py-0.5 rounded" id="pubStatus">--</b></span>
+                    </div>
+                </div>
+            </div>
 
-        function trackOrder() {
-            var trackId = document.getElementById('trackInput').value.trim();
-            var btn = document.getElementById('trackBtn');
-            var errorDiv = document.getElementById('errorMsg');
-            
-            if(!trackId) { errorDiv.innerText = "الرجاء إدخال رقم التتبع!"; errorDiv.style.display = "block"; return; }
-            
-            btn.disabled = true; 
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> <span>جاري البحث...</span>';
-            errorDiv.style.display = "none"; 
-            
-            document.getElementById('trackingDashboard').style.display = "none";
-            document.getElementById('privateCard').style.display = "none";
-            document.getElementById('courierCard').style.display = "none";
-            document.getElementById('authCard').style.display = "flex";
-            document.getElementById('pinInput').value = ""; 
-            
+            <!-- Auth Card -->
+            <div id="authCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-surface-container-high flex flex-col gap-4">
+                <h3 class="text-lg font-black text-primary border-r-4 border-secondary-container pr-3">بيانات سرية</h3>
+                <p class="text-xs text-outline leading-relaxed">لعرض تفاصيل المستلم والمبلغ المطلوب واسم المندوب، يرجى إدخال الرقم السري (PIN) الخاص بهذه الشحنة.</p>
+                <input type="password" id="pinInput" placeholder="أدخل الرقم السري" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary-container transition-all">
+                <button id="authBtn" onclick="verifyPin()" class="bg-secondary-container mb-1 text-white w-full py-3 rounded-xl font-bold shadow-lg shadow-secondary-container/20 hover:brightness-110 transition-all text-sm">عرض التفاصيل الحساسة</button>
+                <div id="pinErrorMsg" class="text-error text-xs font-bold text-center hidden mt-1"></div>
+            </div>
+
+            <!-- Private Details (Hidden initially) -->
+            <div id="privateCard" class="bg-white p-6 rounded-3xl shadow-xl shadow-primary/5 border border-surface-container-high flex-col gap-4 hidden">
+                <h3 class="text-lg font-black text-primary border-r-4 border-secondary-container pr-3 mb-2">التفاصيل الكاملة</h3>
+                <div class="flex flex-col gap-3">
+                    <div class="bg-surface-container-high p-3 rounded-xl border border-surface-container-high">
+                        <strong class="text-outline text-[0.65rem] uppercase block mb-1">المرسل (متجر)</strong>
+                        <div id="privSender" class="text-primary font-bold text-sm">--</div>
+                    </div>
+                    <div class="bg-surface-container-high p-3 rounded-xl border border-surface-container-high">
+                        <strong class="text-outline text-[0.65rem] uppercase block mb-1">مبلغ التحصيل المطلوب</strong>
+                        <div class="text-secondary-container font-bold text-lg"><span id="privAmount">0</span> <span class="text-xs">ج.م</span></div>
+                    </div>
+                    <div class="bg-surface-container-high p-3 rounded-xl border border-surface-container-high">
+                        <strong class="text-outline text-[0.65rem] uppercase block mb-1">عنوان التوصيل</strong>
+                        <div id="privAddress" class="text-primary font-bold text-sm leading-relaxed">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function navigateTo(page) {
+        if(page === 'home') {
             if(typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(function(jsonResponse) {
-                    btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span>';
-                    var response = JSON.parse(jsonResponse);
-                    
-                    if (response.error) {
-                        errorDiv.innerText = response.error; errorDiv.style.display = "block";
-                    } else {
-                        displayPublicData(response.data);
-                        document.getElementById('trackingDashboard').style.display = "grid";
-                    }
-                }).getOrderStatus(trackId, null);
+                google.script.run.withSuccessHandler(function(url) {
+                    window.top.location.href = url.split("?")[0];
+                }).getAppUrl();
             } else {
-                // Local dev fallback
-                setTimeout(() => {
-                    btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span>';
-                    displayPublicData({
-                        id: trackId, status: "خرج للتوصيل", dateAdded: new Date(), lastUpdate: new Date()
-                    });
+                window.location.href = window.location.pathname;
+            }
+        } else {
+            if(typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function(url) {
+                    window.top.location.href = url + '?page=' + page;
+                }).getAppUrl();
+            } else {
+                window.location.href = '?page=' + page;
+            }
+        }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return "";
+        var d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "";
+        return d.toLocaleDateString('ar-EG') + " " + d.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function trackOrder() {
+        var trackId = document.getElementById('trackInput').value.trim();
+        var btn = document.getElementById('trackBtn');
+        var errorDiv = document.getElementById('errorMsg');
+        
+        if(!trackId) { errorDiv.innerText = "الرجاء إدخال رقم التتبع!"; errorDiv.style.display = "block"; return; }
+        
+        btn.disabled = true; 
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> <span>جاري البحث...</span>';
+        errorDiv.style.display = "none"; 
+        
+        var container = document.getElementById('trackingContainer');
+        if(container.innerHTML.trim() === "") {
+            container.innerHTML = document.getElementById('trackingDashboardTpl').innerHTML;
+        }
+        container.style.display = "block";
+
+        document.getElementById('trackingDashboard').style.display = "none";
+        document.getElementById('privateCard').style.display = "none";
+        document.getElementById('courierCard').style.display = "none";
+        document.getElementById('authCard').style.display = "flex";
+        document.getElementById('pinInput').value = ""; 
+        
+        if(typeof google !== 'undefined' && google.script) {
+            google.script.run.withSuccessHandler(function(jsonResponse) {
+                btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span><span class="material-symbols-outlined">arrow_back</span>';
+                var response = JSON.parse(jsonResponse);
+                
+                if (response.error) {
+                    errorDiv.innerText = response.error; errorDiv.style.display = "block";
+                    container.style.display = "none";
+                } else {
+                    displayPublicData(response.data);
                     document.getElementById('trackingDashboard').style.display = "grid";
-                }, 800);
-            }
+                    container.scrollIntoView({behavior: "smooth", block: "start"});
+                }
+            }).getOrderStatus(trackId, null);
+        } else {
+            // Local dev fallback
+            setTimeout(() => {
+                btn.disabled = false; btn.innerHTML = '<span>تتبع الآن</span><span class="material-symbols-outlined">arrow_back</span>';
+                displayPublicData({
+                    id: trackId, status: "خرج للتوصيل", dateAdded: new Date(), lastUpdate: new Date()
+                });
+                document.getElementById('trackingDashboard').style.display = "grid";
+                container.scrollIntoView({behavior: "smooth", block: "start"});
+            }, 800);
+        }
+    }
+
+    function setStepStyle(stepId, state, customText, dateText, isPulsing) {
+        var icon = document.getElementById(stepId + 'Icon');
+        var title = document.getElementById(stepId + 'Title');
+        var date = document.getElementById(stepId + 'Date');
+        
+        // reset
+        icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-surface-container-high text-outline";
+        title.className = "text-sm font-bold text-outline";
+        title.innerText = customText || title.innerText;
+        date.innerText = dateText || "";
+        icon.innerHTML = icon.innerHTML.replace('animate-pulse', '');
+
+        if (state === 'done') {
+            icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-primary text-white shadow-lg shadow-primary/20";
+            icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check</span>';
+            title.className = "text-sm font-bold text-primary";
+        } else if (state === 'current') {
+            icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-secondary-container text-white shadow-lg shadow-secondary-container/30" + (isPulsing ? " animate-pulse" : "");
+            title.className = "text-sm font-bold text-primary";
+        } else if (state === 'error') {
+            icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-error text-white shadow-lg shadow-error/30";
+            icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">cancel</span>';
+            title.className = "text-sm font-bold text-error";
+        }
+    }
+
+    function displayPublicData(data) {
+        document.getElementById('resTrackId').innerText = data.id;
+        document.getElementById('pubDateAdded').innerText = formatDate(data.dateAdded);
+        document.getElementById('pubLastUpdate').innerText = formatDate(data.lastUpdate) || "لم يتم التحديث";
+        document.getElementById('pubStatus').innerText = data.status;
+        
+        var s = data.status;
+        var w = "0%";
+        var states = ["pending", "pending", "pending", "pending"];
+        var title4 = "تم الاستلام";
+        var latestDate = formatDate(data.lastUpdate);
+        
+        if (s === "قيد الانتظار" || s === "تم الإنشاء") {
+            w = "0%"; states = ["current", "pending", "pending", "pending"];
+        } else if (s === "في المخزن") {
+            w = "33%"; states = ["done", "current", "pending", "pending"];
+        } else if (s === "خرج للتسليم" || s === "خرج للتوصيل") {
+            w = "66%"; states = ["done", "done", "current", "pending"];
+        } else if (s === "تم التوصيل") {
+            w = "100%"; states = ["done", "done", "done", "done"];
+            title4 = "تم التوصيل";
+        } else if (s === "مرتجع") {
+            w = "100%"; states = ["done", "done", "done", "error"];
+            title4 = "مرتجع";
+        } else if (s === "ملغي") {
+            w = "100%"; states = ["error", "error", "error", "error"];
+            title4 = "ملغي";
         }
 
-        function setStepStyle(stepId, state, customText, dateText, isPulsing) {
-            var icon = document.getElementById(stepId + 'Icon');
-            var title = document.getElementById(stepId + 'Title');
-            var date = document.getElementById(stepId + 'Date');
-            
-            // reset
-            icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-slate-100 text-slate-400";
-            title.className = "text-sm font-bold text-slate-400";
-            title.innerText = customText || title.innerText;
-            date.innerText = dateText || "";
-            icon.innerHTML = icon.innerHTML.replace('animate-pulse', '');
+        document.getElementById('activeProgressBar').style.width = w;
+        
+        setStepStyle('step1', states[0], "تم الإنشاء", states[0]==='done'?formatDate(data.dateAdded):"");
+        setStepStyle('step2', states[1], "في المخزن", states[1]==='done'?latestDate:"");
+        setStepStyle('step3', states[2], "خرج للتوصيل", states[2]==='done'?latestDate:"", states[2]==='current');
+        
+        var d4 = (states[3]==='done'||states[3]==='error') ? latestDate : "متوقع قريباً";
+        setStepStyle('step4', states[3], title4, d4);
+    }
 
-            if (state === 'done') {
-                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-primary text-white shadow-lg shadow-primary/20";
-                icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check</span>';
-                title.className = "text-sm font-bold text-primary";
-            } else if (state === 'current') {
-                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-tertiary text-white shadow-lg shadow-tertiary/30" + (isPulsing ? " animate-pulse" : "");
-                title.className = "text-sm font-bold text-primary";
-            } else if (state === 'error') {
-                icon.className = "w-12 h-12 rounded-xl flex items-center justify-center transition-all bg-error text-white shadow-lg shadow-error/30";
-                icon.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">cancel</span>';
-                title.className = "text-sm font-bold text-error";
-            }
-        }
+    function verifyPin() {
+        var trackId = document.getElementById('trackInput').value.trim();
+        var pinCode = document.getElementById('pinInput').value.trim();
+        var btn = document.getElementById('authBtn');
+        var pinErrorDiv = document.getElementById('pinErrorMsg');
 
-        function displayPublicData(data) {
-            document.getElementById('resTrackId').innerText = data.id;
-            document.getElementById('pubDateAdded').innerText = formatDate(data.dateAdded);
-            document.getElementById('pubLastUpdate').innerText = formatDate(data.lastUpdate) || "لم يتم التحديث";
-            document.getElementById('pubStatus').innerText = data.status;
-            
-            var s = data.status;
-            var w = "0%";
-            var states = ["pending", "pending", "pending", "pending"];
-            var title4 = "تم الاستلام";
-            var latestDate = formatDate(data.lastUpdate);
-            
-            // States map based on exact naming
-            if (s === "قيد الانتظار" || s === "تم الإنشاء") {
-                w = "0%"; states = ["current", "pending", "pending", "pending"];
-            } else if (s === "في المخزن") {
-                w = "33%"; states = ["done", "current", "pending", "pending"];
-            } else if (s === "خرج للتسليم" || s === "خرج للتوصيل") {
-                w = "66%"; states = ["done", "done", "current", "pending"];
-            } else if (s === "تم التوصيل") {
-                w = "100%"; states = ["done", "done", "done", "done"];
-                title4 = "تم التوصيل";
-            } else if (s === "مرتجع") {
-                w = "100%"; states = ["done", "done", "done", "error"];
-                title4 = "مرتجع";
-            } else if (s === "ملغي") {
-                // Determine width based on where it got mostly cancelled? 
-                // Let's just make it full red or halfway. We'll set 100% and error state
-                w = "100%"; states = ["error", "error", "error", "error"];
-                title4 = "ملغي";
-            }
+        if(!pinCode) { pinErrorDiv.innerText = "الرجاء إدخال الرقم السري!"; pinErrorDiv.style.display = "block"; return; }
 
-            document.getElementById('activeProgressBar').style.width = w;
-            
-            setStepStyle('step1', states[0], "تم الإنشاء", states[0]==='done'?formatDate(data.dateAdded):"");
-            setStepStyle('step2', states[1], "في المخزن", states[1]==='done'?latestDate:"");
-            setStepStyle('step3', states[2], "خرج للتوصيل", states[2]==='done'?latestDate:"", states[2]==='current');
-            
-            var d4 = (states[3]==='done'||states[3]==='error') ? latestDate : "متوقع قريباً";
-            setStepStyle('step4', states[3], title4, d4);
-        }
+        btn.disabled = true; btn.innerText = "جاري التحقق...";
+        pinErrorDiv.style.display = "none";
 
-        function verifyPin() {
-            var trackId = document.getElementById('trackInput').value.trim();
-            var pinCode = document.getElementById('pinInput').value.trim();
-            var btn = document.getElementById('authBtn');
-            var pinErrorDiv = document.getElementById('pinErrorMsg');
+        if(typeof google !== 'undefined' && google.script) {
+            google.script.run.withSuccessHandler(function(jsonResponse) {
+                btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
+                var response = JSON.parse(jsonResponse);
 
-            if(!pinCode) { pinErrorDiv.innerText = "الرجاء إدخال الرقم السري!"; pinErrorDiv.style.display = "block"; return; }
-
-            btn.disabled = true; btn.innerText = "جاري التحقق...";
-            pinErrorDiv.style.display = "none";
-
-            if(typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(function(jsonResponse) {
-                    btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
-                    var response = JSON.parse(jsonResponse);
-
-                    if (response.error) {
-                        pinErrorDiv.innerText = response.error; pinErrorDiv.style.display = "block";
-                    } else {
-                        document.getElementById('authCard').style.display = "none";
-                        displayPrivateData(response.privateData);
-                    }
-                }).getOrderStatus(trackId, pinCode);
-            } else {
-                 setTimeout(() => {
-                    btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
+                if (response.error) {
+                    pinErrorDiv.innerText = response.error; pinErrorDiv.style.display = "block";
+                } else {
                     document.getElementById('authCard').style.display = "none";
-                    displayPrivateData({
-                        sender: "متجر الأزياء الحديثة", amount: "550", address: "شارع الرياض، حي المربّع، أمام المسجد", courier: "محمود سلامة", courierPhone: "0501234567"
-                    });
-                }, 800);
-            }
+                    displayPrivateData(response.privateData);
+                }
+            }).getOrderStatus(trackId, pinCode);
+        } else {
+                setTimeout(() => {
+                btn.disabled = false; btn.innerText = "عرض التفاصيل الحساسة";
+                document.getElementById('authCard').style.display = "none";
+                displayPrivateData({
+                    sender: "متجر الأزياء الحديثة", amount: "550", address: "شارع الرياض، حي المربّع، أمام المسجد", courier: "محمود سلامة", courierPhone: "0501234567"
+                });
+            }, 800);
         }
+    }
 
-        function displayPrivateData(privateData) {
-            document.getElementById('privSender').innerText = privateData.sender;
-            document.getElementById('privAmount').innerText = privateData.amount;
-            document.getElementById('privAddress').innerText = privateData.address;
-            document.getElementById('privCourierTxt').innerText = privateData.courier || "لم يعين بعد";
-            
-            if(privateData.courierPhone && privateData.courierPhone !== "غير متوفر") {
-                document.getElementById('privPhoneBtn').href = "tel:" + privateData.courierPhone;
-                document.getElementById('privPhoneBtn').style.display = 'flex';
-            } else {
-                document.getElementById('privPhoneBtn').style.display = 'none';
-            }
-            
-            document.getElementById('privateCard').style.display = 'flex';
-            document.getElementById('courierCard').style.display = 'flex';
+    function displayPrivateData(privateData) {
+        document.getElementById('privSender').innerText = privateData.sender;
+        document.getElementById('privAmount').innerText = privateData.amount;
+        document.getElementById('privAddress').innerText = privateData.address;
+        document.getElementById('privCourierTxt').innerText = privateData.courier || "لم يعين بعد";
+        
+        if(privateData.courierPhone && privateData.courierPhone !== "غير متوفر") {
+            document.getElementById('privPhoneBtn').href = "tel:" + privateData.courierPhone;
+            document.getElementById('privPhoneBtn').style.display = 'flex';
+        } else {
+            document.getElementById('privPhoneBtn').style.display = 'none';
         }
-    </script>
-</body>
-</html>
+        
+        document.getElementById('privateCard').style.display = 'flex';
+        document.getElementById('courierCard').style.display = 'flex';
+    }
+</script>
+</body></html>
