@@ -205,7 +205,7 @@ function processCourierUpdate(rowNumber, actionType, imageData, filename, reason
       podUrl = file.getUrl();
     }
     var mapUrl = "";
-    if (location && location.lat) { mapUrl = "http://maps.google.com/maps?q=" + location.lat + "," + location.lng; }
+    if (location && location.lat) { mapUrl = "https://www.google.com/maps/search/?api=1&query=" + location.lat + "," + location.lng; }
     var newStatus = (actionType === 'delivered') ? "تم التوصيل" : "مرتجع";
     sheet.getRange(rowNumber, 5).setValue(newStatus);
     if (podUrl != "") sheet.getRange(rowNumber, 20).setValue(podUrl);

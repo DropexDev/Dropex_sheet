@@ -57,17 +57,17 @@
                     <div>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">email</span>
-                            <input type="email" id="emailInput" placeholder="البريد الإلكتروني" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') login()">
+                            <input type="email" id="emailInput" placeholder="البريد الإلكتروني" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') courierLogin()">
                         </div>
                     </div>
                     <div>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
-                            <input type="password" id="passInput" placeholder="كلمة المرور" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') login()">
+                            <input type="password" id="passInput" placeholder="كلمة المرور" class="w-full bg-slate-50 border border-slate-100 rounded-2xl pr-12 pl-4 py-4 text-sm focus:ring-2 focus:ring-accent transition-all placeholder-slate-400" onkeypress="if(event.key === 'Enter') courierLogin()">
                         </div>
                     </div>
                 </div>
-                <button id="loginBtn" onclick="login()" class="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex justify-center items-center gap-2">
+                <button id="loginBtn" onclick="courierLogin()" class="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex justify-center items-center gap-2">
                     دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>
                 </button>
                 <p id="loginError" class="text-error text-center text-xs font-bold mt-4 bg-red-50 p-2 rounded-lg hidden"></p>
@@ -132,7 +132,7 @@
                 <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">package</span>
                 <span class="text-[9px] font-bold uppercase">المهام</span>
             </button>
-            <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition" onclick="location.reload()">
+            <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition" onclick="refreshOrders()">
                 <span class="material-symbols-outlined text-2xl">sync</span>
                 <span class="text-[9px] font-bold uppercase">تحديث</span>
             </button>
@@ -151,62 +151,83 @@
     <script>
         var currentCourier = "";
 
-        // Safe URL builder for Whatsapp
+        // دالة بناء رابط الواتساب
         function getWaLink(phone) {
             let num = String(phone).trim();
             return num.startsWith('0') ? '2' + num : num;
         }
 
-        function login() {
-            var email = document.getElementById('emailInput').value.trim();
-            var pass = document.getElementById('passInput').value.trim();
-            var btn = document.getElementById('loginBtn');
-            var err = document.getElementById('loginError');
-            
-            if(!email || !pass) {
-                err.innerText = "الرجاء إدخال الإيميل والرقم السري.";
-                err.style.display = 'block';
-                return;
-            }
+        // دالة تسجيل الدخول
+        function courierLogin() {
+            try {
+                var email = document.getElementById('emailInput').value.trim();
+                var pass = document.getElementById('passInput').value.trim();
+                var btn = document.getElementById('loginBtn');
+                var err = document.getElementById('loginError');
+                
+                if(!email || !pass) {
+                    err.innerText = "الرجاء إدخال الإيميل والرقم السري.";
+                    err.style.display = 'block';
+                    return;
+                }
 
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-xl">sync</span> جاري التحقق...';
-            btn.disabled = true;
-            err.style.display = 'none';
+                btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-xl">sync</span> جاري التحقق...';
+                btn.disabled = true;
+                err.style.display = 'none';
 
-            if(typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(function(response) {
-                    btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
-                    btn.disabled = false;
-                    
-                    if (response.error) {
-                        err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = response.error;
-                    } else {
-                        currentCourier = response.courierName;
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'flex';
-                        document.getElementById('welcomeText').innerText = "كابتن " + currentCourier;
-                        renderOrders(response.orders);
-                    }
-                }).withFailureHandler(function(e) {
-                    btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
-                    btn.disabled = false;
-                    err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = "خطأ من الخادم مقطوع: " + e.message;
-                }).getCourierOrders(email, pass);
-            } else {
-                // Local testing fallback
-                setTimeout(() => {
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'flex';
-                    currentCourier = "سالم القحطاني";
-                    document.getElementById('welcomeText').innerText = "كابتن " + currentCourier;
-                    renderOrders([
-                        {row: 2, id: 'TRK-9002', receiver: 'محمد العبدالله', address: 'الرياض، حي الملقا، شارع الأبراج', receiverPhone: '0501112222', sender: 'متجر الأزياء', senderPhone: '0598887777', amount: 350},
-                        {row: 3, id: 'TRK-1055', receiver: 'عبدالرحمن', address: 'جدة، حي الشاطئ، شارع الكورنيش', receiverPhone: '0554443333', sender: 'إلكترونيات سمارت', senderPhone: '0541110000', amount: 1200}
-                    ]);
-                }, 800);
+                if(typeof google !== 'undefined' && google.script) {
+                    google.script.run.withSuccessHandler(function(response) {
+                        btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
+                        btn.disabled = false;
+                        
+                        if (response.error) {
+                            err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = response.error;
+                        } else {
+                            currentCourier = response.courierName;
+                            document.getElementById('loginSection').style.display = 'none';
+                            document.getElementById('dashboard').style.display = 'flex';
+                            document.getElementById('welcomeText').innerText = "كابتن " + currentCourier;
+                            renderOrders(response.orders);
+                        }
+                    }).withFailureHandler(function(e) {
+                        btn.innerHTML = 'دخول المنصة <span class="material-symbols-outlined text-lg">arrow_left_alt</span>';
+                        btn.disabled = false;
+                        err.classList.remove('hidden'); err.style.display = 'block'; err.innerText = "خطأ في الاتصال بالخادم: " + e.message;
+                    }).getCourierOrders(email, pass);
+                } 
+            } catch(errObj) {
+                alert('خطأ برمجي: ' + errObj.message);
             }
         }
 
+        // دالة تحديث الطلبات بدون الخروج من الحساب
+        function refreshOrders() {
+            var email = document.getElementById('emailInput').value.trim();
+            var pass = document.getElementById('passInput').value.trim();
+            var list = document.getElementById('ordersList');
+            
+            if(!email || !pass) return;
+
+            list.innerHTML = `
+            <div class="flex flex-col justify-center items-center h-48 opacity-70">
+                <span class="material-symbols-outlined animate-spin text-5xl text-primary mb-3">sync</span>
+                <p class="text-sm font-bold text-slate-500">جاري جلب الطلبات الحديثة...</p>
+            </div>`;
+
+            if(typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function(response) {
+                    if (response.error) {
+                        alert("خطأ: " + response.error);
+                    } else {
+                        renderOrders(response.orders);
+                    }
+                }).withFailureHandler(function(e) {
+                    alert("فشل تحديث الطلبات، تحقق من اتصال الإنترنت.");
+                }).getCourierOrders(email, pass);
+            }
+        }
+
+        // دالة عرض الطلبات
         function renderOrders(orders) {
             var list = document.getElementById('ordersList');
             var html = "";
@@ -226,7 +247,6 @@
 
                 html += `
                 <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 page-enter" style="animation-delay: 0.1s" id="card-${o.row}">
-                    <!-- Card Header -->
                     <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-50">
                         <div class="flex items-center gap-2">
                             <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs material-symbols-outlined">inventory_2</span>
@@ -235,9 +255,7 @@
                         <span class="px-3 py-1.5 bg-primary-fixed text-accent text-[9px] font-black rounded-full uppercase tracking-widest truncate max-w-[130px] shadow-inner border border-accent/10">شحنة نشطة</span>
                     </div>
 
-                    <!-- Client Connections -->
                     <div class="space-y-3 mb-5">
-                        <!-- Receiver -->
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
                             <div class="flex justify-between items-start mb-2">
@@ -252,12 +270,11 @@
                             <p class="text-[11px] font-medium text-slate-500 pr-7 leading-relaxed mb-3">${o.address}</p>
                             
                             <div class="flex gap-2 pr-7">
-                                <a href="tel:${o.receiverPhone}" class="flex-1 h-9 rounded-xl border border-slate-200 bg-white text-primary flex items-center justify-center gap-1 shadow-sm hover:bg-slate-50 active:bg-slate-100 transition text-[10px] items-center font-bold"><span class="material-symbols-outlined text-[1rem]">call</span> اتصال</a>
-                                <a href="https://wa.me/${recWa}" target="_blank" class="flex-1 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-1 shadow-sm shadow-[#25D366]/20 hover:opacity-90 transition text-[10px] items-center font-bold"><span class="material-symbols-outlined text-[1rem]">chat</span> واتساب</a>
+                                <a href="tel:${o.receiverPhone}" class="flex-1 h-9 rounded-xl border border-slate-200 bg-white text-primary flex items-center justify-center gap-1 shadow-sm hover:bg-slate-50 transition text-[10px] font-bold"><span class="material-symbols-outlined text-[1rem]">call</span> اتصال</a>
+                                <a href="https://wa.me/${recWa}" target="_blank" class="flex-1 h-9 rounded-xl bg-[#25D366] text-white flex items-center justify-center gap-1 shadow-sm shadow-[#25D366]/20 hover:opacity-90 transition text-[10px] font-bold"><span class="material-symbols-outlined text-[1rem]">chat</span> واتساب</a>
                             </div>
                         </div>
 
-                        <!-- Sender -->
                         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-1 h-full bg-slate-300"></div>
                             <div class="flex justify-between items-center">
@@ -276,30 +293,27 @@
                         </div>
                     </div>
 
-                    <!-- Financials -->
                     <div class="bg-red-50 border border-red-100 p-4 rounded-2xl mb-5 text-center shadow-sm relative overflow-hidden">
                         <span class="material-symbols-outlined absolute -left-4 -bottom-4 text-6xl text-red-100 opacity-50">payments</span>
-                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest w-full text-center relative z-10 w-full mb-1">المطلوب تحصيله من العميل</p>
+                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest w-full text-center relative z-10 w-full mb-1">المطلوب تحصيله</p>
                         <p class="text-3xl font-black text-red-600 relative z-10 w-full mb-0 leading-tight">${o.amount} <span class="text-xs">ج.م</span></p>
                     </div>
 
-                    <!-- Critical Forms Section -->
                     <div class="p-4 rounded-2xl border-[3px] border-accent/20 bg-accent/5 mb-5 space-y-4">
                         <div class="relative">
                             <label class="text-[11px] font-bold text-accent flex items-center gap-1 mb-2"><span class="material-symbols-outlined text-[1rem] text-accent">add_a_photo</span>التقط صورة التسليم (إجباري)</label>
                             <div class="relative w-full h-12 border-2 border-dashed border-accent/40 rounded-xl bg-white flex items-center justify-center overflow-hidden">
-                                <span class="text-xs font-bold text-accent/80 flex items-center gap-2"><span class="material-symbols-outlined text-[1.2rem]">camera_alt</span> اضغط لالتقاط أو اختيار الصورة</span>
-                                <input type="file" id="file-${o.row}" accept="image/*" capture="camera" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <span class="text-xs font-bold text-accent/80 flex items-center gap-2"><span class="material-symbols-outlined text-[1.2rem]">camera_alt</span> اضغط لالتقاط الصورة</span>
+                                <input type="file" id="file-${o.row}" accept="image/*" capture="environment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             </div>
                         </div>
 
                         <div>
-                            <label class="text-[11px] font-bold text-slate-500 flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-[0.9rem]">edit_note</span>سبب الارتجاع (مطلوب إذا أردت إرجاع الطلب)</label>
+                            <label class="text-[11px] font-bold text-slate-500 flex items-center gap-1 mb-1"><span class="material-symbols-outlined text-[0.9rem]">edit_note</span>سبب الارتجاع (مطلوب للارتجاع)</label>
                             <input type="text" id="reason-${o.row}" placeholder="اكتب السبب بوضوح هنا..." class="w-full bg-white border border-slate-200 rounded-xl text-xs py-3 px-4 focus:ring-1 focus:ring-primary shadow-sm leading-relaxed">
                         </div>
                     </div>
 
-                    <!-- Confirmation Actions -->
                     <div class="flex gap-3">
                         <button class="flex-1 py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition shadow-lg shadow-primary/20 text-xs" id="btnDel-${o.row}" onclick="processAction(${o.row}, 'delivered')">
                             <span class="material-symbols-outlined text-[1.1rem]">task_alt</span> إتمام التوصيل
@@ -314,7 +328,7 @@
             list.innerHTML = html;
         }
 
-        // Image compression helper (keeps identical logical flow but inside app scope)
+        // دالة ضغط الصورة
         function compressImage(file, callback) {
             var reader = new FileReader();
             reader.onload = function(event) {
@@ -335,78 +349,81 @@
             reader.readAsDataURL(file);
         }
 
+        // دالة معالجة الأزرار (تم التعديل لتجنب فخ الـ GPS)
         function processAction(row, actionType) {
             var fileInput = document.getElementById('file-' + row);
             var reasonInput = document.getElementById('reason-' + row).value.trim();
             var btnDel = document.getElementById('btnDel-' + row);
             var btnRet = document.getElementById('btnRet-' + row);
 
-            // 1. Mandatory image check
             if (fileInput.files.length === 0) { 
                 alert("⚠️ لا يمكنك تجاوز هذه الخطوة: يجب إرفاق صورة إثبات الاستلام أو صورة لمكان التسليم كمرتجع!"); 
                 return; 
             }
-            // 2. Mandatory reason if returned
+            
             if (actionType === 'returned' && reasonInput === "") { 
                 alert("⚠️ للتسجيل كمرتجع: يجب أن تكتب السبب بوضوح في المربع المخصص!"); 
                 document.getElementById('reason-' + row).focus();
                 return; 
             }
 
-            // Lock UI
             btnDel.classList.add('btn-disabled'); btnRet.classList.add('btn-disabled');
             var activeBtn = (actionType === 'delivered') ? btnDel : btnRet;
             activeBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> سحب الموقع...';
 
             var uploadedFile = fileInput.files[0];
+            var locationData = { lat: "", lng: "" }; // قيمة افتراضية في حال فشل الـ GPS
 
-            // GeoLocation Fetch
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
-                        var locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
                         activeBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">cloud_upload</span> رفع البيانات...';
                         prepareDataAndUpload(row, actionType, uploadedFile, reasonInput, locationData);
                     }, 
                     function(error) { 
                         var errorMsg = "حدث خطأ في تحديد الموقع.";
-                        if(error.code == 1) errorMsg = "لا توجد صلاحية للـ GPS، يرجى تفعيله من إعدادات المتصفح!";
-                        else if(error.code == 2) errorMsg = "لا يمكن التقاط إشارة الـ GPS. تأكد من تفعيله.";
-                        else if(error.code == 3) errorMsg = "انتهى وقت سحب الموقع (إشارة ضعيفة).";
-                        alert("❌ فشل: " + errorMsg);
+                        if(error.code == 1) errorMsg = "لا توجد صلاحية للـ GPS، يرجى تفعيله من إعدادات المتصفح وإعادة المحاولة!";
+                        else if(error.code == 2) errorMsg = "لا يمكن التقاط إشارة الـ GPS. تأكد من تفعيله وتحديث الصفحة.";
+                        else if(error.code == 3) errorMsg = "إشارة الـ GPS ضعيفة (انتهى الوقت). يرجى التوجه لمكان مفتوح والمحاولة مرة أخرى.";
+                        alert("❌ إجراء إلزامي: " + errorMsg);
                         resetButtons(row);
                     },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
                 );
             } else { 
-                alert("جهازك لا يدعم خاصية تحديد الموقع.");
+                alert("❌ جهازك لا يدعم خاصية تحديد الموقع المطلوبة لإتمام العملية.");
                 resetButtons(row);
             }
         }
 
+        // دالة الرفع إلى الخادم (تم إضافة معالجة الأخطاء)
         function prepareDataAndUpload(row, actionType, file, reason, locationData) {
             compressImage(file, function(compressedBase64) {
                 var filename = "POD_" + actionType + "_" + row + "_" + new Date().getTime() + ".jpg";
                 
                 if(typeof google !== 'undefined' && google.script) {
-                    google.script.run.withSuccessHandler(function(res) {
+                    google.script.run
+                    .withSuccessHandler(function(res) {
                         if(res.success) {
-                            alert("✅ تمت العملية بنجاح! تم حفظ الموقع والصورة والتحديث.");
+                            alert("✅ تمت العملية بنجاح! تم التحديث.");
                             document.getElementById('card-' + row).style.display = 'none';
                         } else {
-                            alert("خطأ: " + res.error); resetButtons(row);
+                            alert("خطأ: " + res.error); 
+                            resetButtons(row);
                         }
-                    }).processCourierUpdate(row, actionType, compressedBase64, filename, reason, locationData);
-                } else {
-                    // Local dev test
-                    setTimeout(()=>{
-                        alert("✅ تمت العملية بنجاح! (معاينة محلية)");
-                        document.getElementById('card-' + row).style.display = 'none';
-                    }, 1000);
+                    })
+                    .withFailureHandler(function(error) {
+                        // معالجة الخطأ لتجنب تعليق الزر
+                        alert("❌ فشل الاتصال بالخادم، الرجاء المحاولة مرة أخرى.");
+                        resetButtons(row);
+                    })
+                    .processCourierUpdate(row, actionType, compressedBase64, filename, reason, locationData);
                 }
             });
         }
 
+        // دالة استعادة حالة الأزرار
         function resetButtons(row) {
             var btnDel = document.getElementById('btnDel-' + row);
             var btnRet = document.getElementById('btnRet-' + row);
