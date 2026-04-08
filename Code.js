@@ -11,6 +11,8 @@ function doGet(e) {
     return HtmlService.createHtmlOutputFromFile('User').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } else if (page == 'tracking') {
     return HtmlService.createHtmlOutputFromFile('Tracking').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  } else if (page == 'signup') {
+    return HtmlService.createHtmlOutputFromFile('Signup').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } else {
     return HtmlService.createHtmlOutputFromFile('Index').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL).addMetaTag('viewport', 'width=device-width, initial-scale=1');
   }
@@ -704,14 +706,15 @@ function createNewUser(userData) {
     }
 
     // بناء صف البيانات بنفس الترتيب الذي تقرأه دالة userLogin
-    // [0]:الاسم, [1]:الإيميل, [2]:الباسورد, [3]:الهاتف, [4]:العنوان, [5]:المحافظة
+    // [0]:الاسم, [1]:الإيميل, [2]:الباسورد, [3]:الهاتف, [4]:العنوان, [5]:المحافظة, [6]:نوع الخدمة
     var rowData = [
       String(userData.name).trim(),
       newEmail,
       String(userData.password).trim(),
       String(userData.phone).trim(),
       String(userData.address).trim(),
-      String(userData.area).trim()
+      String(userData.area).trim(),
+      userData.serviceType ? String(userData.serviceType).trim() : "الشحن فقط"
     ];
 
     sheet.appendRow(rowData);
@@ -722,4 +725,85 @@ function createNewUser(userData) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// ==========================================
+// التحقق من البريد وإرسال الـ OTP
+// ==========================================
+function sendVerificationEmail(userData) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
+  if (!sheet) return { success: false, error: "شيت Users غير موجود." };
+  
+  var data = sheet.getDataRange().getValues();
+  var newEmail = String(userData.email).trim().toLowerCase();
+
+  // التحقق من أن الحساب غير مسجل بالفعل
+  for (var i = 1; i < data.length; i++) {
+    var existingEmail = String(data[i][1]).trim().toLowerCase();
+    if (existingEmail === newEmail) {
+      return { success: false, error: "هذا البريد الإلكتروني مسجل لتاجر آخر بالفعل." };
+    }
+  }
+
+  // توليد رمز OTP
+  var otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  // حفظ ה־OTP في الكاش لمدة 10 دقائق (600 ثانية)
+  var cache = CacheService.getScriptCache();
+  cache.put("OTP_" + newEmail, otp, 600);
+
+  // إرسال الإيميل
+  var subject = "رمز التحقق من حسابك - Dropex";
+  var htmlBody = `
+    <div dir="rtl" style="font-family: Arial, sans-serif; padding: 20px; color: #191c1e;">
+      <h2 style="color: #0a1e4d;">مرحباً ${userData.name}،</h2>
+      <p>شكراً لاختيارك شركة Dropex. لإكمال تسجيل حسابك، يرجى استخدام رمز التحقق التالي:</p>
+      <div style="background-color: #f7f9fb; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+        <span style="font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #ff6b35;">${otp}</span>
+      </div>
+      <p>هذا الرمز صالح لمدة 10 دقائق فقط. يرجى عدم مشاركة هذا الرمز مع أي شخص.</p>
+      <br>
+      <p>مع تحياتنا،<br>فريق Dropex</p>
+    </div>
+  `;
+
+  try {
+    MailApp.sendEmail({
+      to: newEmail,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: "حدث خطأ أثناء إرسال البريد: " + e.toString() };
+  }
+}
+
+// ==========================================
+// التحقق من ה-OTP وإنشاء الحساب
+// ==========================================
+function verifyAndCreateUser(userData, otpCode) {
+  var newEmail = String(userData.email).trim().toLowerCase();
+  var cache = CacheService.getScriptCache();
+  var savedOtp = cache.get("OTP_" + newEmail);
+
+  if (!savedOtp) {
+    return { success: false, error: "انتهت صلاحية الرمز، يرجى إعادة المحاولة." };
+  }
+
+  if (String(savedOtp).trim() !== String(otpCode).trim()) {
+    return { success: false, error: "رمز التحقق غير صحيح، حاول مرة أخرى." };
+  }
+
+  // الرمز صحيح، نقوم بإنشاء الحساب
+  cache.remove("OTP_" + newEmail); // تنظيف الكاش
+  return createNewUser(userData);
+}
+
+// ==========================================
+// دالة اختبارية لتفعيل صلاحيات الإيميل
+// ==========================================
+function authorizeEmail() {
+  // استخدام بريد وهمي أو البريد الخاص بك مباشرة لتجنب طلب صلاحية userinfo
+  MailApp.sendEmail("test@example.com", "اختبار الصلاحيات - Dropex", "تم تفعيل صلاحيات إرسال البريد بنجاح!");
 }
