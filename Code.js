@@ -800,10 +800,4 @@ function verifyAndCreateUser(userData, otpCode) {
   return createNewUser(userData);
 }
 
-// ==========================================
-// دالة اختبارية لتفعيل صلاحيات الإيميل
-// ==========================================
-function authorizeEmail() {
-  // استخدام بريد وهمي أو البريد الخاص بك مباشرة لتجنب طلب صلاحية userinfo
-  MailApp.sendEmail("test@example.com", "اختبار الصلاحيات - Dropex", "تم تفعيل صلاحيات إرسال البريد بنجاح!");
-}
+// end of file
