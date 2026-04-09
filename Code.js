@@ -393,10 +393,20 @@ function userLogin(email, password) {
   var userEmail = String(email).trim().toLowerCase();
   var userPass = String(password).trim();
   for (var i = 1; i < data.length; i++) {
-    var rowEmail = String(data[i][1]).trim().toLowerCase();
-    var rowPass = String(data[i][2]).trim();
     if (rowEmail === userEmail && rowPass === userPass) {
-      return { success: true, userData: { name: String(data[i][0]).trim(), email: rowEmail, phone: String(data[i][3]).trim(), address: data[i][4], area: data[i][5] } };
+      return { 
+        success: true, 
+        userData: { 
+          name: String(data[i][0]).trim(), 
+          email: rowEmail, 
+          phone: String(data[i][3]).trim(), 
+          address: data[i][4], 
+          area: data[i][5],
+          address2: data[i][7] || "",
+          phone2: data[i][8] || "",
+          phone3: data[i][9] || ""
+        } 
+      };
     }
   }
   return { success: false, error: "الإيميل أو الرقم السري غير صحيح" };
@@ -706,7 +716,7 @@ function createNewUser(userData) {
     }
 
     // بناء صف البيانات بنفس الترتيب الذي تقرأه دالة userLogin
-    // [0]:الاسم, [1]:الإيميل, [2]:الباسورد, [3]:الهاتف, [4]:العنوان, [5]:المحافظة, [6]:نوع الخدمة
+    // [0]:الاسم, [1]:الإيميل, [2]:الباسورد, [3]:الهاتف, [4]:العنوان, [5]:المحافظة, [6]:نوع الخدمة, [7]:عنوان إضافي (H), [8]:رقم إضافي 1 (I), [9]:رقم إضافي 2 (J)
     var rowData = [
       String(userData.name).trim(),
       newEmail,
@@ -714,7 +724,10 @@ function createNewUser(userData) {
       String(userData.phone).trim(),
       String(userData.address).trim(),
       String(userData.area).trim(),
-      userData.serviceType ? String(userData.serviceType).trim() : "الشحن فقط"
+      userData.serviceType ? String(userData.serviceType).trim() : "الشحن فقط",
+      String(userData.address2 || "").trim(),
+      String(userData.phone2 || "").trim(),
+      String(userData.phone3 || "").trim()
     ];
 
     sheet.appendRow(rowData);

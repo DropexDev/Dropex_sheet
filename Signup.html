@@ -70,12 +70,32 @@
           <input type="text" id="regName" placeholder="مثال: محمد علي / براند" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary placeholder:text-slate-400">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-outline mb-1 uppercase tracking-wider">رقم التليفون</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[11px] font-bold text-outline uppercase tracking-wider">رقم التليفون الأساسي</label>
+            <button onclick="toggleExtraField('extraPhoneWrapper')" class="text-secondary hover:text-primary transition-colors flex items-center gap-1 group">
+              <span class="text-[10px] font-bold group-hover:underline">إضافة رقم</span>
+              <span class="material-symbols-outlined text-sm">add_circle</span>
+            </button>
+          </div>
           <div class="flex">
             <div class="bg-surface-container-high rounded-r-xl px-3 py-3 border-l text-sm border-slate-200 font-bold flex items-center justify-center gap-2 text-primary" dir="ltr">
               <img src="https://flagcdn.com/w20/eg.png" class="w-5 h-auto rounded-sm"> +20
             </div>
             <input type="tel" id="regPhone" dir="ltr" placeholder="10XXXXXXX" class="w-full bg-surface-container-high border-none rounded-l-xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary text-right placeholder:text-right">
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra Phones (Hidden by default) -->
+      <div id="extraPhoneWrapper" class="hidden mb-4 space-y-3 bg-surface-container-low p-3 rounded-xl border border-dashed border-outline-variant">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] font-bold text-outline mb-1">رقم إضافي 1</label>
+            <input type="tel" id="regPhone2" dir="ltr" placeholder="01XXXXXXXXX" class="w-full bg-white border-none rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-secondary">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-outline mb-1">رقم إضافي 2</label>
+            <input type="tel" id="regPhone3" dir="ltr" placeholder="01XXXXXXXXX" class="w-full bg-white border-none rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-secondary">
           </div>
         </div>
       </div>
@@ -102,9 +122,21 @@
           </select>
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-outline mb-1 uppercase tracking-wider">العنوان التفصيلي</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[11px] font-bold text-outline uppercase tracking-wider">العنوان التفصيلي</label>
+            <button onclick="toggleExtraField('extraAddressWrapper')" class="text-secondary hover:text-primary transition-colors flex items-center gap-1 group">
+              <span class="text-[10px] font-bold group-hover:underline">عنوان إضافي</span>
+              <span class="material-symbols-outlined text-sm">add_location</span>
+            </button>
+          </div>
           <input type="text" id="regAddress" placeholder="عنوان المتجر أو المخزن" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary">
         </div>
+      </div>
+
+      <!-- Extra Address (Hidden by default) -->
+      <div id="extraAddressWrapper" class="hidden mb-4 bg-surface-container-low p-3 rounded-xl border border-dashed border-outline-variant">
+        <label class="block text-[10px] font-bold text-outline mb-1">عنوان بديل / إضافي</label>
+        <input type="text" id="regAddress2" placeholder="مثال: الفرع الثاني أو تفاصيل إضافية" class="w-full bg-white border-none rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-secondary">
       </div>
 
       <div class="mb-6 pb-2 border-b border-slate-100 flex items-center gap-2">
@@ -353,6 +385,16 @@
   </div>
 
   <script>
+    function toggleExtraField(id) {
+      const el = document.getElementById(id);
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        el.classList.add('animate-[fadeIn_0.3s_ease-out]');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+
     function navigateTo(page) {
       if (typeof google !== 'undefined' && google.script) {
         google.script.run.withSuccessHandler(function (url) {
@@ -469,7 +511,10 @@
         password: password,
         area: area,
         address: address,
-        serviceType: serviceType
+        serviceType: serviceType,
+        phone2: document.getElementById('regPhone2').value.trim(),
+        phone3: document.getElementById('regPhone3').value.trim(),
+        address2: document.getElementById('regAddress2').value.trim()
       };
 
       btn.disabled = true;
