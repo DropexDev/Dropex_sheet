@@ -47,7 +47,7 @@
     <div class="w-full lg:w-5/12 bg-white p-8 md:p-10 rounded-2xl shadow-xl z-10 relative">
       <div class="mb-8 text-right">
         <h1 class="text-3xl font-bold text-primary mb-2">ابدأ الشحن الآن</h1>
-        <p class="text-sm text-outline">تمتلك حساب بالفعل؟ <a href="?page=user" class="text-secondary font-bold hover:underline">تسجيل دخول</a></p>
+        <p class="text-sm text-outline">تمتلك حساب بالفعل؟ <a href="javascript:void(0)" onclick="navigateTo('user')" class="text-secondary font-bold hover:underline">تسجيل دخول</a></p>
       </div>
 
       <!-- Service Type Checkboxes -->
@@ -98,7 +98,7 @@
         <div>
           <label class="block text-[11px] font-bold text-outline mb-1 uppercase tracking-wider">المحافظة</label>
           <select id="regArea" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary">
-            <option value="">..اختر..</option>
+            <option value="">..اختر المحافظة..</option>
           </select>
         </div>
         <div>
@@ -124,14 +124,10 @@
 
     <!-- Right Column: Banner / Info -->
     <div class="w-full lg:w-7/12 flex-col justify-center pe-0 lg:pe-12 hidden lg:flex">
-      <div class="mb-10 flex items-center gap-4 border-b border-secondary/20 pb-6 w-fit">
-        <div class="w-14 h-14 bg-primary text-white flex items-center justify-center font-bold text-2xl rounded-2xl shadow-xl shadow-primary/20 rotate-3 transform">
-          D
-        </div>
-        <div>
-          <h2 class="text-4xl font-bold text-primary tracking-tight">Dropex</h2>
-          <p class="text-xs font-semibold text-secondary uppercase tracking-widest mt-1">Shipping & Logistics</p>
-        </div>
+      <div class="flex items-center justify-start mb-10">
+        <a href="javascript:void(0)" onclick="navigateTo('home')">
+          <img alt="Dropex Logo" class="h-14 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+        </a>
       </div>
 
       <h2 class="text-[2.75rem] font-bold text-primary leading-tight mb-8 drop-shadow-sm">
@@ -357,6 +353,24 @@
   </div>
 
   <script>
+    function navigateTo(page) {
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function (url) {
+          if (page === 'home' || page === 'Index' || !page) {
+            window.top.location.href = url.split("?")[0];
+          } else {
+            window.top.location.href = url + "?page=" + page;
+          }
+        }).getAppUrl();
+      } else {
+        if (page === 'home' || page === 'Index' || !page) {
+          window.location.href = "Index.html";
+        } else {
+          window.location.href = "?page=" + page;
+        }
+      }
+    }
+
     function openTermsModal() {
       var modal = document.getElementById('termsModal');
       var content = document.getElementById('termsModalContent');
@@ -530,9 +544,7 @@
             btn.className = "w-full bg-green-600 text-white py-3 rounded-xl font-bold transition-all shadow-lg text-lg mb-4";
             btn.innerText = "تم التسجيل بنجاح!";
             setTimeout(() => {
-              google.script.run.withSuccessHandler(function(url) {
-                window.top.location.href = url + "?page=user";
-              }).getAppUrl();
+              navigateTo('user');
             }, 2000);
           } else {
             err.innerText = res.error;

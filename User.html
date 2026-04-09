@@ -71,7 +71,10 @@
   <!-- Login Section -->
   <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
-      <h2 class="text-3xl font-bold text-primary mb-6">تسجيل الدخول - Dropex</h2>
+      <div class="flex justify-center mb-8">
+        <img alt="Dropex Logo" class="h-16 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+      </div>
+      <h2 class="text-3xl font-bold text-primary mb-6">تسجيل الدخول - بوابة التجار</h2>
       <input type="email" id="userEmail" placeholder="البريد الإلكتروني"
         class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 mb-4 text-sm focus:ring-2 focus:ring-secondary">
       <input type="password" id="userPass" placeholder="كلمة المرور"
@@ -82,7 +85,7 @@
       
       <div class="mt-6 pt-6 border-t border-slate-100 flex flex-col gap-2 relative">
         <span class="text-xs text-outline font-medium absolute -top-2.5 bg-white px-2 left-1/2 -translate-x-1/2">أو</span>
-        <a href="?page=signup" class="w-full mt-2 bg-primary/5 text-primary border border-primary/20 py-3 rounded-xl font-bold hover:bg-primary/10 transition-all inline-flex items-center justify-center gap-2 hover:scale-[1.02]">
+        <a href="javascript:void(0)" onclick="navigateTo('signup')" class="w-full mt-2 bg-primary/5 text-primary border border-primary/20 py-3 rounded-xl font-bold hover:bg-primary/10 transition-all inline-flex items-center justify-center gap-2 hover:scale-[1.02]">
           <span class="material-symbols-outlined text-[20px]">person_add</span>
           إنشاء حساب جديد
         </a>
@@ -94,8 +97,9 @@
     <header
       class="w-full h-16 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/50 flex justify-between items-center px-8">
       <div class="flex items-center gap-6">
-        <div class="text-primary font-bold text-xl uppercase tracking-widest">Dropex <span
-            class="text-secondary text-xs">PORTAL</span></div>
+        <a href="javascript:void(0)" onclick="navigateTo('home')">
+          <img alt="Dropex Logo" class="h-8 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+        </a>
       </div>
       <div class="flex items-center gap-4">
         <div class="text-left rtl:text-right">
@@ -259,6 +263,24 @@
   </div>
 
   <script>
+    function navigateTo(page) {
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function (url) {
+          if (page === 'home' || page === 'Index' || !page) {
+            window.top.location.href = url.split("?")[0];
+          } else {
+            window.top.location.href = url + "?page=" + page;
+          }
+        }).getAppUrl();
+      } else {
+        if (page === 'home' || page === 'Index' || !page) {
+          window.location.href = "Index.html";
+        } else {
+          window.location.href = "?page=" + page;
+        }
+      }
+    }
+
     var currentUser = null;
     var areasOptionsHTML = '<option value="">..اختر المنطقة..</option>';
 

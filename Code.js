@@ -800,4 +800,38 @@ function verifyAndCreateUser(userData, otpCode) {
   return createNewUser(userData);
 }
 
+// ==========================================
+// طلب توظيف المندوبين
+// ==========================================
+function submitEmploymentApplication(jobData) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName("Employment");
+    if (!sheet) {
+      sheet = spreadsheet.insertSheet("Employment");
+      sheet.appendRow(["التاريخ", "الاسم", "رقم الهاتف", "السن", "المحافظة", "المدينة", "نوع المركبة", "الخبرة السابقة"]);
+    }
+    
+    var rowData = [
+      new Date(),
+      String(jobData.name).trim(),
+      String(jobData.phone).trim(),
+      String(jobData.age).trim(),
+      String(jobData.governorate).trim(),
+      String(jobData.city).trim(),
+      String(jobData.vehicle).trim(),
+      String(jobData.experience).trim()
+    ];
+    
+    sheet.appendRow(rowData);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 // end of file

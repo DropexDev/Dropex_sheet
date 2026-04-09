@@ -91,12 +91,10 @@
     <!-- SideNavBar -->
     <aside class="w-20 lg:w-72 bg-white border-l border-slate-100 h-screen z-50 flex flex-col transition-all shrink-0">
         <div class="p-6 flex items-center justify-center lg:justify-start gap-3">
-            <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-primary font-bold">admin_panel_settings</span>
-            </div>
-            <div class="hidden lg:block">
-                <h1 class="text-xl font-black text-primary tracking-widest leading-none">DROPEX</h1>
-                <p class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest mt-1">نظام الإدارة</p>
+            <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4 justify-start w-full">
+                <a href="javascript:void(0)" onclick="navigateTo('home')">
+                    <img alt="Dropex Logo" class="h-8 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+                </a>
             </div>
         </div>
 
@@ -136,11 +134,12 @@
         <div id="loginSection"
             class="absolute inset-0 bg-background/95 backdrop-blur z-50 flex items-center justify-center p-6">
             <div class="bg-white p-10 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-sm text-center">
-                <div
-                    class="w-16 h-16 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <span class="material-symbols-outlined text-4xl">admin_panel_settings</span>
+                <div class="flex items-center justify-center mb-6">
+                    <a href="javascript:void(0)" onclick="navigateTo('home')">
+                        <img alt="Dropex Logo" class="h-16 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+                    </a>
                 </div>
-                <h2 class="text-2xl font-black text-primary tracking-tight mb-2">تسجيل الدخول (آدمن)</h2>
+                <h2 class="text-2xl font-black text-primary tracking-tight mb-2">تسجيل الدخول - نظام الإدارة</h2>
                 <p class="text-sm text-slate-500 mb-8">يرجى إدخال كلمة مرور الإدارة للوصول.</p>
                 <input type="password" id="adminPass" placeholder="كلمة المرور"
                     class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-center text-lg focus:ring-2 focus:ring-primary transition-all mb-4"
@@ -511,6 +510,24 @@
     </div>
 
     <script>
+        function navigateTo(page) {
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (url) {
+                    if (page === 'home' || page === 'Index' || !page) {
+                        window.top.location.href = url.split("?")[0];
+                    } else {
+                        window.top.location.href = url + "?page=" + page;
+                    }
+                }).getAppUrl();
+            } else {
+                if (page === 'home' || page === 'Index' || !page) {
+                    window.location.href = "Index.html";
+                } else {
+                    window.location.href = "?page=" + page;
+                }
+            }
+        }
+
         var allCouriers = [];
         var globalOrders = [];
 

@@ -37,11 +37,13 @@
         
         <!-- Header -->
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-primary text-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
-                <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">add_box</span>
+            <div class="flex justify-center mb-6">
+                <a href="javascript:void(0)" onclick="navigateTo('home')">
+                    <img alt="Dropex Logo" class="h-16 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" />
+                </a>
             </div>
-            <h1 class="text-2xl font-black text-primary tracking-tight">تسجيل شحنة جديدة</h1>
-            <p class="text-sm text-slate-500 font-medium mt-1">يرجى تعبئة كافة البيانات بدقة لضمان سرعة التوصيل</p>
+            <h1 class="text-2xl font-black text-primary tracking-tight font-ibm-plex-arabic">تسجيل شحنة جديدة</h1>
+            <p class="text-sm text-slate-500 font-medium mt-1 font-ibm-plex-arabic">يرجى تعبئة كافة البيانات بدقة لضمان سرعة التوصيل</p>
         </div>
 
         <!-- Order Form Container -->
@@ -225,6 +227,24 @@
         var finalPdfBase64 = ""; 
         var currentTrackingId = ""; 
         var currentPin = ""; 
+
+        function navigateTo(page) {
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (url) {
+                    if (page === 'home' || page === 'Index' || !page) {
+                        window.top.location.href = url.split("?")[0];
+                    } else {
+                        window.top.location.href = url + "?page=" + page;
+                    }
+                }).getAppUrl();
+            } else {
+                if (page === 'home' || page === 'Index' || !page) {
+                    window.location.href = "Index.html";
+                } else {
+                    window.location.href = "?page=" + page;
+                }
+            }
+        }
 
         window.onload = function() {
             if(typeof google !== 'undefined' && google.script) {

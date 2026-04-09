@@ -181,7 +181,10 @@
 <body>
 
     <div id="loginSection" class="login-screen">
-        <h2>بوابة المندوبين</h2>
+        <a href="javascript:void(0)" onclick="navigateTo('home')">
+            <img alt="Dropex Logo" class="h-16 w-auto" src="https://i.postimg.cc/V6sxBsF8/dropex.png" style="display: block; margin: 0 auto 20px auto;" />
+        </a>
+        <h2 style="color: #2c3e50;">بوابة المندوبين - نظام التوصيل</h2>
         <input type="email" id="emailInput" placeholder="أدخل الإيميل الخاص بك"><br>
         <input type="password" id="passInput" placeholder="أدخل الرقم السري"><br>
         <button class="btn-login" onclick="login()" id="loginBtn">دخول</button>
@@ -198,6 +201,24 @@
 
     <script>
         var currentCourier = "";
+
+        function navigateTo(page) {
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(function (url) {
+                    if (page === 'home' || page === 'Index' || !page) {
+                        window.top.location.href = url.split("?")[0];
+                    } else {
+                        window.top.location.href = url + "?page=" + page;
+                    }
+                }).getAppUrl();
+            } else {
+                if (page === 'home' || page === 'Index' || !page) {
+                    window.location.href = "Index.html";
+                } else {
+                    window.location.href = "?page=" + page;
+                }
+            }
+        }
 
         function login() {
             // إزالة المسافات الزائدة قبل الإرسال لتجنب الأخطاء
