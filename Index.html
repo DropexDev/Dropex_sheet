@@ -670,12 +670,18 @@
 
         document.getElementById('activeProgressBar').style.width = w;
         
-        setStepStyle('step1', states[0], "تم الإنشاء", states[0]==='done'?formatDate(data.dateAdded):"");
-        setStepStyle('step2', states[1], "في المخزن", states[1]==='done'?latestDate:"");
-        setStepStyle('step3', states[2], "خرج للتوصيل", states[2]==='done'?latestDate:"", states[2]==='current');
+        // استخدام التواريخ الدقيقة من قاعدة البيانات
+        var d1 = formatDate(data.timestampCreated);
+        var d2 = formatDate(data.timestampWarehouse);
+        var d3 = formatDate(data.timestampShipping);
+        var d4 = formatDate(data.timestampFinal);
+
+        setStepStyle('step1', states[0], "تم الإنشاء", d1 || states[0] === 'done' ? d1 : "");
+        setStepStyle('step2', states[1], "في المخزن", d2 || states[1] === 'done' ? d2 : "");
+        setStepStyle('step3', states[2], "خرج للتوصيل", d3 || states[2] === 'done' ? d3 : "", states[2] === 'current');
         
-        var d4 = (states[3]==='done'||states[3]==='error') ? latestDate : "متوقع قريباً";
-        setStepStyle('step4', states[3], title4, d4);
+        var date4 = d4 || ((states[3] === 'done' || states[3] === 'error') ? d4 : "متوقع قريباً");
+        setStepStyle('step4', states[3], title4, date4);
     }
 
     function verifyPin() {
