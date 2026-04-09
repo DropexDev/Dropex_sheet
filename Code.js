@@ -212,110 +212,116 @@ function processCourierUpdate(rowNumber, actionType, imageData, filename, reason
     if (location && location.lat) { mapUrl = "https://www.google.com/maps/search/?api=1&query=" + location.lat + "," + location.lng; }
     var newStatus = (actionType === 'delivered') ? "تم التوصيل" : "مرتجع";
     sheet.getRange(rowNumber, 5).setValue(newStatus);
-    sheet.getRange(rowNumber, 21).setValue(new Date()); // آخر تحديث (U)
-
-    // تسجيل التواريخ المخصصة حسب المرحلة
-    if (newStatus === "في المخزن") {
-      sheet.getRange(rowNumber, 23).setValue(new Date()); // W (23)
-    } else if (newStatus === "خرج للتوصيل" || newStatus === "خرج للتسليم") {
-      sheet.getRange(rowNumber, 30).setValue(new Date()); // AD (30)
-    } else if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") {
+    
+    // تسجيل التواريخ المخصصة حسب المرحلة ( AE للنتيجة النهائية)
+    if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") {
       sheet.getRange(rowNumber, 31).setValue(new Date()); // AE (31)
     }
     
-    if (podUrl != "") sheet.getRange(rowNumber, 20).setValue(podUrl);
-    if (mapUrl != "") sheet.getRange(rowNumber, 21).setValue(mapUrl);
-    if (actionType === 'returned' && reason != "") sheet.getRange(rowNumber, 22).setValue(reason);
+    if (podUrl != "") sheet.getRange(rowNumber, 20).setValue(podUrl);    // T (20)
+    if (mapUrl != "") sheet.getRange(rowNumber, 21).setValue(mapUrl);    // U (21)
+    if (actionType === 'returned' && reason != "") sheet.getRange(rowNumber, 22).setValue(reason); // V (22)
     return { success: true };
   } catch (e) { return { success: false, error: e.toString() }; }
 }
 
 function getDashboardStats(password) {
-  var adminPassword = "admin123";
-  if (password !== adminPassword) return { error: "كلمة المرور غير صحيحة" };
+  try {
+    var adminPassword = "admin123";
+    if (password !== adminPassword) return { error: "كلمة المرور غير صحيحة" };
 
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
-  var data = sheet.getDataRange().getValues();
-  var courierSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Couriers");
-  var courierData = courierSheet.getDataRange().getValues();
-  var couriersList = [];
-  for (var c = 1; c < courierData.length; c++) { if (courierData[c][0] != "") couriersList.push(courierData[c][0]); }
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Orders");
+    var data = sheet.getDataRange().getValues();
+    
+    var courierSheet = ss.getSheetByName("Couriers");
+    var courierData = courierSheet ? courierSheet.getDataRange().getValues() : [];
+    var couriersList = [];
+    for (var c = 1; c < courierData.length; c++) { if (courierData[c][0] != "") couriersList.push(courierData[c][0]); }
 
-  var stats = { totalOrders: 0, deliveredOrders: 0, pendingOrders: 0, outForDelivery: 0, totalCollectedAmount: 0, todayCollectedAmount: 0, totalNetProfit: 0, todayNetProfit: 0, recentOrders: [] };
-  var todayStr = new Date().toDateString();
+    var stats = { totalOrders: 0, deliveredOrders: 0, pendingOrders: 0, outForDelivery: 0, totalCollectedAmount: 0, todayCollectedAmount: 0, totalNetProfit: 0, todayNetProfit: 0, recentOrders: [] };
+    var todayStr = new Date().toDateString();
 
-  for (var i = 1; i < data.length; i++) {
-    if (data[i][0] != "") {
-      stats.totalOrders++;
+    // نمر على البيانات بالعكس لنأخذ أحدث الطلبات أولاً للجدول
+    for (var i = data.length - 1; i >= 1; i--) {
+      if (data[i][0] == "") continue;
+      
       var status = data[i][4];
+      stats.totalOrders++;
+
       var netProfit = parseFloat(data[i][25]) || 0; 
       var amountToCollect = parseFloat(data[i][27]) || parseFloat(data[i][6]) || 0; 
-
       var productPrice = parseFloat(data[i][6]) || 0;
       var deliveryCost = parseFloat(data[i][7]) || 0;
-      var paidBy = String(data[i][8]).trim();
+      var paidBy = String(data[i][8] || "على المستلم").trim();
       var pickupPrice = parseFloat(data[i][9]) || 0;
 
-      var merchantNet = 0;
-      if (status === "تم التوصيل") {
-        merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
-      } else if (status === "مرتجع") {
-        merchantNet = (paidBy === "على المرسل") ? (0 - deliveryCost - pickupPrice) : (0 - pickupPrice);
-      } else {
-        merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
+      var updateDateStr = "";
+      // تحديد تاريخ "اليوم" بناءً على الحالة
+      if (status === "تم التوصيل" || status === "مرتجع" || status === "ملغي") {
+        if (data[i][30] instanceof Date) updateDateStr = data[i][30].toDateString(); // AE
+      } else if (status === "خرج للتوصيل" || status === "خرج للتسليم") {
+        if (data[i][29] instanceof Date) updateDateStr = data[i][29].toDateString(); // AD
+      } else if (status === "في المخزن") {
+        if (data[i][22] instanceof Date) updateDateStr = data[i][22].toDateString(); // W
       }
 
-      var updateDateStr = "";
-      if (data[i][22] instanceof Date) { updateDateStr = data[i][22].toDateString(); }
+      if (updateDateStr === "" && data[i][5] instanceof Date) {
+        updateDateStr = data[i][5].toDateString(); // F (للحالات الجديدة)
+      }
 
       if (status == "تم التوصيل") {
         stats.deliveredOrders++;
         stats.totalCollectedAmount += amountToCollect; 
         stats.totalNetProfit += netProfit;             
-
-        if (updateDateStr === todayStr) {
-          stats.todayCollectedAmount += amountToCollect;
-          stats.todayNetProfit += netProfit;
-        }
-      }
-      else if (status == "مرتجع") {
+        if (updateDateStr === todayStr) { stats.todayCollectedAmount += amountToCollect; stats.todayNetProfit += netProfit; }
+      } else if (status == "مرتجع") {
         stats.totalNetProfit += netProfit;
-
-        if (updateDateStr === todayStr) {
-          stats.todayNetProfit += netProfit;
-        }
-      }
-      else if (status == "خرج للتسليم" || status == "خرج للتوصيل") {
+        if (updateDateStr === todayStr) { stats.todayNetProfit += netProfit; }
+      } else if (status == "خرج للتسليم" || status == "خرج للتوصيل") {
         stats.outForDelivery++;
-      }
-      else if (status == "قيد الانتظار" || status == "تم الإنشاء" || status == "في المخزن") {
+      } else if (status == "قيد الانتظار" || status == "تم الإنشاء" || status == "في المخزن") {
         stats.pendingOrders++;
       }
 
-      stats.recentOrders.unshift({
-        rowIndex: i + 1,
-        id: data[i][0],
-        pin: data[i][26] || "",
-        sender: data[i][2],
-        receiver: data[i][3],
-        address: data[i][16] + " - " + data[i][17],
-        status: status,
-        productPrice: productPrice,
-        deliveryCost: deliveryCost,
-        paidBy: paidBy,
-        pickupPrice: pickupPrice,
-        merchantNet: merchantNet,
-        courier: data[i][18] || "",
-        gas: data[i][23] || 0,
-        maintenance: data[i][24] || 0,
-        netProfit: netProfit,
-        podImage: data[i][19] || "",
-        location: data[i][20] || "",
-        waybillUrl: data[i][10] || ""
-      });
+      // إضافة الطلب للقائمة (نكتفي بأحدث 500 طلب لتحسين الأداء)
+      if (stats.recentOrders.length < 500) {
+        var merchantNet = 0;
+        if (status === "تم التوصيل") {
+          merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
+        } else if (status === "مرتجع") {
+          merchantNet = (paidBy === "على المرسل") ? (0 - deliveryCost - pickupPrice) : (0 - pickupPrice);
+        } else {
+          merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
+        }
+
+        stats.recentOrders.push({
+          rowIndex: i + 1,
+          id: data[i][0],
+          pin: data[i][26] || "",
+          sender: data[i][2] || "",
+          receiver: data[i][3] || "",
+          address: (data[i][16] || "") + " - " + (data[i][17] || ""),
+          status: status,
+          productPrice: productPrice,
+          deliveryCost: deliveryCost,
+          paidBy: paidBy,
+          pickupPrice: pickupPrice,
+          merchantNet: merchantNet,
+          courier: data[i][18] || "",
+          gas: data[i][23] || 0,
+          maintenance: data[i][24] || 0,
+          netProfit: netProfit,
+          podImage: data[i][19] || "",
+          location: data[i][20] || "",
+          waybillUrl: data[i][10] || ""
+        });
+      }
     }
+    return { error: null, stats: stats, couriersList: couriersList };
+  } catch (e) {
+    return { error: "حدث خطأ في الخادم: " + e.toString() };
   }
-  return { error: null, stats: stats, couriersList: couriersList };
 }
 
 
@@ -333,14 +339,13 @@ function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit
     sheet.getRange(rowIndex, 25).setValue(parseFloat(maintenance) || 0);
     sheet.getRange(rowIndex, 26).setValue(parseFloat(netProfit) || 0);
     
-    // تحديث التواريخ
-    sheet.getRange(rowIndex, 21).setValue(new Date());
+    // تحديث التواريخ المحددة حسب الحالة
     if (status === "في المخزن") {
-      sheet.getRange(rowIndex, 23).setValue(new Date());
+      sheet.getRange(rowIndex, 23).setValue(new Date()); // W (23)
     } else if (status === "خرج للتوصيل" || status === "خرج للتسليم") {
-      sheet.getRange(rowIndex, 30).setValue(new Date());
+      sheet.getRange(rowIndex, 30).setValue(new Date()); // AD (30)
     } else if (status === "تم التوصيل" || status === "مرتجع" || status === "ملغي") {
-      sheet.getRange(rowIndex, 31).setValue(new Date());
+      sheet.getRange(rowIndex, 31).setValue(new Date()); // AE (31)
     }
 
     return { success: true };
@@ -363,7 +368,7 @@ function getOrderStatus(trackingId, pinCode) {
           id: rowData[0],
           status: status,
           dateAdded: rowData[5],
-          lastUpdate: rowData[20],
+          lastUpdate: rowData[30] || rowData[29] || rowData[22] || rowData[5],
           timestampCreated: rowData[5],   
           timestampWarehouse: rowData[22], 
           timestampShipping: rowData[29],  
