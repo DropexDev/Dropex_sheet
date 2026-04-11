@@ -145,9 +145,9 @@ function createNewOrder(formObj) {
     rowData[6] = formObj.productPrice; rowData[7] = formObj.deliveryCost;
     rowData[8] = formObj.deliveryPaidBy; rowData[9] = 0;
     rowData[10] = waybillUrl;
-    rowData[11] = String(formObj.senderPhone).trim(); rowData[12] = formObj.senderAddress;
+    rowData[11] = formatPhoneForSheet(formObj.senderPhone); rowData[12] = formObj.senderAddress;
     rowData[13] = formObj.senderArea; rowData[14] = formObj.receiverEmail;
-    rowData[15] = formObj.receiverPhone; rowData[16] = formObj.receiverAddress;
+    rowData[15] = formatPhoneForSheet(formObj.receiverPhone); rowData[16] = formObj.receiverAddress;
     rowData[17] = formObj.receiverArea; rowData[26] = orderPin;
     rowData[27] = totalToCollectFromReceiver;
     rowData[28] = ""; // حالة التصفية
@@ -656,9 +656,9 @@ function processGridOrders(ordersArray, userData) {
       rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
       rowData[6] = productPrice; rowData[7] = deliveryCost;
       rowData[8] = deliveryPaidBy; rowData[10] = waybillUrl;
-      rowData[11] = String(userData.phone).trim();
+      rowData[11] = formatPhoneForSheet(userData.phone);
       rowData[12] = userData.address; rowData[13] = userData.area;
-      rowData[14] = recEmail; rowData[15] = recPhone;
+      rowData[14] = recEmail; rowData[15] = formatPhoneForSheet(recPhone);
       rowData[16] = recAddress; rowData[17] = recArea;
       rowData[26] = orderPin; rowData[27] = totalToCollect;
       rowData[28] = ""; // حالة التصفية
@@ -759,13 +759,13 @@ function createNewUser(userData) {
       String(userData.name).trim(),
       newEmail,
       String(userData.password).trim(),
-      String(userData.phone).trim(),
+      formatPhoneForSheet(userData.phone),
       String(userData.address).trim(),
       String(userData.area).trim(),
       userData.serviceType ? String(userData.serviceType).trim() : "الشحن فقط",
       String(userData.address2 || "").trim(),
-      String(userData.phone2 || "").trim(),
-      String(userData.phone3 || "").trim()
+      formatPhoneForSheet(userData.phone2 || ""),
+      formatPhoneForSheet(userData.phone3 || "")
     ];
 
     sheet.appendRow(rowData);
@@ -868,7 +868,7 @@ function submitEmploymentApplication(jobData) {
     var rowData = [
       new Date(),
       String(jobData.name).trim(),
-      String(jobData.phone).trim(),
+      formatPhoneForSheet(jobData.phone),
       String(jobData.age).trim(),
       String(jobData.governorate).trim(),
       String(jobData.city).trim(),
