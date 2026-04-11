@@ -157,6 +157,33 @@ function createNewOrder(formObj) {
   } catch (e) { return { success: false, error: e.toString() }; } finally { lock.releaseLock(); }
 }
 
+/**
+ * Normalizes Egyptian phone numbers to international format (+20...)
+ * to ensure Google Sheets treats them as text and for compatibility with WhatsApp/Calling.
+ */
+function formatPhoneForSheet(phone) {
+  if (phone === null || phone === undefined) return "";
+  var phoneStr = String(phone).replace(/[\s\-\(\)]/g, ""); // Clean formatting characters
+  if (phoneStr === "") return "";
+
+  // 1. If it already starts with +20, just return it
+  if (phoneStr.startsWith("+20")) return phoneStr;
+  
+  // 2. If it starts with 20 (but no +), add the +
+  if (phoneStr.startsWith("20") && phoneStr.length >= 12) return "+" + phoneStr;
+
+  // 3. If it starts with 0 (e.g., 012...), add +2
+  if (phoneStr.startsWith("0")) return "+2" + phoneStr;
+
+  // 4. If it starts with 1 (and is likely an Egyptian mobile number without 0), add +20
+  if (phoneStr.startsWith("1") && (phoneStr.length === 10)) return "+20" + phoneStr;
+
+  // 5. If it's something else but looks like it needs the country code
+  if (phoneStr.length === 11 && phoneStr.startsWith("01")) return "+2" + phoneStr;
+
+  return phoneStr;
+}
+
 function generateTrackingNumber() {
   var date = new Date();
   var randomNum = Math.floor(100 + Math.random() * 900);
@@ -212,12 +239,12 @@ function processCourierUpdate(rowNumber, actionType, imageData, filename, reason
     if (location && location.lat) { mapUrl = "https://www.google.com/maps/search/?api=1&query=" + location.lat + "," + location.lng; }
     var newStatus = (actionType === 'delivered') ? "تم التوصيل" : "مرتجع";
     sheet.getRange(rowNumber, 5).setValue(newStatus);
-    
+
     // تسجيل التواريخ المخصصة حسب المرحلة ( AE للنتيجة النهائية)
     if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") {
       sheet.getRange(rowNumber, 31).setValue(new Date()); // AE (31)
     }
-    
+
     if (podUrl != "") sheet.getRange(rowNumber, 20).setValue(podUrl);    // T (20)
     if (mapUrl != "") sheet.getRange(rowNumber, 21).setValue(mapUrl);    // U (21)
     if (actionType === 'returned' && reason != "") sheet.getRange(rowNumber, 22).setValue(reason); // V (22)
@@ -233,7 +260,7 @@ function getDashboardStats(password) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("Orders");
     var data = sheet.getDataRange().getValues();
-    
+
     var courierSheet = ss.getSheetByName("Couriers");
     var courierData = courierSheet ? courierSheet.getDataRange().getValues() : [];
     var couriersList = [];
@@ -245,12 +272,12 @@ function getDashboardStats(password) {
     // نمر على البيانات بالعكس لنأخذ أحدث الطلبات أولاً للجدول
     for (var i = data.length - 1; i >= 1; i--) {
       if (data[i][0] == "") continue;
-      
+
       var status = data[i][4];
       stats.totalOrders++;
 
-      var netProfit = parseFloat(data[i][25]) || 0; 
-      var amountToCollect = parseFloat(data[i][27]) || parseFloat(data[i][6]) || 0; 
+      var netProfit = parseFloat(data[i][25]) || 0;
+      var amountToCollect = parseFloat(data[i][27]) || parseFloat(data[i][6]) || 0;
       var productPrice = parseFloat(data[i][6]) || 0;
       var deliveryCost = parseFloat(data[i][7]) || 0;
       var paidBy = String(data[i][8] || "على المستلم").trim();
@@ -272,8 +299,8 @@ function getDashboardStats(password) {
 
       if (status == "تم التوصيل") {
         stats.deliveredOrders++;
-        stats.totalCollectedAmount += amountToCollect; 
-        stats.totalNetProfit += netProfit;             
+        stats.totalCollectedAmount += amountToCollect;
+        stats.totalNetProfit += netProfit;
         if (updateDateStr === todayStr) { stats.todayCollectedAmount += amountToCollect; stats.todayNetProfit += netProfit; }
       } else if (status == "مرتجع") {
         stats.totalNetProfit += netProfit;
@@ -331,14 +358,14 @@ function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit
 
     sheet.getRange(rowIndex, 19).setValue(courierName);
     sheet.getRange(rowIndex, 5).setValue(status);
-    sheet.getRange(rowIndex, 7).setValue(parseFloat(productPrice) || 0); 
-    sheet.getRange(rowIndex, 8).setValue(parseFloat(deliveryCost) || 0); 
-    sheet.getRange(rowIndex, 9).setValue(paidBy);                        
-    sheet.getRange(rowIndex, 10).setValue(parseFloat(pickupPrice) || 0); 
+    sheet.getRange(rowIndex, 7).setValue(parseFloat(productPrice) || 0);
+    sheet.getRange(rowIndex, 8).setValue(parseFloat(deliveryCost) || 0);
+    sheet.getRange(rowIndex, 9).setValue(paidBy);
+    sheet.getRange(rowIndex, 10).setValue(parseFloat(pickupPrice) || 0);
     sheet.getRange(rowIndex, 24).setValue(parseFloat(gas) || 0);
     sheet.getRange(rowIndex, 25).setValue(parseFloat(maintenance) || 0);
     sheet.getRange(rowIndex, 26).setValue(parseFloat(netProfit) || 0);
-    
+
     // تحديث التواريخ المحددة حسب الحالة
     if (status === "في المخزن") {
       sheet.getRange(rowIndex, 23).setValue(new Date()); // W (23)
@@ -364,15 +391,15 @@ function getOrderStatus(trackingId, pinCode) {
       if (String(data[i][0]).trim().toUpperCase() === searchId) {
         var rowData = data[i];
         var status = rowData[4];
-        var publicData = { 
+        var publicData = {
           id: rowData[0],
           status: status,
           dateAdded: rowData[5],
           lastUpdate: rowData[30] || rowData[29] || rowData[22] || rowData[5],
-          timestampCreated: rowData[5],   
-          timestampWarehouse: rowData[22], 
-          timestampShipping: rowData[29],  
-          timestampFinal: rowData[30]      
+          timestampCreated: rowData[5],
+          timestampWarehouse: rowData[22],
+          timestampShipping: rowData[29],
+          timestampFinal: rowData[30]
         };
         if (!pinCode) return JSON.stringify({ error: null, isPublicOnly: true, data: publicData });
         if (String(pinCode).trim() !== String(rowData[26]).trim()) return JSON.stringify({ error: "الرقم السري غير صحيح." });
@@ -416,18 +443,18 @@ function userLogin(email, password) {
     var rowEmail = String(data[i][1]).trim().toLowerCase();
     var rowPass = String(data[i][2]).trim();
     if (rowEmail === userEmail && rowPass === userPass) {
-      return { 
-        success: true, 
-        userData: { 
-          name: String(data[i][0]).trim(), 
-          email: rowEmail, 
-          phone: String(data[i][3]).trim(), 
-          address: data[i][4], 
+      return {
+        success: true,
+        userData: {
+          name: String(data[i][0]).trim(),
+          email: rowEmail,
+          phone: String(data[i][3]).trim(),
+          address: data[i][4],
           area: data[i][5],
           address2: data[i][7] || "",
           phone2: data[i][8] || "",
           phone3: data[i][9] || ""
-        } 
+        }
       };
     }
   }
@@ -456,12 +483,12 @@ function getUserDashboardStats(email, name) {
       stats.totalOrders++;
       var status = data[i][4];
 
-      var productPrice = parseFloat(data[i][6]) || 0; 
-      var deliveryCost = parseFloat(data[i][7]) || 0; 
-      var paidBy = String(data[i][8]).trim();         
-      var pickupPrice = parseFloat(data[i][9]) || 0;  
+      var productPrice = parseFloat(data[i][6]) || 0;
+      var deliveryCost = parseFloat(data[i][7]) || 0;
+      var paidBy = String(data[i][8]).trim();
+      var pickupPrice = parseFloat(data[i][9]) || 0;
 
-      var merchantNet = 0; 
+      var merchantNet = 0;
 
       if (status === "تم التوصيل") {
         if (paidBy === "على المرسل") {
@@ -472,9 +499,9 @@ function getUserDashboardStats(email, name) {
       }
       else if (status === "مرتجع") {
         if (paidBy === "على المرسل") {
-          merchantNet = 0 - deliveryCost - pickupPrice; 
+          merchantNet = 0 - deliveryCost - pickupPrice;
         } else {
-          merchantNet = 0 - pickupPrice; 
+          merchantNet = 0 - pickupPrice;
         }
       }
 
@@ -482,9 +509,9 @@ function getUserDashboardStats(email, name) {
 
       if (status === "تم التوصيل") {
         stats.deliveredOrders++;
-        stats.totalHistoricalAmount += productPrice; 
+        stats.totalHistoricalAmount += productPrice;
         if (!isSettled) {
-          stats.currentOwed += merchantNet; 
+          stats.currentOwed += merchantNet;
         }
       }
       else if (status === "مرتجع") {
@@ -514,7 +541,7 @@ function getUserDashboardStats(email, name) {
         productPrice: productPrice,
         paidBy: paidBy,
         pickupPrice: pickupPrice,
-        merchantNet: merchantNet,   
+        merchantNet: merchantNet,
         podImage: data[i][19] || "",
         location: data[i][20] || "",
         waybillUrl: data[i][10]
@@ -711,7 +738,7 @@ function createNewUser(userData) {
   try {
     lock.waitLock(10000);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
-    
+
     // التأكد من وجود شيت Users
     if (!sheet) return { success: false, error: "شيت Users غير موجود. يرجى إنشاؤه أولاً وتسميته 'Users'." };
 
@@ -757,7 +784,7 @@ function createNewUser(userData) {
 function sendVerificationEmail(userData) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
   if (!sheet) return { success: false, error: "شيت Users غير موجود." };
-  
+
   var data = sheet.getDataRange().getValues();
   var newEmail = String(userData.email).trim().toLowerCase();
 
@@ -771,7 +798,7 @@ function sendVerificationEmail(userData) {
 
   // توليد رمز OTP
   var otp = Math.floor(100000 + Math.random() * 900000).toString();
-  
+
   // حفظ ה־OTP في الكاش لمدة 10 دقائق (600 ثانية)
   var cache = CacheService.getScriptCache();
   cache.put("OTP_" + newEmail, otp, 600);
@@ -837,7 +864,7 @@ function submitEmploymentApplication(jobData) {
       sheet = spreadsheet.insertSheet("Employment");
       sheet.appendRow(["التاريخ", "الاسم", "رقم الهاتف", "السن", "المحافظة", "المدينة", "نوع المركبة", "الخبرة السابقة"]);
     }
-    
+
     var rowData = [
       new Date(),
       String(jobData.name).trim(),
@@ -848,7 +875,7 @@ function submitEmploymentApplication(jobData) {
       String(jobData.vehicle).trim(),
       String(jobData.experience).trim()
     ];
-    
+
     sheet.appendRow(rowData);
     return { success: true };
   } catch (e) {
