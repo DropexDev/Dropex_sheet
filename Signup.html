@@ -496,6 +496,11 @@
         err.style.display = 'block';
         return;
       }
+      if(password.startsWith('0')) {
+        err.innerText = "كلمة المرور لا يمكن أن تبدأ بالرقم 0.";
+        err.style.display = 'block';
+        return;
+      }
 
       var cleanPhone = phoneStr.replace(/\D/g, ''); 
       if (!cleanPhone.startsWith('0') || cleanPhone.length !== 11) {

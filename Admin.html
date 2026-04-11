@@ -771,6 +771,7 @@
                 address: document.getElementById('newUserAddress').value
             };
             if (!d.name || !d.email || !d.password || !d.phone) { alert("يرجى ملء البيانات الأساسية!"); return; }
+            if (d.password.startsWith('0')) { alert("كلمة المرور لا يمكن أن تبدأ بالرقم 0."); return; }
 
             var btn = document.getElementById('saveUserBtn');
             btn.disabled = true; btn.innerText = "جاري الحفظ...";
