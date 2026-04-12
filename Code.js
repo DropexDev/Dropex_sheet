@@ -385,8 +385,11 @@ function getDashboardStats(password) {
           gas: data[i][23] || 0,
           maintenance: data[i][24] || 0,
           netProfit: netProfit,
-          podImage: data[i][19] || "",
-          location: data[i][20] || "",
+          senderPhone: data[i][11] || "",
+          senderAddress: data[i][12] || "",
+          senderArea: data[i][13] || "",
+          receiverPhone: data[i][15] || "",
+          receiverArea: data[i][17] || "",
           waybillUrl: data[i][10] || "",
           inspection: data[i][31] || "لا",
           payMethod: data[i][32] || "COD",
@@ -401,37 +404,127 @@ function getDashboardStats(password) {
 }
 
 
-function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit, pickupPrice, status, productPrice, deliveryCost, paidBy, inspection, payMethod) {
+function updateOrderFromAdmin(dataObj) {
   try {
+    var rowIndex = dataObj.rowIndex;
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
-
-    sheet.getRange(rowIndex, 19).setValue(courierName);
-    sheet.getRange(rowIndex, 5).setValue(status);
-    sheet.getRange(rowIndex, 7).setValue(parseFloat(productPrice) || 0);
-    sheet.getRange(rowIndex, 8).setValue(parseFloat(deliveryCost) || 0);
-    sheet.getRange(rowIndex, 9).setValue(paidBy);
-    sheet.getRange(rowIndex, 10).setValue(parseFloat(pickupPrice) || 0);
-    sheet.getRange(rowIndex, 24).setValue(parseFloat(gas) || 0);
-    sheet.getRange(rowIndex, 25).setValue(parseFloat(maintenance) || 0);
-    sheet.getRange(rowIndex, 26).setValue(parseFloat(netProfit) || 0);
+    var oldData = sheet.getRange(rowIndex, 1, 1, 33).getValues()[0]; // جلب السطر الحالي بالكامل
     
-    // التعديل: تحديث الأعمدة الجديدة من خلال المدير
-    if(inspection) sheet.getRange(rowIndex, 32).setValue(inspection); // AF
-    if(payMethod) sheet.getRange(rowIndex, 33).setValue(payMethod); // AG
+    var oldStatus = oldData[4]; // العمود E
+    var newStatus = dataObj.status;
+    
+    // 1. تحديث البيانات الأساسية
+    sheet.getRange(rowIndex, 3).setValue(dataObj.senderName); // C
+    sheet.getRange(rowIndex, 4).setValue(dataObj.receiverName); // D
+    sheet.getRange(rowIndex, 5).setValue(newStatus); // E
+    sheet.getRange(rowIndex, 7).setValue(parseFloat(dataObj.productPrice) || 0); // G
+    sheet.getRange(rowIndex, 8).setValue(parseFloat(dataObj.deliveryCost) || 0); // H
+    sheet.getRange(rowIndex, 9).setValue(dataObj.paidBy); // I
+    sheet.getRange(rowIndex, 10).setValue(parseFloat(dataObj.pickupPrice) || 0); // J
+    sheet.getRange(rowIndex, 12).setValue(dataObj.senderPhone); // L
+    sheet.getRange(rowIndex, 13).setValue(dataObj.senderAddress); // M
+    sheet.getRange(rowIndex, 14).setValue(dataObj.senderArea); // N
+    sheet.getRange(rowIndex, 16).setValue(formatPhoneForSheet(dataObj.receiverPhone)); // P
+    sheet.getRange(rowIndex, 17).setValue(dataObj.receiverAddress); // Q
+    sheet.getRange(rowIndex, 18).setValue(dataObj.receiverArea); // R
+    sheet.getRange(rowIndex, 19).setValue(dataObj.courierName); // S
+    sheet.getRange(rowIndex, 24).setValue(parseFloat(dataObj.gas) || 0); // X
+    sheet.getRange(rowIndex, 25).setValue(parseFloat(dataObj.maintenance) || 0); // Y
+    sheet.getRange(rowIndex, 26).setValue(parseFloat(dataObj.netProfit) || 0); // Z
+    
+    sheet.getRange(rowIndex, 32).setValue(dataObj.inspection); // AF
+    sheet.getRange(rowIndex, 33).setValue(dataObj.payMethod); // AG
 
-    // تحديث التواريخ المحددة حسب الحالة
-    if (status === "في المخزن") {
-      sheet.getRange(rowIndex, 23).setValue(new Date()); // W (23)
-    } else if (status === "خرج للتوصيل" || status === "خرج للتسليم") {
-      sheet.getRange(rowIndex, 30).setValue(new Date()); // AD (30)
-    } else if (status === "تم التوصيل" || status === "مرتجع" || status === "ملغي") {
-      sheet.getRange(rowIndex, 31).setValue(new Date()); // AE (31)
+    // 2. منطق التواريخ الذكي: تحديث التاريخ فقط إذا تغيرت الحالة
+    if (newStatus !== oldStatus) {
+      if (newStatus === "في المخزن") sheet.getRange(rowIndex, 23).setValue(new Date()); // W
+      else if (newStatus === "خرج للتوصيل" || newStatus === "خرج للتسليم") sheet.getRange(rowIndex, 30).setValue(new Date()); // AD
+      else if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") sheet.getRange(rowIndex, 31).setValue(new Date()); // AE
+    }
+
+    // 3. منطق البوليصة الذكي: هل نحتاج لتوليد بوليصة جديدة؟
+    var waybillFieldsChanged = (
+      dataObj.receiverName !== oldData[3] ||
+      dataObj.receiverPhone !== oldData[15] ||
+      dataObj.receiverAddress !== oldData[16] ||
+      dataObj.receiverArea !== oldData[17] ||
+      dataObj.productPrice != oldData[6] ||
+      dataObj.deliveryCost != oldData[7] ||
+      dataObj.paidBy !== oldData[8] ||
+      dataObj.inspection !== oldData[31] ||
+      dataObj.payMethod !== oldData[32]
+    );
+
+    if (waybillFieldsChanged) {
+      var newWaybillUrl = regenerateWaybill(dataObj, oldData[0], oldData[5]); // rowIndex, id, originalDate
+      sheet.getRange(rowIndex, 11).setValue(newWaybillUrl); // K
     }
 
     return { success: true };
   } catch (e) {
     return { success: false, error: e.toString() };
   }
+}
+
+/**
+ * دالة مستقلة لإعادة إنشاء البوليصة PDF عند التعديل
+ */
+function regenerateWaybill(formObj, trackId, dateAdded) {
+  var dateStr = (dateAdded instanceof Date) ? Utilities.formatDate(dateAdded, Session.getScriptTimeZone(), "dd/MM/yyyy") : String(dateAdded);
+  
+  var inspectTxt = (formObj.inspection === "نعم") ? "نعم (يسمح بالفتح)" : "لا (ممنوع الفتح)";
+  var payMethodTxt = "نقداً (COD)";
+  if(formObj.payMethod === "WALLET_INSTAPAY") payMethodTxt = "محفظة / إنستا باي";
+
+  var productPrice = parseFloat(formObj.productPrice) || 0;
+  var deliveryCost = parseFloat(formObj.deliveryCost) || 0;
+  var receiverDeliveryShare = 0;
+  if (formObj.paidBy === "على المستلم") receiverDeliveryShare = deliveryCost;
+  var totalToCollect = productPrice + receiverDeliveryShare;
+
+  var barcodeUrl = "https://quickchart.io/barcode?type=code128&text=" + trackId + "&height=60&includeText=true";
+  var barcodeBlob = UrlFetchApp.fetch(barcodeUrl).getBlob();
+  var barcodeImgSrc = "data:image/png;base64," + Utilities.base64Encode(barcodeBlob.getBytes());
+
+  var html = `
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head><meta charset="UTF-8"><style>
+      body { font-family: 'Tahoma', sans-serif; padding: 10px; font-size: 13px; }
+      .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+      td, th { border: 1px solid #ccc; padding: 8px; text-align: right; }
+      .total { background: #f9f9f9; font-weight: bold; font-size: 16px; color: #d35400; }
+    </style></head>
+    <body>
+      <div class="header">
+        <h2>Dropex Shipping</h2>
+        <p>رقم التتبع: ${trackId} | ${dateStr}</p>
+        <img src="${barcodeImgSrc}" style="width:200px;">
+      </div>
+      <table>
+        <tr>
+          <td><strong>المستلم:</strong> ${formObj.receiverName}<br><strong>الهاتف:</strong> ${formObj.receiverPhone}<br><strong>العنوان:</strong> ${formObj.receiverAddress} - ${formObj.receiverArea}</td>
+          <td><strong>المرسل:</strong> ${formObj.senderName}<br><strong>الهاتف:</strong> ${formObj.senderPhone}</td>
+        </tr>
+      </table>
+      <table>
+        <tr><td><strong>المعاينة:</strong> ${inspectTxt}</td><td><strong>الدفع:</strong> ${payMethodTxt}</td></tr>
+      </table>
+      <table>
+        <tr><th>البيان</th><th>المبلغ</th></tr>
+        <tr><td>سعر المنتج</td><td>${productPrice} ج.م</td></tr>
+        <tr><td>تكلفة الشحن</td><td>${receiverDeliveryShare} ج.م</td></tr>
+        <tr class="total"><td>الإجمالي المطلوب</td><td>${totalToCollect} ج.م</td></tr>
+      </table>
+    </body></html>`;
+
+  var blob = Utilities.newBlob(html, MimeType.HTML, "temp.html").getAs(MimeType.PDF);
+  blob.setName("Waybill_Updated_" + trackId + ".pdf");
+  var folder = getSystemFolder("PDF");
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return file.getUrl();
 }
 
 

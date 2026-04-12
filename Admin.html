@@ -345,112 +345,150 @@
     <!-- MODALS -->
 
     <!-- Edit Modal -->
-    <div id="editModal" class="modal" onclick="if(event.target===this)closeModal('editModal')">
+    <div id="editOrderModal" class="modal" onclick="if(event.target===this)closeModal('editOrderModal')">
         <div class="modal-content !max-w-3xl">
             <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                <h3 class="text-xl font-black text-primary">تعديل الشحنة: <span id="modalTrackId"
-                        class="text-tertiary"></span></h3>
-                <button onclick="closeModal('editModal')" class="text-slate-400 hover:text-error transition"><span
-                        class="material-symbols-outlined">close</span></button>
+                <h3 class="text-xl font-black text-primary">تعديل الشحنة: <span id="editOrderId" class="text-tertiary"></span></h3>
+                <button onclick="closeModal('editOrderModal')" class="text-slate-400 hover:text-error transition"><span class="material-symbols-outlined">close</span></button>
             </div>
-            <input type="hidden" id="modalRowIndex">
-
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Order Details -->
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                    <h4 class="text-sm font-bold text-primary mb-4 flex items-center gap-2"><span
-                            class="material-symbols-outlined text-base">info</span>بيانات الطلب</h4>
-                    <div class="space-y-4">
+                <!-- Receiver & Sender Info -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h4 class="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">person</span> بيانات المستلم والمرسل
+                    </h4>
+                    
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-xs font-bold text-slate-500 mb-1 block">الحالة</label>
-                            <select id="modalStatusSelect"
-                                class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary focus:border-primary px-3 py-2">
-                                <option value="تم الإنشاء">تم الإنشاء</option>
-                                <option value="في المخزن">في المخزن</option>
-                                <option value="خرج للتوصيل">خرج للتوصيل</option>
-                                <option value="تم التوصيل">تم التوصيل</option>
-                                <option value="مرتجع">مرتجع</option>
-                                <option value="ملغي">ملغي</option>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">اسم المستلم</label>
+                            <input type="text" id="modalReceiverName" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">هاتف المستلم</label>
+                            <input type="text" id="modalReceiverPhone" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">عنوان المستلم</label>
+                            <input type="text" id="modalReceiverAddress" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">منطقة/محافظة المستلم</label>
+                            <input type="text" id="modalReceiverArea" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">اسم البراند (المرسل)</label>
+                            <input type="text" id="modalSenderName" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">هاتف المرسل</label>
+                            <input type="text" id="modalSenderPhone" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">عنوان المرسل</label>
+                            <input type="text" id="modalSenderAddress" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">منطقة المرسل</label>
+                            <input type="text" id="modalSenderArea" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financials & Courier -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h4 class="text-sm font-bold text-tertiary mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">payments</span> مبالغ الشحنة والمندوب
+                    </h4>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">سعر المنتج</label>
+                            <input type="number" id="modalProductPrice" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">تكلفة الشحن</label>
+                            <input type="number" id="modalDeliveryCost" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">بيك أب/تغليف</label>
+                            <input type="number" id="modalPickupPrice" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">الشحن على</label>
+                            <select id="modalPaidBySelect" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                                <option value="على المستلم">المستلم</option>
+                                <option value="على المرسل">المرسل</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر المنتج</label>
-                                <input type="number" id="modalProductPrice"
-                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">التوصيل على:</label>
-                                <select id="modalPaidBySelect"
-                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                                    <option value="على المستلم">المستلم</option>
-                                    <option value="على المرسل">المرسل</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر التوصيل</label>
-                                <input type="number" id="modalDeliveryCost" oninput="calculateNetProfit()"
-                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">سعر التغليف/البيك أب</label>
-                                <input type="number" id="modalPickupPrice" oninput="calculateNetProfit()"
-                                    class="w-full bg-white border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                            </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">طريقة الدفع</label>
+                            <select id="modalPayMethod" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                                <option value="COD">نقداً (COD)</option>
+                                <option value="WALLET_INSTAPAY">محفظة أو إنستا باي</option>
+                                <option value="ALL">الكل مختلط</option>
+                            </select>
                         </div>
                     </div>
-                </div>
 
-                <!-- Delivery & Expenses -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h4 class="text-sm font-bold text-tertiary mb-4 flex items-center gap-2"><span
-                            class="material-symbols-outlined text-base">two_wheeler</span>المندوب والمصاريف</h4>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">المعاينة</label>
-                                <select id="modalInspection" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                                    <option value="لا">لا (ممنوع الفتح)</option>
-                                    <option value="نعم">نعم (مسموح بالفتح)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">طريقة الدفع</label>
-                                <select id="modalPayMethod" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2">
-                                    <option value="COD">نقداً (COD)</option>
-                                    <option value="WALLET_INSTAPAY">محفظة أو إنستا باي</option>
-                                    <option value="ALL">الكل (نقداً / محفظة / إنستا باي)</option>
-                                </select>
-                            </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">المندوب</label>
+                            <select id="modalCourierSelect" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2"></select>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-slate-500 mb-1 block">تخصيص المندوب</label>
-                            <select id="modalCourierSelect"
-                                class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-primary px-3 py-2"></select>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">المعاينة</label>
+                            <select id="modalInspection" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                                <option value="لا">لا (ممنوع)</option>
+                                <option value="نعم">نعم (مسموح)</option>
+                            </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">مصاريف البنزين</label>
-                                <input type="number" id="modalGas" oninput="calculateNetProfit()"
-                                    class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-primary px-3 py-2">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">مصاريف أخرى</label>
-                                <input type="number" id="modalMaintenance" oninput="calculateNetProfit()"
-                                    class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-primary px-3 py-2">
-                            </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">مصاريف بنزين</label>
+                            <input type="number" id="modalGas" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
                         </div>
-                        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-xl text-center">
-                            <p class="text-[0.6rem] font-bold text-green-700 uppercase tracking-widest mb-1">صافي ربح
-                                الشركة المتوقع</p>
-                            <p class="text-3xl font-black text-green-600"><span id="modalNetProfit">0</span> <span
-                                    class="text-sm">ج.م</span></p>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">مصاريف صيانة</label>
+                            <input type="number" id="modalMaintenance" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
                         </div>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-xl text-center border border-green-100">
+                        <p class="text-[0.6rem] font-bold text-green-700 uppercase mb-1">صافي ربح الشركة</p>
+                        <p class="text-2xl font-black text-green-600"><span id="modalNetProfit">0</span> ج.م</p>
                     </div>
                 </div>
             </div>
+            
+            <div class="mt-6">
+                <label class="text-xs font-bold text-slate-500 mb-1 block">تغيير الحالة</label>
+                <select id="modalStatusSelect" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-3">
+                    <option value="تم الإنشاء">تم الإنشاء</option>
+                    <option value="في المخزن">في المخزن</option>
+                    <option value="خرج للتوصيل">خرج للتوصيل</option>
+                    <option value="تم التوصيل">تم التوصيل</option>
+                    <option value="مرتجع">مرتجع</option>
+                    <option value="ملغي">ملغي</option>
+                </select>
+            </div>
+
             <button id="saveBtn" onclick="saveOrderUpdates()"
                 class="w-full mt-6 bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary/90 transition shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined">save</span> حفظ جميع التعديلات
@@ -692,7 +730,7 @@
                 html += '<td class="py-3 px-6 text-center">';
                 html += '<div class="flex justify-center gap-2 opacity-30 group-hover:opacity-100 transition">';
                 html += '<button onclick="openInfoModal(\'' + orderDataStr + '\')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition" title="تفاصيل"><span class="material-symbols-outlined text-[1rem]">description</span></button>';
-                html += '<button onclick="openModal(\'' + orderDataStr + '\')" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition" title="تعديل"><span class="material-symbols-outlined text-[1rem]">edit</span></button>';
+                html += '<button onclick="openEditModal(' + order.rowIndex + ', \'' + order.id + '\')" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition" title="تعديل"><span class="material-symbols-outlined text-[1rem]">edit</span></button>';
                 html += '</div></td></tr>';
             });
             tbody.innerHTML = html;
@@ -706,24 +744,42 @@
             select.innerHTML = html;
         }
 
-        function openModal(itemStr) {
-            var order = JSON.parse(decodeURIComponent(itemStr));
-            document.getElementById('modalTrackId').innerText = order.id;
-            document.getElementById('modalRowIndex').value = order.rowIndex;
-            document.getElementById('modalStatusSelect').value = order.status || "قيد الانتظار";
-            document.getElementById('modalProductPrice').value = order.productPrice || 0;
-            document.getElementById('modalDeliveryCost').value = order.deliveryCost || 0;
-            document.getElementById('modalPaidBySelect').value = order.paidBy || "على المستلم";
-            document.getElementById('modalPickupPrice').value = order.pickupPrice || 0;
-            document.getElementById('modalInspection').value = order.inspection || "لا";
-            document.getElementById('modalPayMethod').value = order.payMethod || "COD";
+        var currentEditRow = null;
+        function openEditModal(row, id) {
+            currentEditRow = row;
+            var item = globalOrders.find(o => o.id == id);
+            if (!item) return;
 
-            document.getElementById('modalCourierSelect').value = order.courier || "";
-            document.getElementById('modalGas').value = order.gas || 0;
-            document.getElementById('modalMaintenance').value = order.maintenance || 0;
+            document.getElementById('editOrderId').innerText = item.id;
+            document.getElementById('modalStatusSelect').value = item.status;
+            
+            // بيانات المستلم
+            document.getElementById('modalReceiverName').value = item.receiver || '';
+            document.getElementById('modalReceiverPhone').value = item.receiverPhone || '';
+            document.getElementById('modalReceiverAddress').value = item.address ? item.address.split(' - ')[0] : '';
+            document.getElementById('modalReceiverArea').value = item.receiverArea || '';
 
+            // بيانات المرسل
+            document.getElementById('modalSenderName').value = item.sender || '';
+            document.getElementById('modalSenderPhone').value = item.senderPhone || '';
+            document.getElementById('modalSenderAddress').value = item.senderAddress || '';
+            document.getElementById('modalSenderArea').value = item.senderArea || '';
+
+            // بيانات الشحن
+            document.getElementById('modalProductPrice').value = item.productPrice || 0;
+            document.getElementById('modalDeliveryCost').value = item.deliveryCost || 0;
+            document.getElementById('modalPickupPrice').value = item.pickupPrice || 0;
+            document.getElementById('modalPaidBySelect').value = item.paidBy || 'على المستلم';
+            document.getElementById('modalPayMethod').value = item.payMethod || 'COD';
+            document.getElementById('modalInspection').value = item.inspection || 'لا';
+            document.getElementById('modalCourierSelect').value = item.courier || '';
+            
+            // المصاريف
+            document.getElementById('modalGas').value = item.gas || 0;
+            document.getElementById('modalMaintenance').value = item.maintenance || 0;
+            
             calculateNetProfit();
-            document.getElementById('editModal').style.display = 'flex';
+            document.getElementById('editOrderModal').style.display = 'flex';
         }
 
         function calculateNetProfit() {
