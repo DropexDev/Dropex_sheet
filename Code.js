@@ -389,7 +389,8 @@ function getDashboardStats(password) {
           location: data[i][20] || "",
           waybillUrl: data[i][10] || "",
           inspection: data[i][31] || "لا",
-          payMethod: data[i][32] || "COD"
+          payMethod: data[i][32] || "COD",
+          isSettled: (String(data[i][28]).trim() === "تمت التصفية" || data[i][28] === true)
         });
       }
     }
@@ -567,6 +568,7 @@ function getUserDashboardStats(email, name) {
 
       var isSettled = (String(data[i][28]).trim() === "تمت التصفية" || data[i][28] === true);
 
+      // الحالة المالية: تم التوصيل أو مرتجع أو (ملغي ببيك أب)
       if (status === "تم التوصيل") {
         stats.deliveredOrders++;
         stats.totalHistoricalAmount += productPrice;
@@ -578,6 +580,12 @@ function getUserDashboardStats(email, name) {
         stats.returnedOrders++;
         if (!isSettled) {
           stats.currentOwed += merchantNet;
+        }
+      }
+      else if (status === "ملغي") {
+        // الطلب الملغي لا يحسب إلا إذا كان فيه بيك أب ولم يتم تصفيته
+        if (pickupPrice > 0 && !isSettled) {
+          stats.currentOwed += (0 - pickupPrice); // يخصم سعر البيك أب من التاجر
         }
       }
       else if (status === "قيد الانتظار" || status === "تم الإنشاء" || status === "خرج للتسليم" || status === "خرج للتوصيل" || status === "في المخزن") {
@@ -735,56 +743,65 @@ function processGridOrders(ordersArray, userData) {
 // ==========================================
 // دالة تصفية حسابات التجار (للوحة الإدارة)
 // ==========================================
-function settleMerchantAccountByName(merchantName) {
+function settleMerchantAccountByName(merchantName, settleType) {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
     var data = sheet.getDataRange().getValues();
     var searchName = String(merchantName).trim().toLowerCase();
-    var settledCount = 0;
-    var totalSettledAmount = 0;
+    var summary = {
+      delivered: { count: 0, amount: 0 },
+      returned: { count: 0, amount: 0 },
+      canceledWithPickup: { count: 0, amount: 0 },
+      totalAmount: 0,
+      totalCount: 0
+    };
 
     for (var i = 1; i < data.length; i++) {
       var rowName = String(data[i][2]).trim().toLowerCase();
       var status = data[i][4];
       var isSettled = (String(data[i][28]).trim() === "تمت التصفية" || data[i][28] === true);
+      
+      // تحديد ما إذا كان الطلب قابلاً للتصفية أصلاً
+      var canSettle = (status === "تم التوصيل" || status === "مرتجع" || (status === "ملغي" && parseFloat(data[i][9]) > 0));
+      
+      // التصفية بناءً على النوع المختار (الكل، واصل، مرتجع، ملغي)
+      var matchesType = false;
+      if (settleType === 'ALL') matchesType = true;
+      else if (settleType === 'DELIVERED' && status === "تم التوصيل") matchesType = true;
+      else if (settleType === 'RETURNED' && status === "مرتجع") matchesType = true;
+      else if (settleType === 'CANCELED' && status === "ملغي") matchesType = true;
 
-      // التعديل هنا: تصفية الطلبات التي (تم توصيلها) أو (المرتجعة) ولم يتم تصفيتها مسبقاً
-      if (rowName === searchName && (status === "تم التوصيل" || status === "مرتجع") && !isSettled) {
-
+      if (rowName === searchName && canSettle && !isSettled && matchesType) {
         var productPrice = parseFloat(data[i][6]) || 0;
         var deliveryCost = parseFloat(data[i][7]) || 0;
         var paidBy = String(data[i][8]).trim();
         var pickupPrice = parseFloat(data[i][9]) || 0;
-
         var merchantNet = 0;
 
-        // تطبيق نفس القواعد المحاسبية الدقيقة التي في صفحة التاجر لضمان تطابق الأرقام 100%
         if (status === "تم التوصيل") {
-          if (paidBy === "على المرسل") {
-            merchantNet = productPrice - deliveryCost - pickupPrice;
-          } else {
-            merchantNet = productPrice - pickupPrice;
-          }
+          merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
+          summary.delivered.count++;
+          summary.delivered.amount += merchantNet;
         }
         else if (status === "مرتجع") {
-          if (paidBy === "على المرسل") {
-            merchantNet = 0 - deliveryCost - pickupPrice; // قيمة سالبة تخصم
-          } else {
-            merchantNet = 0 - pickupPrice; // قيمة سالبة تخصم
-          }
+          merchantNet = (paidBy === "على المرسل") ? (0 - deliveryCost - pickupPrice) : (0 - pickupPrice);
+          summary.returned.count++;
+          summary.returned.amount += merchantNet;
+        }
+        else if (status === "ملغي") {
+          merchantNet = 0 - pickupPrice;
+          summary.canceledWithPickup.count++;
+          summary.canceledWithPickup.amount += merchantNet;
         }
 
-        // كتابة حالة التصفية في العمود AC (رقم 29)
         sheet.getRange(i + 1, 29).setValue("تمت التصفية");
-
-        // تجميع المبلغ النهائي: يجمع المبالغ الموجبة للواصل، ويطرح منها المبالغ السالبة للمرتجع
-        totalSettledAmount += merchantNet;
-        settledCount++;
+        summary.totalAmount += merchantNet;
+        summary.totalCount++;
       }
     }
-    return { success: true, count: settledCount, amount: totalSettledAmount };
+    return { success: true, summary: summary };
   } catch (e) {
     return { success: false, error: e.toString() };
   } finally {

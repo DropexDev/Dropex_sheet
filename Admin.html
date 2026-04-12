@@ -480,17 +480,39 @@
                 <button onclick="closeModal('settlementModal')" class="text-slate-400 hover:text-error transition"><span
                         class="material-symbols-outlined">close</span></button>
             </div>
-            <p class="text-xs text-slate-500 mb-6 leading-relaxed">سيتم تصفير الرصيد المستحق للتاجر المختار بناءً على
-                الطلبات التي "تم توصيلها" أو المرتجعة فقط ولم تتم تصفيتها من قبل.</p>
+            <div class="space-y-4 mt-6">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">بحث عن اسم التاجر</label>
+                    <input type="text" id="merchantSearchInput" oninput="filterSettlementMerchants()" 
+                           placeholder="اكتب اسم التاجر للبحث..." 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-tertiary px-4 py-3 mb-2">
+                    
+                    <label class="text-xs font-bold text-slate-600 mb-1 block">اختر التاجر المستحق:</label>
+                    <select id="merchantSettleSelect"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-tertiary px-4 py-3 mb-3"></select>
 
-            <label class="text-xs font-bold text-slate-600 mb-2 block">اختر التاجر:</label>
-            <select id="merchantSettleSelect"
-                class="w-full bg-slate-50 border-none rounded-xl text-sm focus:ring-tertiary px-4 py-3 mb-6"></select>
+                    <label class="text-xs font-bold text-slate-600 mb-1 block">ماذا تريد تصفيته الآن؟</label>
+                    <select id="settleTypeSelect"
+                        class="w-full bg-slate-50 border-amber-300 rounded-xl text-sm focus:ring-amber-500 px-4 py-3 font-bold text-amber-900 shadow-sm border">
+                        <option value="ALL">تصفية الكل (واصل + مرتجع + ملغي)</option>
+                        <option value="DELIVERED">تصفية الواصل فقط (مبالغ)</option>
+                        <option value="RETURNED">تصفية المرتجع فقط (خصومات)</option>
+                        <option value="CANCELED">تصفية الملغي ببيك أب فقط</option>
+                    </select>
+                </div>
 
-            <button id="executeSettleBtn" onclick="executeSettlement()"
-                class="w-full bg-tertiary text-white font-bold py-3 rounded-xl hover:bg-tertiary/90 transition shadow-lg shadow-tertiary/20 flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">done_all</span> تأكيد التصفية
-            </button>
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-start gap-2">
+                    <span class="material-symbols-outlined text-blue-600 text-lg">info</span>
+                    <p class="text-[0.7rem] text-blue-700 leading-relaxed">
+                        تظهر في القائمة الأسماء التي لديها طلبات (واصل/مرتجع/ملغي ببيك أب) بانتظار التصفية فقط.
+                    </p>
+                </div>
+
+                <button id="executeSettleBtn" onclick="executeSettlement()"
+                    class="w-full bg-tertiary text-white font-bold py-4 rounded-xl hover:bg-tertiary/90 transition shadow-lg shadow-tertiary/20 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">done_all</span> تأكيد التصفية
+                </button>
+            </div>
         </div>
     </div>
 
@@ -775,19 +797,49 @@
             document.getElementById('infoModal').style.display = 'flex';
         }
 
+        var settlementMerchants = [];
+
         function openSettlementModal() {
-            var senders = [...new Set(globalOrders.map(o => o.sender).filter(s => s))];
-            var select = document.getElementById('merchantSettleSelect');
-            var html = '<option value="">-- اختر التاجر --</option>';
-            senders.forEach(s => html += '<option value="' + s + '">' + s + '</option>');
-            select.innerHTML = html;
+            document.getElementById('merchantSearchInput').value = '';
+            
+            // فلترة التجار المستحقين للتصفية فقط (الذكية)
+            var debtors = [];
+            globalOrders.forEach(o => {
+                // الشروط: لم تتم تصفيتها بعد + (واصل أو مرتجع أو ملغي ببيك أب)
+                var isUnsettled = (o.isSettled === false);
+                var hasBalance = (o.status === "تم التوصيل" || o.status === "مرتجع" || (o.status === "ملغي" && parseFloat(o.pickupPrice) > 0));
+                
+                if (isUnsettled && hasBalance) {
+                    debtors.push(o.sender);
+                }
+            });
+
+            // إزالة التكرار
+            settlementMerchants = [...new Set(debtors.filter(s => s))];
+            updateSettlementSelect(settlementMerchants);
             document.getElementById('settlementModal').style.display = 'flex';
+        }
+
+        function updateSettlementSelect(list) {
+            var select = document.getElementById('merchantSettleSelect');
+            var html = '<option value="">-- اختر التاجر (' + list.length + ') --</option>';
+            list.forEach(s => html += '<option value="' + s + '">' + s + '</option>');
+            select.innerHTML = html;
+        }
+
+        function filterSettlementMerchants() {
+            var term = document.getElementById('merchantSearchInput').value.toLowerCase();
+            var filtered = settlementMerchants.filter(m => m.toLowerCase().includes(term));
+            updateSettlementSelect(filtered);
         }
 
         function executeSettlement() {
             var m = document.getElementById('merchantSettleSelect').value;
+            var type = document.getElementById('settleTypeSelect').value;
             if (!m) { alert("الرجاء اختيار التاجر."); return; }
-            if (!confirm("تأكيد تصفية جميع حسابات التاجر (" + m + ")؟")) return;
+            
+            var typeNames = { 'ALL': 'الكل', 'DELIVERED': 'الواصل فقط', 'RETURNED': 'المرتجع فقط', 'CANCELED': 'الملغي ببيك أب' };
+            if (!confirm("تأكيد تصفية (" + typeNames[type] + ") لحساب التاجر (" + m + ")؟")) return;
 
             var btn = document.getElementById('executeSettleBtn');
             btn.disabled = true; btn.innerText = "جاري التصفية...";
@@ -796,10 +848,20 @@
                 google.script.run.withSuccessHandler(function (res) {
                     btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">done_all</span> تأكيد التصفية';
                     if (res.success) {
-                        alert("نجاح! عدد الشحنات المصفاة: " + res.count + "\nبإجمالي مبلغ: " + res.amount + " ج.م");
+                        var s = res.summary;
+                        var msg = "✅ تم تصفية الحساب بنجاح!\n\n" +
+                                  "📦 تفاصيل العملية:\n" +
+                                  "--------------------------\n" +
+                                  "🟢 واصل: " + s.delivered.count + " طلب (بإجمالي " + s.delivered.amount.toLocaleString() + " ج.م)\n" +
+                                  "🔴 مرتجع: " + s.returned.count + " طلب (بإجمالي " + s.returned.amount.toLocaleString() + " ج.م)\n" +
+                                  "⚠️ ملغي ببيك أب: " + s.canceledWithPickup.count + " طلب (بإجمالي " + s.canceledWithPickup.amount.toLocaleString() + " ج.م)\n\n" +
+                                  "💰 المبلغ النهائي المصفى: " + s.totalAmount.toLocaleString() + " ج.م\n" +
+                                  "📊 إجمالي عدد الطلبات: " + s.totalCount;
+                        
+                        alert(msg);
                         closeModal('settlementModal'); checkAdminPassword();
                     } else { alert("خطأ: " + res.error); }
-                }).settleMerchantAccountByName(m);
+                }).settleMerchantAccountByName(m, type);
             } else { setTimeout(() => { closeModal('settlementModal'); btn.disabled = false; }, 400); }
         }
 
