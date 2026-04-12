@@ -493,12 +493,26 @@
                     class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
                 <input type="text" id="newUserPassword" placeholder="كلمة المرور"
                     class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
-                <input type="text" id="newUserPhone" placeholder="رقم الهاتف"
+                <select id="newUserServiceType" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                    <option value="الشحن فقط">نوع الخدمة: الشحن فقط</option>
+                    <option value="التخزين والشحن">نوع الخدمة: التخزين والشحن</option>
+                </select>
+                <input type="text" id="newUserPhone" placeholder="رقم الهاتف الأساسي"
                     class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="newUserPhone2" placeholder="رقم إضافي 1"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                    <input type="text" id="newUserPhone3" placeholder="رقم إضافي 2"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <input type="text" id="newUserArea" placeholder="المحافظة"
                         class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
                     <input type="text" id="newUserAddress" placeholder="العنوان التفصيلي"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                    <input type="text" id="newUserAddress2" placeholder="عنوان إضافي (اختياري)"
+                        class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
+                    <input type="text" id="newUserBusinessType" placeholder="نوع النشاط"
                         class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-green-500">
                 </div>
                 <button id="saveUserBtn" onclick="saveNewUser()"
@@ -757,7 +771,8 @@
         }
 
         function openAddUserModal() {
-            ['newUserName', 'newUserEmail', 'newUserPassword', 'newUserPhone', 'newUserArea', 'newUserAddress'].forEach(id => document.getElementById(id).value = '');
+            ['newUserName', 'newUserEmail', 'newUserPassword', 'newUserPhone', 'newUserPhone2', 'newUserPhone3', 'newUserArea', 'newUserAddress', 'newUserAddress2', 'newUserBusinessType'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('newUserServiceType').value = 'الشحن فقط';
             document.getElementById('addUserModal').style.display = 'flex';
         }
 
@@ -767,8 +782,13 @@
                 email: document.getElementById('newUserEmail').value,
                 password: document.getElementById('newUserPassword').value,
                 phone: document.getElementById('newUserPhone').value,
+                phone2: document.getElementById('newUserPhone2').value,
+                phone3: document.getElementById('newUserPhone3').value,
                 area: document.getElementById('newUserArea').value,
-                address: document.getElementById('newUserAddress').value
+                address: document.getElementById('newUserAddress').value,
+                address2: document.getElementById('newUserAddress2').value,
+                serviceType: document.getElementById('newUserServiceType').value,
+                businessType: document.getElementById('newUserBusinessType').value
             };
             if (!d.name || !d.email || !d.password || !d.phone) { alert("يرجى ملء البيانات الأساسية!"); return; }
             if (d.password.startsWith('0')) { alert("كلمة المرور لا يمكن أن تبدأ بالرقم 0."); return; }

@@ -78,51 +78,73 @@ function createNewOrder(formObj) {
     var base64Barcode = Utilities.base64Encode(barcodeBlob.getBytes());
     var barcodeImgSrc = "data:image/png;base64," + base64Barcode;
 
+    // تجهيز تسميات البيانات الجديدة للبوليصة
+    var inspectTxt = formObj.openForInspection ? "نعم (يسمح بالفتح)" : "لا (ممنوع الفتح)";
+    var payMethodTxt = "نقداً (COD)";
+    if(formObj.shippingPaymentMethod === "Wallet") payMethodTxt = "محفظة إلكترونية";
+    else if(formObj.shippingPaymentMethod === "InstaPay") payMethodTxt = "إنستا باي";
+
     var htmlContent = `
     <!DOCTYPE html>
     <html dir="rtl" lang="ar">
     <head>
       <meta charset="UTF-8">
       <style>
-        body { font-family: 'Tahoma', 'Arial', sans-serif; color: #333; line-height: 1.6; padding: 20px; }
-        .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { margin: 0; color: #2c3e50; font-size: 28px; font-weight: bold; }
-        .header p { margin: 5px 0 0 0; color: #7f8c8d; font-size: 14px; }
-        .barcode { margin-top: 15px; width: 250px; height: 60px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .info-table td { width: 50%; padding: 15px; vertical-align: top; border: 1px solid #bdc3c7; background-color: #fafafa; }
-        .info-table h3 { margin-top: 0; color: #2980b9; font-size: 16px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-        .financial-table th { background-color: #ecf0f1; padding: 10px; text-align: right; border: 1px solid #bdc3c7; color: #2c3e50; }
-        .financial-table td { padding: 10px; border: 1px solid #bdc3c7; }
-        .total-row td { background-color: #e8f6f3; font-weight: bold; font-size: 18px; color: #16a085; }
+        body { font-family: 'Tahoma', 'Arial', sans-serif; color: #333; line-height: 1.4; padding: 10px; }
+        .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
+        .header h1 { margin: 0; color: #2c3e50; font-size: 24px; font-weight: bold; }
+        .barcode { margin-top: 10px; width: 220px; height: 50px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .info-table td { width: 50%; padding: 10px; vertical-align: top; border: 1px solid #bdc3c7; background-color: #fafafa; }
+        .info-table h3 { margin: 0 0 5px 0; color: #2980b9; font-size: 14px; border-bottom: 1px solid #eee; }
+        .instructions-table td { padding: 8px; border: 1px solid #bdc3c7; background-color: #fff9f0; font-size: 13px; }
+        .financial-table th { background-color: #ecf0f1; padding: 8px; text-align: right; border: 1px solid #bdc3c7; font-size: 13px; }
+        .financial-table td { padding: 8px; border: 1px solid #bdc3c7; font-size: 13px; }
+        .total-row td { background-color: #e8f6f3; font-weight: bold; font-size: 16px; color: #16a085; }
         .amount { color: #c0392b; font-weight: bold; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
       </style>
     </head>
     <body>
       <div class="header">
         <h1>Dropex</h1>
-        <p>تاريخ الإنشاء: ${dateString}</p>
+        <p style="font-size:12px; margin:0;">رقم الشحنة: ${newTrackId} | ${dateString}</p>
         <img src="${barcodeImgSrc}" class="barcode" alt="Barcode">
       </div>
+      
       <table class="info-table">
         <tr>
           <td>
-            <h3>بيانات المستلم (إلى)</h3>
+            <h3>إلى (المستلم)</h3>
             <p><strong>الاسم:</strong> ${formObj.receiverName}</p>
             <p><strong>الهاتف:</strong> <span dir="ltr">${formObj.receiverPhone}</span></p>
             <p><strong>العنوان:</strong> ${formObj.receiverAddress} - ${formObj.receiverArea}</p>
           </td>
           <td>
-            <h3>بيانات المرسل (من)</h3>
+            <h3>من (المرسل)</h3>
             <p><strong>الاسم:</strong> ${formObj.senderName}</p>
+            <p><strong>الهاتف:</strong> <span dir="ltr">${formObj.senderPhone}</span></p>
           </td>
         </tr>
       </table>
+
+      <table class="instructions-table">
+        <tr>
+          <td width="50%"><strong>مسموح بالفتح للمعاينة:</strong> <span class="badge ${formObj.openForInspection ? 'badge-info' : ''}">${inspectTxt}</span></td>
+          <td width="50%"><strong>طريقة دفع الشحن:</strong> ${payMethodTxt}</td>
+        </tr>
+        <tr>
+          <td colspan="2"><strong>الشحن مدفوع بواسطة:</strong> ${formObj.deliveryPaidBy} 
+          ${formObj.deliveryPaidBy === 'تقسيم' ? '(' + formObj.divisionDetail + ')' : ''}</td>
+        </tr>
+      </table>
+
       <table class="financial-table">
-        <tr><th colspan="2">التفاصيل المالية</th></tr>
+        <tr><th colspan="2">المبالغ المطلوب تحصيلها من المستلم</th></tr>
         <tr><td>سعر المنتج</td><td>${productPrice} ج.م</td></tr>
-        <tr><td>رسوم التوصيل</td><td>${receiverDeliveryShare} ج.م</td></tr>
-        <tr class="total-row"><td>الإجمالي</td><td class="amount">${totalToCollectFromReceiver} ج.م</td></tr>
+        <tr><td>نصيب المستلم من الشحن</td><td>${receiverDeliveryShare} ج.م</td></tr>
+        <tr class="total-row"><td>الإجمالي المطلوب تحصيله</td><td class="amount">${totalToCollectFromReceiver} ج.م</td></tr>
       </table>
     </body>
     </html>
@@ -137,8 +159,12 @@ function createNewOrder(formObj) {
     var waybillUrl = pdfFile.getUrl();
     var pdfBase64 = Utilities.base64Encode(pdfBlob.getBytes());
 
-    // التعديل: جعل المصفوفة 29 لاستيعاب عمود التصفية AC
-    var rowData = new Array(29).fill("");
+    // الاستقبال من الواجهة
+    var openForInspection = formObj.openForInspection ? "نعم" : "لا";
+    var shippingPaymentMethod = formObj.shippingPaymentMethod || "COD";
+
+    // التعديل: جعل المصفوفة 33 لاستيعاب الأعمدة الجديدة AF و AG
+    var rowData = new Array(33).fill("");
     rowData[0] = newTrackId; rowData[1] = String(formObj.senderEmail).trim().toLowerCase();
     rowData[2] = String(formObj.senderName).trim(); rowData[3] = formObj.receiverName;
     rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
@@ -151,6 +177,10 @@ function createNewOrder(formObj) {
     rowData[17] = formObj.receiverArea; rowData[26] = orderPin;
     rowData[27] = totalToCollectFromReceiver;
     rowData[28] = ""; // حالة التصفية
+    
+    // البيانات الجديدة
+    rowData[31] = openForInspection; // Column AF
+    rowData[32] = shippingPaymentMethod; // Column AG
 
     sheet.appendRow(rowData);
     return { success: true, trackingId: newTrackId, pin: orderPin, totalToCollect: totalToCollectFromReceiver, receiverDeliveryShare: receiverDeliveryShare, pdfUrl: waybillUrl, pdfBase64: pdfBase64 };
@@ -215,7 +245,21 @@ function getCourierOrders(email, password) {
     if (assignedCourier == courierName && status != "تم التوصيل" && status != "مرتجع" && status != "ملغي") {
       var fullAddress = orderData[j][16] + " (" + orderData[j][17] + ")";
       var totalToCollect = parseFloat(orderData[j][27]) || 0;
-      pendingOrders.push({ row: j + 1, id: orderData[j][0], sender: orderData[j][2], senderPhone: orderData[j][11], receiver: orderData[j][3], receiverPhone: orderData[j][15], address: fullAddress, amount: totalToCollect });
+      var inspection = orderData[j][31] || "لا";
+      var payMethod = orderData[j][32] || "COD";
+      
+      pendingOrders.push({ 
+        row: j + 1, 
+        id: orderData[j][0], 
+        sender: orderData[j][2], 
+        senderPhone: orderData[j][11], 
+        receiver: orderData[j][3], 
+        receiverPhone: orderData[j][15], 
+        address: fullAddress, 
+        amount: totalToCollect,
+        inspection: inspection,
+        payMethod: payMethod
+      });
     }
   }
   return { error: null, courierName: courierName, orders: pendingOrders };
@@ -765,7 +809,8 @@ function createNewUser(userData) {
       userData.serviceType ? String(userData.serviceType).trim() : "الشحن فقط",
       String(userData.address2 || "").trim(),
       formatPhoneForSheet(userData.phone2 || ""),
-      formatPhoneForSheet(userData.phone3 || "")
+      formatPhoneForSheet(userData.phone3 || ""),
+      String(userData.businessType || "").trim()
     ];
 
     sheet.appendRow(rowData);
