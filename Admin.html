@@ -418,8 +418,12 @@
                             <input type="number" id="modalProductPrice" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
                         </div>
                         <div>
-                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">تكلفة الشحن</label>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">سعر دروبكس</label>
                             <input type="number" id="modalDeliveryCost" oninput="calculateNetProfit()" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">سعر البوليصة</label>
+                            <input type="number" id="modalMerchantDeliveryCost" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
                         </div>
                         <div>
                             <label class="text-[0.65rem] font-bold text-slate-400 uppercase">بيك أب/تغليف</label>
@@ -622,6 +626,17 @@
         var allCouriers = [];
         var globalOrders = [];
 
+        function validateEgyptianPhone(phone) {
+            let clean = phone.replace(/[^\d+]/g, '');
+            if (clean.startsWith('+2')) {
+                return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
+            }
+            if (clean.startsWith('01')) {
+                return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
+            }
+            return false;
+        }
+
         function checkAdminPassword() {
             var pass = document.getElementById('adminPass').value;
             var errorDiv = document.getElementById('errorMsg');
@@ -768,6 +783,7 @@
             // بيانات الشحن
             document.getElementById('modalProductPrice').value = item.productPrice || 0;
             document.getElementById('modalDeliveryCost').value = item.deliveryCost || 0;
+            document.getElementById('modalMerchantDeliveryCost').value = item.merchantDeliveryCost || item.deliveryCost || 0;
             document.getElementById('modalPickupPrice').value = item.pickupPrice || 0;
             document.getElementById('modalPaidBySelect').value = item.paidBy || 'على المستلم';
             document.getElementById('modalPayMethod').value = item.payMethod || 'COD';
@@ -777,6 +793,7 @@
             // المصاريف
             document.getElementById('modalGas').value = item.gas || 0;
             document.getElementById('modalMaintenance').value = item.maintenance || 0;
+            document.getElementById('modalRowIndex').value = row;
             
             calculateNetProfit();
             document.getElementById('editOrderModal').style.display = 'flex';
@@ -791,32 +808,38 @@
         }
 
         function saveOrderUpdates() {
-            var btn = document.getElementById('saveBtn');
-            btn.disabled = true; btn.innerText = "جاري الحفظ...";
-
-            var args = [
-                document.getElementById('modalRowIndex').value,
-                document.getElementById('modalCourierSelect').value,
-                document.getElementById('modalGas').value,
-                document.getElementById('modalMaintenance').value,
-                document.getElementById('modalNetProfit').innerText,
-                document.getElementById('modalPickupPrice').value,
-                document.getElementById('modalStatusSelect').value,
-                document.getElementById('modalProductPrice').value,
-                document.getElementById('modalDeliveryCost').value,
-                document.getElementById('modalPaidBySelect').value,
-                document.getElementById('modalInspection').value,
-                document.getElementById('modalPayMethod').value
-            ];
+            var orderData = {
+                rowIndex: document.getElementById('modalRowIndex').value,
+                courierName: document.getElementById('modalCourierSelect').value,
+                gas: document.getElementById('modalGas').value,
+                maintenance: document.getElementById('modalMaintenance').value,
+                netProfit: document.getElementById('modalNetProfit').innerText,
+                pickupPrice: document.getElementById('modalPickupPrice').value,
+                status: document.getElementById('modalStatusSelect').value,
+                productPrice: document.getElementById('modalProductPrice').value,
+                deliveryCost: document.getElementById('modalDeliveryCost').value,
+                merchantDeliveryCost: document.getElementById('modalMerchantDeliveryCost').value,
+                paidBy: document.getElementById('modalPaidBySelect').value,
+                inspection: document.getElementById('modalInspection').value,
+                payMethod: document.getElementById('modalPayMethod').value,
+                receiverName: document.getElementById('modalReceiverName').value,
+                receiverPhone: document.getElementById('modalReceiverPhone').value,
+                receiverAddress: document.getElementById('modalReceiverAddress').value,
+                receiverArea: document.getElementById('modalReceiverArea').value,
+                senderName: document.getElementById('modalSenderName').value,
+                senderPhone: document.getElementById('modalSenderPhone').value,
+                senderAddress: document.getElementById('modalSenderAddress').value,
+                senderArea: document.getElementById('modalSenderArea').value
+            };
 
             if (typeof google !== 'undefined' && google.script) {
                 google.script.run.withSuccessHandler(function (res) {
                     btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">save</span> حفظ جميع التعديلات';
-                    if (res.success) { closeModal('editModal'); checkAdminPassword(); }
+                    if (res.success) { closeModal('editOrderModal'); checkAdminPassword(); }
                     else { alert("خطأ: " + res.error); }
-                }).updateOrderFromAdmin(...args);
+                }).updateOrderFromAdmin(orderData);
             } else {
-                setTimeout(() => { closeModal('editModal'); btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">save</span> حفظ جميع التعديلات'; }, 400);
+                setTimeout(() => { closeModal('editOrderModal'); btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">save</span> حفظ جميع التعديلات'; }, 400);
             }
         }
 

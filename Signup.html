@@ -507,6 +507,20 @@
       }
     }
 
+    function validateEgyptianPhone(phone) {
+      if (!phone) return false;
+      let clean = phone.replace(/[^\d+]/g, '');
+      // إذا بدأ بـ +2 أو 002
+      if (clean.startsWith('+2')) return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
+      if (clean.startsWith('002')) return clean.length === 14 && /^00201[0125]\d{8}$/.test(clean);
+      // الصيغة المحلية 11 رقم تبدأ بصفر
+      if (clean.startsWith('0')) return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
+      // حالة إدخال 10 أرقام فقط مع وجود الكود الملحق في الواجهة (+20)
+      if (clean.length === 10 && /^1[0125]\d{8}$/.test(clean)) return true;
+      
+      return false;
+    }
+
     function navigateTo(page) {
       if (typeof google !== 'undefined' && google.script) {
         google.script.run.withSuccessHandler(function (url) {
@@ -620,12 +634,28 @@
         return;
       }
 
-      var cleanPhone = phoneStr.replace(/\D/g, '');
-      if (!cleanPhone.startsWith('0') || cleanPhone.length !== 11) {
-        err.innerText = "برجاء التأكد من إدخال رقم هاتف محمول صحيح، مكون من 11 رقم ويبدأ بـ 0.";
+      if (!validateEgyptianPhone(phoneStr)) {
+        err.innerText = "برجاء التأكد من إدخال رقم هاتف محمول صحيح، مكون من 11 رقم ويبدأ بـ 0 (أو يتبع الكود الدولي).";
         err.style.display = 'block';
         return;
       }
+
+      var phone2 = document.getElementById('regPhone2').value.trim();
+      var phone3 = document.getElementById('regPhone3').value.trim();
+
+      if (phone2 && !validateEgyptianPhone(phone2)) {
+        err.innerText = "رقم الهاتف الإضافي 1 غير صحيح.";
+        err.style.display = 'block';
+        return;
+      }
+      if (phone3 && !validateEgyptianPhone(phone3)) {
+        err.innerText = "رقم الهاتف الإضافي 2 غير صحيح.";
+        err.style.display = 'block';
+        return;
+      }
+
+      var cleanPhone = phoneStr.replace(/\D/g, '');
+      if (cleanPhone.length === 10) cleanPhone = "0" + cleanPhone; // إضافة الصفر إذا أدخل 10 أرقام فقط مع الكود
 
       currentPendingUserData = {
         name: name,

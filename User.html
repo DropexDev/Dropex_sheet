@@ -291,61 +291,120 @@
                         <label class="text-outline font-bold text-xs mr-1 uppercase">الاسم الكامل</label>
                         <input id="s-receiverName" class="w-full bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" placeholder="أدخل اسم المستلم" type="text"/>
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-outline font-bold text-xs mr-1 uppercase">رقم الهاتف</label>
-                        <input id="s-receiverPhone" class="w-full text-left bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" dir="ltr" placeholder="01x xxxx xxxx" type="tel"/>
+                    
+                    <div class="space-y-3 md:col-span-2">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-outline font-bold text-xs mr-1 uppercase">رقم الهاتف الأساسي</label>
+                            <div class="flex gap-2">
+                                <input id="s-receiverPhone" class="w-full text-left bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" dir="ltr" placeholder="01x xxxx xxxx" type="tel"/>
+                                <button onclick="toggleExtraPhones()" class="bg-primary-stitch/10 text-primary-stitch p-3 rounded-xl hover:bg-primary-stitch hover:text-white transition-all">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="extra-phones" class="hidden space-y-3">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-outline font-bold text-xs mr-1 uppercase">رقم هاتف إضافي 1</label>
+                                <input id="s-receiverPhone2" class="w-full text-left bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" dir="ltr" placeholder="01x xxxx xxxx" type="tel"/>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-outline font-bold text-xs mr-1 uppercase">رقم هاتف إضافي 2</label>
+                                <input id="s-receiverPhone3" class="w-full text-left bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" dir="ltr" placeholder="01x xxxx xxxx" type="tel"/>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1">
+
+                    <div class="flex flex-col gap-1 md:col-span-2">
                         <label class="text-outline font-bold text-xs mr-1 uppercase">البريد الإلكتروني (اختياري)</label>
                         <input id="s-receiverEmail" class="w-full text-left bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none" dir="ltr" placeholder="example@domain.com" type="email"/>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 2: Location -->
-            <section class="bg-surface-container-low rounded-2xl p-6 space-y-4 shadow-sm">
+            <!-- Section 2: Financials & Shipping Logic (Unified) -->
+            <section class="bg-surface-container-low rounded-2xl p-6 space-y-6 shadow-sm">
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="material-symbols-outlined text-primary-stitch">location_on</span>
-                    <h2 class="text-on-surface font-bold text-lg font-headline">تفاصيل الموقع</h2>
+                    <span class="material-symbols-outlined text-primary-stitch">local_shipping</span>
+                    <h2 class="text-on-surface font-bold text-lg font-headline">تفاصيل الشحن والتحصيل</h2>
                 </div>
-                <div class="space-y-4">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-outline font-bold text-xs mr-1 uppercase">المنطقة / المدينة</label>
-                        <div class="relative">
-                            <select id="s-receiverArea" class="w-full bg-white border-none rounded-xl py-3 px-4 appearance-none focus:ring-2 focus:ring-primary-stitch outline-none">
-                                <option value="">اختر المنطقة</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute left-4 top-3 pointer-events-none text-outline">expand_more</span>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Column Left: Location -->
+                    <div class="space-y-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-outline font-bold text-xs mr-1 uppercase">المنطقة / المدينة</label>
+                            <div class="relative">
+                                <select id="s-receiverArea" onchange="updateShippingPriceLogic()" class="w-full bg-white border-none rounded-xl py-3 px-4 appearance-none focus:ring-2 focus:ring-primary-stitch outline-none">
+                                    <option value="">اختر المنطقة</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute left-4 top-3 pointer-events-none text-outline">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-outline font-bold text-xs mr-1 uppercase">العنوان التفصيلي</label>
+                            <textarea id="s-receiverAddress" class="w-full bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none resize-none" placeholder="الحي، اسم الشارع، رقم المبنى..." rows="2"></textarea>
                         </div>
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-outline font-bold text-xs mr-1 uppercase">العنوان التفصيلي</label>
-                        <textarea id="s-receiverAddress" class="w-full bg-white border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none resize-none" placeholder="الحي، اسم الشارع، رقم المبنى..." rows="3"></textarea>
+
+                    <!-- Column Right: Pricing Logic -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 space-y-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-outline font-bold text-xs mr-1 uppercase">مصاريف الشحن (للعرض في البوليصة)</label>
+                            <div class="relative">
+                                <input id="s-deliveryCost" class="w-full bg-slate-50 border-none rounded-xl py-3 pl-16 pr-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none font-bold text-tertiary" placeholder="0" type="number"/>
+                                <span class="absolute left-4 top-3.5 text-outline font-bold text-sm">ج.م</span>
+                            </div>
+                            <p id="shipping-note" class="text-[0.6rem] text-slate-400 mt-1 hidden italic">يمكنك تعديل السعر ليظهر للعميل في البوليصة بمبلغ أعلى.</p>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-outline font-bold text-xs mr-1 uppercase">من سيتحمل الشحن؟</label>
+                            <div class="flex bg-slate-100 p-1 rounded-xl gap-1">
+                                <label class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-all has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary-stitch">
+                                    <input type="radio" name="s-shippingPayer" value="على المستلم" class="hidden peer" onchange="updateShippingPriceLogic()" checked>
+                                    <span class="text-xs font-bold">المستلم</span>
+                                </label>
+                                <label class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-all has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary-stitch">
+                                    <input type="radio" name="s-shippingPayer" value="على المرسل" class="hidden peer" onchange="updateShippingPriceLogic()">
+                                    <span class="text-xs font-bold">المرسل</span>
+                                </label>
+                                <label class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-all has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-primary-stitch">
+                                    <input type="radio" name="s-shippingPayer" value="تقسيم" class="hidden peer" onchange="updateShippingPriceLogic()">
+                                    <span class="text-xs font-bold">تقسيم</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="s-split-inputs" class="hidden space-y-2 p-3 bg-primary-stitch/5 rounded-xl border border-primary-stitch/10">
+                            <div class="flex justify-between items-center text-[10px] font-bold text-primary-stitch uppercase mb-1">
+                                <span>حصة المستلم</span>
+                                <span>حصة المرسل</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <input id="s-receiverShare" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="المستلم" type="number"/>
+                                <input id="s-senderShare" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="المرسل" type="number"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Section 3: Product Details -->
-            <section class="bg-surface-container-low rounded-2xl p-6 space-y-4 shadow-sm">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="material-symbols-outlined text-primary-stitch">inventory_2</span>
-                    <h2 class="text-on-surface font-bold text-lg font-headline">تفاصيل المنتج</h2>
-                </div>
-                <div class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-1">
                         <label class="text-outline font-bold text-xs mr-1 uppercase">سعر المنتج</label>
                         <div class="relative">
-                            <input id="s-productPrice" class="w-full bg-white border-none rounded-xl py-3 pl-16 pr-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none font-bold text-primary-stitch" placeholder="0.00" type="number"/>
+                            <input id="s-productPrice" class="w-full bg-surface-container-high border-none rounded-xl py-3 pl-16 pr-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none font-bold text-primary-stitch" placeholder="0.00" type="number"/>
                             <span class="absolute left-4 top-3.5 text-outline font-bold text-sm">ج.م</span>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100">
+                    
+                    <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-100 h-full mt-auto">
                         <div class="flex flex-col">
                             <span class="text-on-surface font-bold text-sm">مفتوح للمعاينة</span>
-                            <span class="text-outline text-xs">السماح للمستلم بفحص الطرد قبل الدفع</span>
+                            <span class="text-outline text-xs">السماح للمستلم بفحص الطرد</span>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input id="s-openForInspection" class="sr-only peer" type="checkbox">
+                            <input id="s-openForInspection" class="sr-only peer" type="checkbox" checked>
                             <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-stitch"></div>
                         </label>
                     </div>
@@ -462,6 +521,17 @@
       }
     };
 
+    function validateEgyptianPhone(phone) {
+        let clean = phone.replace(/[^\d+]/g, '');
+        if (clean.startsWith('+2')) {
+            return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
+        }
+        if (clean.startsWith('01')) {
+            return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
+        }
+        return false;
+    }
+
     function loginUser() {
       var email = document.getElementById('userEmail').value.trim();
       var pass = document.getElementById('userPass').value.trim();
@@ -550,35 +620,63 @@
       if (event.target == document.getElementById('orderDetailsModal')) { document.getElementById('orderDetailsModal').style.display = "none"; }
     }
 
+    function toggleExtraPhones() {
+        var div = document.getElementById('extra-phones');
+        div.classList.toggle('hidden');
+    }
+
     function openSingleOrderModal() {
       document.getElementById('s-receiverArea').innerHTML = areasOptionsHTML;
       // Reset fields
-      ['s-receiverName', 's-receiverPhone', 's-receiverEmail', 's-receiverAddress', 's-productPrice', 's-receiverShare', 's-senderShare'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('s-openForInspection').checked = false;
+      ['s-receiverName', 's-receiverPhone', 's-receiverPhone2', 's-receiverPhone3', 's-receiverEmail', 's-receiverAddress', 's-productPrice', 's-receiverShare', 's-senderShare', 's-deliveryCost'].forEach(id => {
+          var el = document.getElementById(id);
+          if(el) el.value = '';
+      });
+      document.getElementById('extra-phones').classList.add('hidden');
+      document.getElementById('s-openForInspection').checked = true;
       document.getElementById('s-split-inputs').classList.add('hidden');
       document.getElementById('singleOrderModal').style.display = 'block';
+      updateShippingPriceLogic();
+    }
 
-      // Setup logic for price and split
-      const areaSelect = document.getElementById('s-receiverArea');
-      const payerRadios = document.querySelectorAll('input[name="s-shippingPayer"]');
-      
-      const updateSplitShares = () => {
-          const selectedOption = areaSelect.options[areaSelect.selectedIndex];
-          const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
-          const payer = document.querySelector('input[name="s-shippingPayer"]:checked').value;
-          
-          if (payer === 'تقسيم') {
-              document.getElementById('s-split-inputs').classList.remove('hidden');
-              // Auto split 50/50 as a start
-              document.getElementById('s-receiverShare').value = price / 2;
-              document.getElementById('s-senderShare').value = price / 2;
-          } else {
-              document.getElementById('s-split-inputs').classList.add('hidden');
-          }
-      };
+    function updateShippingPriceLogic() {
+        const areaSelect = document.getElementById('s-receiverArea');
+        const priceInput = document.getElementById('s-deliveryCost');
+        const payerRadio = document.querySelector('input[name="s-shippingPayer"]:checked');
+        const note = document.getElementById('shipping-note');
+        const splitDiv = document.getElementById('s-split-inputs');
 
-      areaSelect.addEventListener('change', updateSplitShares);
-      payerRadios.forEach(r => r.addEventListener('change', updateSplitShares));
+        if (!areaSelect || !priceInput || !payerRadio) return;
+
+        const selectedOption = areaSelect.options[areaSelect.selectedIndex];
+        const defaultPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        const payer = payerRadio.value;
+
+        // حالة "على المستلم": يمكن التعديل
+        if (payer === 'على المستلم') {
+            priceInput.readOnly = false;
+            priceInput.classList.remove('bg-slate-50', 'text-slate-400');
+            priceInput.classList.add('bg-white', 'text-tertiary');
+            if (!priceInput.value || priceInput.value == 0) priceInput.value = defaultPrice;
+            note.classList.remove('hidden');
+            splitDiv.classList.add('hidden');
+        } 
+        // حالة "على المرسل" أو "تقسيم": تأخذ السعر الافتراضي وممنوع التعديل
+        else {
+            priceInput.value = defaultPrice;
+            priceInput.readOnly = true;
+            priceInput.classList.add('bg-slate-50', 'text-slate-400');
+            priceInput.classList.remove('bg-white', 'text-tertiary');
+            note.classList.add('hidden');
+            
+            if (payer === 'تقسيم') {
+                splitDiv.classList.remove('hidden');
+                document.getElementById('s-receiverShare').value = defaultPrice / 2;
+                document.getElementById('s-senderShare').value = defaultPrice / 2;
+            } else {
+                splitDiv.classList.add('hidden');
+            }
+        }
     }
 
     function saveSingleOrder() {
@@ -597,7 +695,8 @@
         btn.disabled = true; btn.innerText = "جاري الحفظ...";
 
         var areaSelect = document.getElementById('s-receiverArea');
-        var fullPrice = parseFloat(areaSelect.options[areaSelect.selectedIndex].getAttribute('data-price')) || 0;
+        var systemFixedPrice = parseFloat(areaSelect.options[areaSelect.selectedIndex].getAttribute('data-price')) || 0;
+        var merchantSetPrice = document.getElementById('s-deliveryCost').value || systemFixedPrice;
 
         var orderData = {
             senderEmail: currentUser.email,
@@ -607,6 +706,8 @@
             senderArea: currentUser.area || "",
             receiverName: name,
             receiverPhone: phone,
+            receiverPhone2: document.getElementById('s-receiverPhone2').value.replace(/\s+/g, ''),
+            receiverPhone3: document.getElementById('s-receiverPhone3').value.replace(/\s+/g, ''),
             receiverEmail: document.getElementById('s-receiverEmail').value.trim(),
             receiverAddress: address,
             receiverArea: area,
@@ -614,7 +715,8 @@
             deliveryPaidBy: payer,
             openForInspection: inspection,
             shippingPaymentMethod: paymentMethod,
-            deliveryCost: fullPrice
+            deliveryCost: merchantSetPrice,
+            systemShippingCost: systemFixedPrice
         };
 
         if (payer === 'تقسيم') {

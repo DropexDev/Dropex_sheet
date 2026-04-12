@@ -66,10 +66,11 @@ function createNewOrder(formObj) {
     var orderPin = Math.floor(100000 + Math.random() * 900000).toString();
 
     var productPrice = parseFloat(formObj.productPrice) || 0;
-    var fullDeliveryCost = parseFloat(formObj.deliveryCost) || 0;
+    var systemShippingFee = parseFloat(formObj.systemShippingCost) || 0;
+    var merchantShippingPrice = parseFloat(formObj.deliveryCost) || systemShippingFee;
+    
     var receiverDeliveryShare = 0;
-
-    if (formObj.deliveryPaidBy === "على المستلم") { receiverDeliveryShare = fullDeliveryCost; }
+    if (formObj.deliveryPaidBy === "على المستلم") { receiverDeliveryShare = merchantShippingPrice; }
     else if (formObj.deliveryPaidBy === "تقسيم") { receiverDeliveryShare = parseFloat(formObj.receiverShare) || 0; }
 
     var totalToCollectFromReceiver = productPrice + receiverDeliveryShare;
@@ -83,6 +84,10 @@ function createNewOrder(formObj) {
     var payMethodTxt = "نقداً (COD)";
     if(formObj.shippingPaymentMethod === "Wallet") payMethodTxt = "محفظة إلكترونية";
     else if(formObj.shippingPaymentMethod === "InstaPay") payMethodTxt = "إنستا باي";
+
+    var extraPhonesHtml = "";
+    if (formObj.receiverPhone2) extraPhonesHtml += `<div>هاتف إضافي: ${formObj.receiverPhone2}</div>`;
+    if (formObj.receiverPhone3) extraPhonesHtml += `<div>هاتف إضافي: ${formObj.receiverPhone3}</div>`;
 
     var htmlContent = `
     <!DOCTYPE html>
@@ -98,12 +103,10 @@ function createNewOrder(formObj) {
         .info-table td { width: 50%; padding: 10px; vertical-align: top; border: 1px solid #bdc3c7; background-color: #fafafa; }
         .info-table h3 { margin: 0 0 5px 0; color: #2980b9; font-size: 14px; border-bottom: 1px solid #eee; }
         .instructions-table td { padding: 8px; border: 1px solid #bdc3c7; background-color: #fff9f0; font-size: 13px; }
-        .financial-table th { background-color: #ecf0f1; padding: 8px; text-align: right; border: 1px solid #bdc3c7; font-size: 13px; }
-        .financial-table td { padding: 8px; border: 1px solid #bdc3c7; font-size: 13px; }
-        .total-row td { background-color: #e8f6f3; font-weight: bold; font-size: 16px; color: #16a085; }
-        .amount { color: #c0392b; font-weight: bold; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .financial-table th { background-color: #2c3e50; color: white; padding: 10px; font-size: 16px; }
+        .financial-table td { padding: 10px; border: 1px solid #bdc3c7; text-align: center; font-size: 18px; }
+        .total-row { background-color: #ecf0f1; font-weight: bold; }
+        .amount { color: #e74c3c; font-size: 22px; }
       </style>
     </head>
     <body>
@@ -163,12 +166,12 @@ function createNewOrder(formObj) {
     var openForInspection = formObj.openForInspection ? "نعم" : "لا";
     var shippingPaymentMethod = formObj.shippingPaymentMethod || "COD";
 
-    // التعديل: جعل المصفوفة 33 لاستيعاب الأعمدة الجديدة AF و AG
-    var rowData = new Array(33).fill("");
+    // التعديل: زيادة المصفوفة لاستيعاب الهواتف الإضافية و "سعر البوليصة" في AJ
+    var rowData = new Array(36).fill("");
     rowData[0] = newTrackId; rowData[1] = String(formObj.senderEmail).trim().toLowerCase();
     rowData[2] = String(formObj.senderName).trim(); rowData[3] = formObj.receiverName;
     rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
-    rowData[6] = formObj.productPrice; rowData[7] = formObj.deliveryCost;
+    rowData[6] = formObj.productPrice; rowData[7] = systemShippingFee; // العمود H لسعر دروبكس الثابت
     rowData[8] = formObj.deliveryPaidBy; rowData[9] = 0;
     rowData[10] = waybillUrl;
     rowData[11] = formatPhoneForSheet(formObj.senderPhone); rowData[12] = formObj.senderAddress;
@@ -177,12 +180,13 @@ function createNewOrder(formObj) {
     rowData[17] = formObj.receiverArea; rowData[26] = orderPin;
     rowData[27] = totalToCollectFromReceiver;
     rowData[28] = ""; // حالة التصفية
+    
+    // البيانات التقنية والهواتف والأسعار الإضافية
     rowData[31] = openForInspection; // AF
     rowData[32] = shippingPaymentMethod; // AG
-    
-    // البيانات الجديدة
-    rowData[31] = openForInspection; // Column AF
-    rowData[32] = shippingPaymentMethod; // Column AG
+    rowData[33] = formatPhoneForSheet(formObj.receiverPhone2); // AH
+    rowData[34] = formatPhoneForSheet(formObj.receiverPhone3); // AI
+    rowData[35] = merchantShippingPrice; // AJ (السعر الذي وضعه التاجر وسيظهر للعميل)
 
     sheet.appendRow(rowData);
     return { success: true, trackingId: newTrackId, pin: orderPin, totalToCollect: totalToCollectFromReceiver, receiverDeliveryShare: receiverDeliveryShare, pdfUrl: waybillUrl, pdfBase64: pdfBase64 };
@@ -434,6 +438,7 @@ function updateOrderFromAdmin(dataObj) {
     
     sheet.getRange(rowIndex, 32).setValue(dataObj.inspection); // AF
     sheet.getRange(rowIndex, 33).setValue(dataObj.payMethod); // AG
+    sheet.getRange(rowIndex, 36).setValue(parseFloat(dataObj.merchantDeliveryCost) || 0); // AJ
 
     // 2. منطق التواريخ الذكي: تحديث التاريخ فقط إذا تغيرت الحالة
     if (newStatus !== oldStatus) {
@@ -452,7 +457,8 @@ function updateOrderFromAdmin(dataObj) {
       dataObj.deliveryCost != oldData[7] ||
       dataObj.paidBy !== oldData[8] ||
       dataObj.inspection !== oldData[31] ||
-      dataObj.payMethod !== oldData[32]
+      dataObj.payMethod !== oldData[32] ||
+      dataObj.merchantDeliveryCost != oldData[35]
     );
 
     if (waybillFieldsChanged) {
@@ -663,10 +669,13 @@ function getUserDashboardStats(email, name) {
 
       // الحالة المالية: تم التوصيل أو مرتجع أو (ملغي ببيك أب)
       if (status === "تم التوصيل") {
+        var extraShippingProfit = Math.max(0, (parseFloat(data[i][35]) || 0) - (parseFloat(data[i][7]) || 0));
+        var finalNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice + extraShippingProfit - pickupPrice);
+        
         stats.deliveredOrders++;
         stats.totalHistoricalAmount += productPrice;
         if (!isSettled) {
-          stats.currentOwed += merchantNet;
+          stats.currentOwed += finalNet;
         }
       }
       else if (status === "مرتجع") {
@@ -810,12 +819,12 @@ function processGridOrders(ordersArray, userData) {
       pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
       var waybillUrl = pdfFile.getUrl();
 
-      // التعديل: تعديل المصفوفة لـ 33 لتشمل الأعمدة الجديدة AF و AG
-      var rowData = new Array(33).fill("");
+      // التعديل: 36 عمود لحفظ البيانات التقنية والهواتف والأسعار المزدوجة
+      var rowData = new Array(36).fill("");
       rowData[0] = newTrackId; rowData[1] = String(userData.email).trim().toLowerCase();
       rowData[2] = String(userData.name).trim(); rowData[3] = recName;
       rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
-      rowData[6] = productPrice; rowData[7] = deliveryCost;
+      rowData[6] = productPrice; rowData[7] = deliveryCost; // السعر الأصلي (دروبكس)
       rowData[8] = deliveryPaidBy; rowData[10] = waybillUrl;
       rowData[11] = formatPhoneForSheet(userData.phone);
       rowData[12] = userData.address; rowData[13] = userData.area;
@@ -823,8 +832,12 @@ function processGridOrders(ordersArray, userData) {
       rowData[16] = recAddress; rowData[17] = recArea;
       rowData[26] = orderPin; rowData[27] = totalToCollect;
       rowData[28] = ""; // حالة التصفية
+      
       rowData[31] = ordersArray[i].inspection || "لا"; // AF
       rowData[32] = ordersArray[i].payMethod || "COD"; // AG
+      rowData[33] = ""; // AH (هاتف إضافي 1)
+      rowData[34] = ""; // AI (هاتف إضافي 2)
+      rowData[35] = deliveryCost; // AJ (سعر البوليصة - افتراضياً نفس سعر دروبكس في الرفع المجمع)
 
       sheet.appendRow(rowData);
       addedCount++;
@@ -874,12 +887,17 @@ function settleMerchantAccountByName(merchantName, settleType) {
         var merchantNet = 0;
 
         if (status === "تم التوصيل") {
-          merchantNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice - pickupPrice);
+          var systemFee = parseFloat(data[i][7]) || 0; // H
+          var merchantFee = parseFloat(data[i][35]) || systemFee; // AJ
+          var extraProfit = (paidBy === "على المستلم") ? Math.max(0, merchantFee - systemFee) : 0;
+          
+          merchantNet = (paidBy === "على المرسل") ? (productPrice - systemFee - pickupPrice) : (productPrice + extraProfit - pickupPrice);
           summary.delivered.count++;
           summary.delivered.amount += merchantNet;
         }
         else if (status === "مرتجع") {
-          merchantNet = (paidBy === "على المرسل") ? (0 - deliveryCost - pickupPrice) : (0 - pickupPrice);
+          var systemFee = parseFloat(data[i][7]) || 0;
+          merchantNet = (paidBy === "على المرسل") ? (0 - systemFee - pickupPrice) : (0 - pickupPrice);
           summary.returned.count++;
           summary.returned.amount += merchantNet;
         }
