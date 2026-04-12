@@ -212,7 +212,7 @@ function getCourierOrders(email, password) {
   for (var j = 1; j < orderData.length; j++) {
     var status = orderData[j][4];
     var assignedCourier = orderData[j][18];
-    if (assignedCourier == courierName && status != "تم التوصيل" && status != "مرتجع") {
+    if (assignedCourier == courierName && status != "تم التوصيل" && status != "مرتجع" && status != "ملغي") {
       var fullAddress = orderData[j][16] + " (" + orderData[j][17] + ")";
       var totalToCollect = parseFloat(orderData[j][27]) || 0;
       pendingOrders.push({ row: j + 1, id: orderData[j][0], sender: orderData[j][2], senderPhone: orderData[j][11], receiver: orderData[j][3], receiverPhone: orderData[j][15], address: fullAddress, amount: totalToCollect });

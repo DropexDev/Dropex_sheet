@@ -267,7 +267,9 @@
                 html += '<h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">رقم الشحنة: <span style="color:#e67e22">' + o.id + '</span></h3>';
 
                 var recPhoneStr = String(o.receiverPhone);
-                var recWaNumber = recPhoneStr.startsWith('0') ? '2' + recPhoneStr : recPhoneStr;
+                // إزالة أي علامات زائدة أو مسافات للواتساب
+                var recWaNumber = recPhoneStr.replace(/\D/g, ''); 
+                if (recWaNumber.startsWith('0')) recWaNumber = '2' + recWaNumber;
 
                 html += '<div class="receiver-box">';
                 html += '<p><span class="info-label">👤 المستلم (الزبون):</span><br><strong>' + o.receiver + '</strong></p>';
@@ -279,7 +281,9 @@
                 html += '</div></div>';
 
                 var senPhoneStr = String(o.senderPhone);
-                var senWaNumber = senPhoneStr.startsWith('0') ? '2' + senPhoneStr : senPhoneStr;
+                // إزالة أي علامات زائدة أو مسافات للواتساب
+                var senWaNumber = senPhoneStr.replace(/\D/g, '');
+                if (senWaNumber.startsWith('0')) senWaNumber = '2' + senWaNumber;
 
                 html += '<div class="sender-box">';
                 html += '<p><span class="info-label">🏪 الراسل (المتجر/البائع):</span><br><strong>' + o.sender + '</strong></p>';
@@ -377,8 +381,8 @@
 
                         alert("❌ لا يمكن إتمام الطلب: " + errorMsg);
                     },
-                    // رفع مدة الانتظار لـ 10 ثواني لضمان سحب الموقع بدقة
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    // رفع مدة الانتظار لـ 30 ثانية لضمان سحب الموقع بدقة
+                    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
                 );
             } else {
                 alert("متصفحك لا يدعم تحديد الموقع (GPS).");
