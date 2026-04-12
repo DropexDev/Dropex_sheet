@@ -811,20 +811,22 @@
 
         function saveNewUser() {
             var d = {
-                name: document.getElementById('newUserName').value,
-                email: document.getElementById('newUserEmail').value,
+                name: document.getElementById('newUserName').value.trim(),
+                email: document.getElementById('newUserEmail').value.trim(),
                 password: document.getElementById('newUserPassword').value,
-                phone: document.getElementById('newUserPhone').value,
-                phone2: document.getElementById('newUserPhone2').value,
-                phone3: document.getElementById('newUserPhone3').value,
-                area: document.getElementById('newUserArea').value,
-                address: document.getElementById('newUserAddress').value,
+                phone: document.getElementById('newUserPhone').value.replace(/\s+/g, ''),
+                phone2: document.getElementById('newUserPhone2').value.replace(/\s+/g, ''),
+                phone3: document.getElementById('newUserPhone3').value.replace(/\s+/g, ''),
+                area: document.getElementById('newUserArea').value.trim(),
+                address: document.getElementById('newUserAddress').value.trim(),
                 address2: document.getElementById('newUserAddress2').value,
                 serviceType: document.getElementById('newUserServiceType').value,
                 businessType: document.getElementById('newUserBusinessType').value
             };
             if (!d.name || !d.email || !d.password || !d.phone) { alert("يرجى ملء البيانات الأساسية!"); return; }
+            if (d.password.includes(' ')) { alert("كلمة المرور لا يمكن أن تحتوي على مسافات."); return; }
             if (d.password.startsWith('0')) { alert("كلمة المرور لا يمكن أن تبدأ بالرقم 0."); return; }
+            if (d.password.length < 8) { alert("كلمة المرور يجب أن لا تقل عن 8 أحرف."); return; }
 
             var btn = document.getElementById('saveUserBtn');
             btn.disabled = true; btn.innerText = "جاري الحفظ...";

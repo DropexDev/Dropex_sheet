@@ -583,7 +583,7 @@
 
     function saveSingleOrder() {
         var name = document.getElementById('s-receiverName').value.trim();
-        var phone = document.getElementById('s-receiverPhone').value.trim();
+        var phone = document.getElementById('s-receiverPhone').value.replace(/\s+/g, '');
         var area = document.getElementById('s-receiverArea').value;
         var address = document.getElementById('s-receiverAddress').value.trim();
         var price = document.getElementById('s-productPrice').value;
@@ -684,7 +684,7 @@
       var ordersToSave = [];
       for (var i = 0; i < rows.length; i++) {
         var name = rows[i].querySelector('.g-name').value.trim();
-        var phone = rows[i].querySelector('.g-phone').value.trim();
+        var phone = rows[i].querySelector('.g-phone').value.replace(/\s+/g, '');
         var email = rows[i].querySelector('.g-email').value.trim();
         var address = rows[i].querySelector('.g-address').value.trim();
         var area = rows[i].querySelector('.g-area').value;

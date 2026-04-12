@@ -609,6 +609,11 @@
         err.style.display = 'block';
         return;
       }
+      if (password.includes(' ')) {
+        err.innerText = "كلمة المرور لا يمكن أن تحتوي على مسافات.";
+        err.style.display = 'block';
+        return;
+      }
       if (password.startsWith('0')) {
         err.innerText = "كلمة المرور لا يمكن أن تبدأ بالرقم 0.";
         err.style.display = 'block';
@@ -630,8 +635,8 @@
         area: area,
         address: address,
         serviceType: serviceType,
-        phone2: document.getElementById('regPhone2').value.trim(),
-        phone3: document.getElementById('regPhone3').value.trim(),
+        phone2: document.getElementById('regPhone2').value.replace(/\s+/g, ''),
+        phone3: document.getElementById('regPhone3').value.replace(/\s+/g, ''),
         address2: document.getElementById('regAddress2').value.trim(),
         businessType: businessType
       };
