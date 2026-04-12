@@ -177,6 +177,8 @@ function createNewOrder(formObj) {
     rowData[17] = formObj.receiverArea; rowData[26] = orderPin;
     rowData[27] = totalToCollectFromReceiver;
     rowData[28] = ""; // حالة التصفية
+    rowData[31] = openForInspection; // AF
+    rowData[32] = shippingPaymentMethod; // AG
     
     // البيانات الجديدة
     rowData[31] = openForInspection; // Column AF
@@ -385,7 +387,9 @@ function getDashboardStats(password) {
           netProfit: netProfit,
           podImage: data[i][19] || "",
           location: data[i][20] || "",
-          waybillUrl: data[i][10] || ""
+          waybillUrl: data[i][10] || "",
+          inspection: data[i][31] || "لا",
+          payMethod: data[i][32] || "COD"
         });
       }
     }
@@ -396,7 +400,7 @@ function getDashboardStats(password) {
 }
 
 
-function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit, pickupPrice, status, productPrice, deliveryCost, paidBy) {
+function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit, pickupPrice, status, productPrice, deliveryCost, paidBy, inspection, payMethod) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
 
@@ -409,6 +413,10 @@ function updateOrderFromAdmin(rowIndex, courierName, gas, maintenance, netProfit
     sheet.getRange(rowIndex, 24).setValue(parseFloat(gas) || 0);
     sheet.getRange(rowIndex, 25).setValue(parseFloat(maintenance) || 0);
     sheet.getRange(rowIndex, 26).setValue(parseFloat(netProfit) || 0);
+    
+    // التعديل: تحديث الأعمدة الجديدة من خلال المدير
+    if(inspection) sheet.getRange(rowIndex, 32).setValue(inspection); // AF
+    if(payMethod) sheet.getRange(rowIndex, 33).setValue(payMethod); // AG
 
     // تحديث التواريخ المحددة حسب الحالة
     if (status === "في المخزن") {
@@ -443,7 +451,8 @@ function getOrderStatus(trackingId, pinCode) {
           timestampCreated: rowData[5],
           timestampWarehouse: rowData[22],
           timestampShipping: rowData[29],
-          timestampFinal: rowData[30]
+          timestampFinal: rowData[30],
+          inspection: rowData[31] || "لا"
         };
         if (!pinCode) return JSON.stringify({ error: null, isPublicOnly: true, data: publicData });
         if (String(pinCode).trim() !== String(rowData[26]).trim()) return JSON.stringify({ error: "الرقم السري غير صحيح." });
@@ -454,7 +463,14 @@ function getOrderStatus(trackingId, pinCode) {
           var courierData = courierSheet.getDataRange().getValues();
           for (var c = 1; c < courierData.length; c++) { if (courierData[c][0] == courierName) { courierPhone = courierData[c][3] || "غير متوفر"; break; } }
         }
-        var privateData = { sender: rowData[2], amount: rowData[27] || rowData[6], address: rowData[16] + " - " + rowData[17], courier: courierName || "لم يتم التحديد", courierPhone: courierPhone };
+        var privateData = {
+          sender: rowData[2],
+          amount: rowData[27] || rowData[6],
+          address: rowData[16] + " - " + rowData[17],
+          courier: courierName || "لم يتم التحديد",
+          courierPhone: courierPhone,
+          payMethod: rowData[32] || "COD"
+        };
         return JSON.stringify({ error: null, isPublicOnly: false, data: publicData, privateData: privateData });
       }
     }
@@ -693,8 +709,8 @@ function processGridOrders(ordersArray, userData) {
       pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
       var waybillUrl = pdfFile.getUrl();
 
-      // التعديل: تعديل المصفوفة لـ 29 لتشمل عمود التصفية
-      var rowData = new Array(29).fill("");
+      // التعديل: تعديل المصفوفة لـ 33 لتشمل الأعمدة الجديدة AF و AG
+      var rowData = new Array(33).fill("");
       rowData[0] = newTrackId; rowData[1] = String(userData.email).trim().toLowerCase();
       rowData[2] = String(userData.name).trim(); rowData[3] = recName;
       rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
@@ -706,6 +722,8 @@ function processGridOrders(ordersArray, userData) {
       rowData[16] = recAddress; rowData[17] = recArea;
       rowData[26] = orderPin; rowData[27] = totalToCollect;
       rowData[28] = ""; // حالة التصفية
+      rowData[31] = ordersArray[i].inspection || "لا"; // AF
+      rowData[32] = ordersArray[i].payMethod || "COD"; // AG
 
       sheet.appendRow(rowData);
       addedCount++;

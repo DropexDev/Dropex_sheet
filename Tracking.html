@@ -228,6 +228,10 @@
                             <span class="text-xs font-medium">آخر تحديث: <b class="text-white"
                                     id="pubLastUpdate">--</b></span>
                         </div>
+                        <div id="inspectBadge" class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 hidden">
+                            <span class="material-symbols-outlined text-tertiary text-lg">visibility</span>
+                            <span class="text-xs font-medium">المعاينة: <b class="text-green-400">مسموح بفتح الطرد للمعاينة</b></span>
+                        </div>
                         <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
                             <span class="material-symbols-outlined text-tertiary text-lg">info</span>
                             <span class="text-xs font-medium">الحالة: <b
@@ -269,6 +273,10 @@
                         <div class="bg-surface-container-high p-3 rounded-xl border border-slate-100">
                             <strong class="text-outline text-[0.65rem] uppercase block mb-1">عنوان التوصيل</strong>
                             <div id="privAddress" class="text-primary font-bold text-sm leading-relaxed">--</div>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                            <strong class="text-blue-600 text-[0.65rem] uppercase block mb-1">طرق الدفع المتاحة</strong>
+                            <div id="privPayMethod" class="text-blue-700 font-bold text-sm">--</div>
                         </div>
                     </div>
                 </div>
@@ -435,6 +443,13 @@
             
             var date4 = d4 || ((states[3] === 'done' || states[3] === 'error') ? d4 : "متوقع قريباً");
             setStepStyle('step4', states[3], title4, date4);
+
+            // إظهار شارة المعاينة إذا كانت مفعلة
+            if (data.inspection === "نعم") {
+                document.getElementById('inspectBadge').style.display = 'flex';
+            } else {
+                document.getElementById('inspectBadge').style.display = 'none';
+            }
         }
 
         function verifyPin() {
@@ -483,6 +498,14 @@
             } else {
                 document.getElementById('privPhoneBtn').style.display = 'none';
             }
+
+            // ترجمة طريقة الدفع للعربية
+            var payLabels = {
+                'COD': 'نقداً (COD)',
+                'WALLET_INSTAPAY': 'محفظة أو إنستا باي',
+                'ALL': 'الكل (نقداً / محفظة / إنستا باي)'
+            };
+            document.getElementById('privPayMethod').innerText = payLabels[privateData.payMethod] || privateData.payMethod || 'نقداً (COD)';
 
             document.getElementById('privateCard').style.display = 'flex';
             document.getElementById('courierCard').style.display = 'flex';

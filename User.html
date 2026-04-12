@@ -362,17 +362,17 @@
                     <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[100px]">
                         <input checked id="pay-cod" class="sr-only" name="s-paymentMethod" type="radio" value="COD"/>
                         <span class="material-symbols-outlined text-outline group-hover:text-primary-stitch mb-2">payments</span>
-                        <span class="text-[10px] font-bold text-on-surface text-center">كاش (COD)</span>
+                        <span class="text-[10px] font-bold text-on-surface text-center">نقداً (COD)</span>
                     </label>
                     <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[100px]">
-                        <input id="pay-wallet" class="sr-only" name="s-paymentMethod" type="radio" value="Wallet"/>
+                        <input id="pay-wallet" class="sr-only" name="s-paymentMethod" type="radio" value="WALLET_INSTAPAY"/>
                         <span class="material-symbols-outlined text-outline group-hover:text-primary-stitch mb-2">account_balance_wallet</span>
-                        <span class="text-[10px] font-bold text-on-surface text-center">محفظة إلكترونية</span>
+                        <span class="text-[10px] font-bold text-on-surface text-center">محفظة أو إنستا باي</span>
                     </label>
                     <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[100px]">
-                        <input id="pay-instapay" class="sr-only" name="s-paymentMethod" type="radio" value="InstaPay"/>
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary-stitch mb-2">account_balance</span>
-                        <span class="text-[10px] font-bold text-on-surface text-center">إنستا باي</span>
+                        <input id="pay-all" class="sr-only" name="s-paymentMethod" type="radio" value="ALL"/>
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary-stitch mb-2">done_all</span>
+                        <span class="text-[10px] font-bold text-on-surface text-center">الكل (نقداً / محفظة / إنستا باي)</span>
                     </label>
                 </div>
             </section>
@@ -662,6 +662,19 @@
             <option value="على المرسل">على المرسل</option>
           </select>
         </td>
+        <td class="p-1">
+          <select class="g-inspect w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary">
+            <option value="لا">لا</option>
+            <option value="نعم">نعم</option>
+          </select>
+        </td>
+        <td class="p-1">
+          <select class="g-paymethod w-full p-2 border border-slate-200 rounded text-sm focus:ring-1 focus:ring-secondary">
+            <option value="COD">نقداً (COD)</option>
+            <option value="WALLET_INSTAPAY">محفظة أو إنستا باي</option>
+            <option value="ALL">الكل (الكل (نقداً / محفظة / إنستا باي))</option>
+          </select>
+        </td>
       `;
       document.getElementById('gridBody').appendChild(tr);
     }
@@ -677,9 +690,11 @@
         var area = rows[i].querySelector('.g-area').value;
         var price = rows[i].querySelector('.g-price').value.trim();
         var paidBy = rows[i].querySelector('.g-paidby').value;
+        var inspect = rows[i].querySelector('.g-inspect').value;
+        var payM = rows[i].querySelector('.g-paymethod').value;
 
         if (name !== "" && phone !== "" && area !== "") {
-          ordersToSave.push({ name: name, phone: phone, recEmail: email, address: address, area: area, price: price, paidBy: paidBy });
+          ordersToSave.push({ name: name, phone: phone, recEmail: email, address: address, area: area, price: price, paidBy: paidBy, inspection: inspect, payMethod: payM });
         }
       }
       if (ordersToSave.length === 0) { alert("يرجى إدخال بيانات طلب واحد على الأقل وتأكيد المنطقة!"); return; }
