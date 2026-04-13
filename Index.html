@@ -1138,29 +1138,89 @@
                 class="absolute top-6 left-6 text-outline hover:text-error transition-colors">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <h2 class="text-3xl font-black text-primary mb-6">اتفاقية الشروط والأحكام</h2>
-            <div class="space-y-6 text-on-surface-variant text-sm leading-relaxed">
+            <h2 class="text-3xl font-black text-primary mb-6">اتفاقية الشروط والأحكام لـ دروبكس</h2>
+            <div class="space-y-8 text-on-surface-variant text-sm leading-relaxed">
+                <!-- 1 -->
                 <div>
                     <h3 class="text-lg font-bold text-secondary mb-2">1. مقدمة</h3>
-                    <p>مرحباً بك في Dropex. باستخدامك لخدماتنا، فإنك توافق تماماً على جميع الشروط والأحكام المذكورة أدناه.</p>
+                    <p>مرحباً بك في شركة دروبكس لخدمات الشحن والخدمات اللوجستية.<br>تشكل هذه الشروط والأحكام عقداً ملزماً قانوناً بينك وبين شركة دروبكس. باستخدامك لخدماتنا، فإنك توافق تماماً على جميع الشروط والأحكام المذكورة أدناه.</p>
                 </div>
+
+                <!-- 2 -->
                 <div>
                     <h3 class="text-lg font-bold text-secondary mb-2">2. التزامات العميل</h3>
-                    <p>العميل مسؤول عن صحة البيانات (الاسم، الهاتف، العنوان) والتغليف السليم للشحنة.</p>
+                    <ul class="list-disc list-inside space-y-2 marker:text-secondary">
+                        <li><span class="font-bold text-primary">صحة البيانات:</span> تقديم معلومات دقيقة عن المرسل والمستلم (الاسم، الهاتف، العنوان بالتفصيل).</li>
+                        <li><span class="font-bold text-primary">التغليف السليم:</span> العميل مسؤول عن تغليف الشحنات بشكل يحميها من التلف.</li>
+                        <li><span class="font-bold text-primary">طبيعة الشحنة:</span> يقر العميل بخلو الشحنة من أي مواد محظورة قانونياً.</li>
+                    </ul>
                 </div>
-                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                    <h3 class="text-lg font-bold text-error mb-2 flex items-center gap-2">
-                        <span class="material-symbols-outlined">warning</span> 3. سياسة المرتجعات والتخزين المهمل
+
+                <!-- 3 -->
+                <div>
+                    <h3 class="text-lg font-bold text-secondary mb-2">3. المواد المحظور شحنها</h3>
+                    <p class="mb-2 font-semibold text-error">يُمنع منعاً باتاً شحن:</p>
+                    <ul class="list-disc list-inside space-y-1 marker:text-error">
+                        <li>الأسلحة، الذخائر، أو المتفجرات.</li>
+                        <li>المخدرات والمواد المسكرة.</li>
+                        <li>المواد القابلة للاشتعال أو السامة.</li>
+                        <li>المبالغ النقدية والمجوهرات دون اتفاق مسبق.</li>
+                    </ul>
+                </div>
+
+                <!-- 4 -->
+                <div>
+                    <h3 class="text-lg font-bold text-secondary mb-2">4. الاستلام والتوصيل</h3>
+                    <ul class="list-disc list-inside space-y-2 marker:text-secondary">
+                        <li><span class="font-bold text-primary">مواعيد التوصيل:</span> المواعيد تقديرية ونبذل قصارى جهدنا للالتزام بها.</li>
+                        <li><span class="font-bold text-primary">عدم الاستلام:</span> في حال رفض المستلم لاستلام الشحنة، يتحمل المرسل رسوم الشحن المرتجع بالكامل.</li>
+                    </ul>
+                </div>
+
+                <!-- 5 -->
+                <div>
+                    <h3 class="text-lg font-bold text-secondary mb-2">5. الرسوم والدفع</h3>
+                    <ul class="list-disc list-inside space-y-2 marker:text-secondary">
+                        <li>يتم تحصيل قيمة البضاعة (COD) وتحويلها للعميل خلال 24-48 ساعة عمل.</li>
+                        <li>تحتفظ الشركة بالحق في تعديل أسعار الشحن مع إعلام العملاء مسبقاً.</li>
+                    </ul>
+                </div>
+
+                <!-- 6 -->
+                <div class="bg-red-50 p-6 rounded-2xl border border-red-100">
+                    <h3 class="text-lg font-bold text-error mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined">warning</span> 6. سياسة المرتجعات والتخزين المهمل
                     </h3>
-                    <p class="font-medium">
-                        يقر التاجر بمسؤوليته الكاملة عن متابعة حالة المرتجعات الخاصة به دورياً عبر النظام. في حالة بقاء الشحنة المرتجعة في مخازن الشركة لفترة تتجوز <span class="text-error font-black underline">15 يوماً</span> دون طلب استلامها، وبما أن حالة الشحنة معلنة للتاجر برمجياً، فإنه يحق للشركة التصرف في الشحنة بعد مرور <span class="text-error font-black underline">30 يوماً</span> كحد أقصى، <span class="font-bold underline">ويسقط حق التاجر تماماً</span> في المطالبة بالشحنة أو قيمتها.
+                    <p class="font-medium text-primary leading-relaxed">
+                        يقر التاجر بمسؤوليته الكاملة عن متابعة حالة المرتجعات الخاصة به عبر النظام (System). في حالة بقاء المرتجع في مخازن الشركة لفترة تتجاوز <span class="bg-error text-white px-1 font-bold">15 يوماً</span> دون طلب استلامه، يحق للشركة التصرف في الشحنة بعد مرور <span class="bg-error text-white px-1 font-bold">30 يوماً</span> كحد أقصى لتغطية تكاليف التخزين، <span class="font-bold underline decoration-double">ويسقط حق التاجر تماماً</span> في المطالبة بالشحنة أو قيمتها المادية.
                     </p>
                 </div>
+
+                <!-- 7 -->
                 <div>
-                    <h3 class="text-lg font-bold text-secondary mb-2">4. الرسوم والدفع</h3>
-                    <p>يتم تحويل المبالغ المحصلة (COD) بعد خصم رسوم الخدمة في المواعيد المتفق عليها.</p>
+                    <h3 class="text-lg font-bold text-secondary mb-2">7. المسؤولية والتعويضات</h3>
+                    <p>في حال ضياع الشحنة بسبب تقصير مباشر من الشركة، نلتزم بتعويض العميل عن القيمة المتفق عليها، ما لم يكن التلف ناتجاً عن سوء التغليف أو قوة قاهرة.</p>
                 </div>
-                <p class="text-xs text-outline pt-4">آخر تحديث للشروط: 13 أبريل 2026</p>
+
+                <!-- 8 -->
+                <div>
+                    <h3 class="text-lg font-bold text-secondary mb-2">8. القانون المطبق</h3>
+                    <p>تخضع هذه الشروط للقوانين المعمول بها في جمهورية مصر العربية، والنزاعات تكون من اختصاص محاكم الجيزة.</p>
+                </div>
+
+                <div class="pt-8 border-t border-surface-variant flex flex-col gap-4">
+                    <p class="text-xs text-outline">لديك استفسار؟ تواصل معنا:</p>
+                    <div class="flex flex-wrap gap-6">
+                        <div class="flex items-center gap-2 text-sm font-bold text-primary">
+                            <span class="material-symbols-outlined text-secondary">call</span>
+                            <span dir="ltr">01034455314</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm font-bold text-primary">
+                            <span class="material-symbols-outlined text-secondary">mail</span>
+                            <span>companydropex@gmail.com</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
