@@ -154,6 +154,11 @@
             document.getElementById('welcomeText').innerText = currentCourier;
             renderOrders(response.orders);
           }
+        }).withFailureHandler(function (err) {
+          btn.innerHTML = '<span>دخول آمن</span> <span class="material-symbols-outlined">login</span>';
+          btn.disabled = false;
+          errorEl.classList.remove('hidden');
+          errorEl.innerText = "حدث خطأ في الخادم: " + err.message;
         }).getCourierOrders(email, pass);
       } else {
         setTimeout(function () {
@@ -161,7 +166,13 @@
           document.getElementById('loginSection').classList.add('hidden');
           document.getElementById('dashboard').classList.remove('hidden');
           document.getElementById('welcomeText').innerText = "مندوب تجريبي";
-          renderOrders([{ row: 2, id: "TRK-TEST", receiver: "أحمد علي", receiverPhone: "+20123456789", address: "الجيزة - الهرم", sender: "متجر تجريبي", senderPhone: "+20109998877", amount: 250, inspection: 'نعم', payMethod: 'Cash' }]);
+          renderOrders([{ 
+            row: 2, id: "TRK-TEST", 
+            status: "تم الإنشاء",
+            receiver: "أحمد علي", receiverPhone: "+20123456789", receiverAddress: "الجيزة - الهرم",
+            sender: "متجر تجريبي", senderPhone: "+20109998877", senderAddress: "القاهرة - المعادي",
+            amount: 250, inspection: 'نعم', payMethod: 'COD' 
+          }]);
         }, 800);
       }
     }
@@ -203,105 +214,122 @@
             </div>
 
             <div class="p-6 space-y-6">
-              <!-- Receiver Details -->
-              <div class="bg-blue-50/50 p-5 rounded-3xl border border-blue-100">
-                <div class="flex items-start gap-4 mb-4 text-right">
-                  <div class="w-10 h-10 bg-blue-600/10 rounded-2xl flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-blue-600">person_pin_circle</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">المستلم (الزبون)</p>
-                    <h5 class="font-bold text-primary text-xl mb-1">${o.receiver}</h5>
-                    <div class="flex items-start gap-1 text-outline">
-                      <span class="material-symbols-outlined text-base mt-0.5">location_on</span>
-                      <p class="text-xs font-medium">${o.address}</p>
+              <!-- Mission Badge -->
+              <div class="flex items-center gap-2 mb-2">
+                ${o.status === 'تم الإنشاء' ? 
+                  `<span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full border border-green-200 flex items-center gap-1"><span class="material-symbols-outlined text-xs">local_shipping</span>مهمة: استلام من التاجر</span>` :
+                  (o.status === 'في المخزن' ? 
+                  `<span class="px-3 py-1 bg-purple-100 text-purple-700 text-[10px] font-black rounded-full border border-purple-200 flex items-center gap-1"><span class="material-symbols-outlined text-xs">inventory_2</span>مهمة: خروج للتوصيل</span>` : 
+                  `<span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full border border-blue-200 flex items-center gap-1"><span class="material-symbols-outlined text-xs">person_pin_circle</span>مهمة: تسليم للعميل</span>`
+                  )
+                }
+              </div>
+
+              <!-- Address Details (Dynamic Priority) -->
+              <div class="space-y-4">
+                <!-- Target Address -->
+                <div class="${o.status === 'تم الإنشاء' ? 'bg-green-50 border-green-100' : 'bg-blue-50 border-blue-100'} p-5 rounded-3xl border">
+                  <div class="flex items-start gap-4 mb-3 text-right">
+                    <div class="w-10 h-10 ${o.status === 'تم الإنشاء' ? 'bg-green-600/10 text-green-600' : 'bg-blue-600/10 text-blue-600'} rounded-2xl flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined">${o.status === 'تم الإنشاء' ? 'store' : 'person_pin_circle'}</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-[10px] ${o.status === 'تم الإنشاء' ? 'text-green-600' : 'text-blue-600'} font-bold uppercase tracking-wider">${o.status === 'تم الإنشاء' ? 'نقطة الاستلام (التاجر)' : 'نقطة التسليم (العميل)'}</p>
+                      <h5 class="font-bold text-primary text-xl mb-1">${o.status === 'تم الإنشاء' ? o.sender : o.receiver}</h5>
+                      <div class="flex items-start gap-1 text-outline">
+                        <span class="material-symbols-outlined text-base mt-0.5">location_on</span>
+                        <p class="text-xs font-black">${o.status === 'تم الإنشاء' ? o.senderAddress : o.receiverAddress}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <a href="tel:${recPhoneStr}" class="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-2xl font-bold text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95">
-                    <span class="material-symbols-outlined text-lg">call</span> اتصال
-                  </a>
-                  <a href="https://wa.me/${recWaNumber}" target="_blank" class="flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 rounded-2xl font-bold text-sm shadow-md hover:opacity-90 transition-all active:scale-95">
-                    <span class="material-symbols-outlined text-lg">chat</span> واتساب
-                  </a>
-                </div>
-              </div>
-
-              <!-- Sender Details -->
-              <div class="bg-orange-50/50 p-5 rounded-3xl border border-orange-100">
-                <div class="flex items-start gap-4 mb-4 text-right">
-                  <div class="w-10 h-10 bg-secondary/10 rounded-2xl flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-secondary">store</span>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-[10px] text-secondary font-bold uppercase tracking-wider">الراسل (المتجر)</p>
-                    <h5 class="font-bold text-primary text-lg">${o.sender}</h5>
+                  <div class="grid grid-cols-2 gap-3">
+                    <a href="tel:${o.status === 'تم الإنشاء' ? o.senderPhone : o.receiverPhone}" class="flex items-center justify-center gap-2 ${o.status === 'تم الإنشاء' ? 'bg-green-600' : 'bg-blue-600'} text-white py-3 rounded-2xl font-bold text-sm shadow-md hover:opacity-90 transition-all active:scale-95">
+                      <span class="material-symbols-outlined text-lg">call</span> اتصال
+                    </a>
+                    <a href="https://wa.me/${o.status === 'تم الإنشاء' ? senWaNumber : recWaNumber}" target="_blank" class="flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 rounded-2xl font-bold text-sm shadow-md hover:opacity-90 transition-all active:scale-95">
+                      <span class="material-symbols-outlined text-lg">chat</span> واتساب
+                    </a>
                   </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <a href="tel:${senPhoneStr}" class="flex items-center justify-center gap-2 border border-orange-200 text-secondary bg-white py-2.5 rounded-2xl font-bold text-xs hover:bg-orange-50 transition-all">
-                    <span class="material-symbols-outlined text-base">call</span> اتصال
-                  </a>
-                  <a href="https://wa.me/${senWaNumber}" target="_blank" class="flex items-center justify-center gap-2 border border-[#25D366] text-[#25D366] bg-white py-2.5 rounded-2xl font-bold text-xs hover:bg-green-50 transition-all">
-                    <span class="material-symbols-outlined text-base">chat</span> واتساب
-                  </a>
-                </div>
-              </div>
-              <!-- Delivery Instructions / Badges -->
-              <div class="flex flex-wrap gap-2">
-                <div class="flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-600">
-                  <span class="material-symbols-outlined text-sm">visibility</span>
-                  <span>فحص للمعاينة: ${o.inspection === 'نعم' ? 'مسموح' : 'ممنوع'}</span>
-                </div>
-                <div class="flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-600">
-                  <span class="material-symbols-outlined text-sm">payments</span>
-                  <span>الدفع: ${o.payMethod === 'WALLET_INSTAPAY' ? 'محفظة / إنستا' : (o.payMethod === 'ALL' ? 'الكل (نقداً/محفظة/إنستا)' : 'نقداً (COD)')}</span>
-                </div>
-              </div>
 
-              <!-- Amount -->
-              <div class="flex items-center justify-between p-5 bg-primary rounded-3xl text-white">
-                <div class="text-right">
-                   <p class="text-[10px] text-white/60 font-bold uppercase">التحصيل</p>
-                   <p class="text-sm font-medium">المبلغ المطلوب</p>
-                </div>
-                <span class="text-3xl font-black text-secondary">${o.amount} <small class="text-xs font-bold text-white/50">ج.م</small></span>
-              </div>
-
-              <!-- Proof & Actions -->
-              <div class="space-y-4 pt-4 border-t border-slate-100 text-right">
-                <div>
-                  <label class="block text-sm font-bold text-primary mb-3 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">add_a_photo</span>
-                    صورة إثبات التسليم أو المرتجع
-                  </label>
-                  <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-[2rem] cursor-pointer bg-slate-50 hover:bg-slate-100 hover:border-secondary transition-all overflow-hidden group">
-                    <div id="preview-container-${o.row}" class="flex flex-col items-center justify-center">
-                      <span class="material-symbols-outlined text-3xl text-outline mb-2 group-hover:scale-110 transition-transform">photo_camera</span>
-                      <p class="text-xs text-outline font-bold">التقاط صورة الدليل</p>
+                <!-- Secondary Info (Details) -->
+                <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 text-right">
+                    <p class="text-[10px] text-outline font-bold uppercase mb-2">معلومات الشحنة</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <div class="flex items-center gap-1 bg-white px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 border border-slate-100">
+                          <span class="material-symbols-outlined text-sm">visibility</span>
+                          <span>المعاينة: ${o.inspection === 'نعم' ? 'مسموح' : 'ممنوع'}</span>
+                        </div>
+                        <div class="flex items-center gap-1 bg-white px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 border border-slate-100">
+                          <span class="material-symbols-outlined text-sm">payments</span>
+                          <span>الدفع: ${o.payMethod === 'WALLET_INSTAPAY' ? 'محفظة / إنستا' : (o.payMethod === 'ALL' ? 'الكل' : 'نقداً')}</span>
+                        </div>
                     </div>
-                    <input type="file" id="file-${o.row}" accept="image/*" capture="camera" class="hidden" onchange="handleFilePreview(this, ${o.row})">
-                  </label>
+                    <div class="flex items-center justify-between p-4 bg-primary rounded-2xl text-white">
+                        <div class="flex flex-col gap-3">
+                          <div class="flex justify-between items-start">
+                              <h4 class="font-bold text-xl">${o.id}</h4>
+                              ${o.priority && o.priority != 999999 ? `<span class="bg-white/20 text-white text-[10px] font-bold px-2 py-1 rounded-lg">رقم المسار: ${o.priority}</span>` : ''}
+                          </div>
+                          <div>
+                             <p class="text-[10px] text-white/50 font-bold">التحصيل المطلـوب</p>
+                             <p class="text-lg font-black text-secondary">${o.amount} <small class="text-[10px]">ج.م</small></p>
+                          </div>
+                        </div>
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-secondary">payments</span>
+                        </div>
+                    </div>
                 </div>
+              </div>
 
-                <div class="space-y-2">
-                  <label class="block text-sm font-bold text-primary mb-1">📝 سبب المرتجع (للمرتجعات فقط)</label>
-                  <input type="text" id="reason-${o.row}" placeholder="مثال: العميل لم يرد، رفض الاستلام..." class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary transition-all">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                  <button class="bg-[#27ae60] text-white py-5 rounded-[1.5rem] font-bold text-base shadow-lg shadow-green-100 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2" 
-                    id="btnDel-${o.row}" onclick="processAction(${o.row}, 'delivered')">
-                    إتمام التسليم
-                    <span class="material-symbols-outlined text-xl">verified</span>
+              <!-- Action Area -->
+              <div class="pt-4 border-t border-slate-100 text-right">
+                ${o.status === 'تم الإنشاء' ? `
+                  <button class="w-full bg-green-600 text-white py-5 rounded-[1.5rem] font-black text-lg shadow-lg shadow-green-100 hover:bg-green-700 active:scale-95 transition-all flex items-center justify-center gap-3" 
+                    id="btnPick-${o.row}" onclick="processSimpleAction(${o.row}, 'picked_up')">
+                    تأكيد استلام الشحنة من التاجر
+                    <span class="material-symbols-outlined text-2xl">check_box</span>
                   </button>
-                  <button class="bg-[#e74c3c] text-white py-5 rounded-[1.5rem] font-bold text-base shadow-lg shadow-red-100 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2" 
-                    id="btnRet-${o.row}" onclick="processAction(${o.row}, 'returned')">
-                    تسجيل مرتجع
-                    <span class="material-symbols-outlined text-xl">cancel</span>
+                ` : o.status === 'في المخزن' ? `
+                  <button class="w-full bg-purple-600 text-white py-5 rounded-[1.5rem] font-black text-lg shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center justify-center gap-3" 
+                    id="btnOut-${o.row}" onclick="processSimpleAction(${o.row}, 'out_for_delivery')">
+                    بدء رحلة التوصيل الآن
+                    <span class="material-symbols-outlined text-2xl">local_shipping</span>
                   </button>
-                </div>
+                ` : `
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-bold text-primary mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary">add_a_photo</span>
+                        صورة إثبات التسليم أو المرتجع
+                      </label>
+                      <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-[2rem] cursor-pointer bg-slate-50 hover:bg-slate-100 hover:border-secondary transition-all overflow-hidden group">
+                        <div id="preview-container-${o.row}" class="flex flex-col items-center justify-center">
+                          <span class="material-symbols-outlined text-3xl text-outline mb-2 group-hover:scale-110 transition-transform">photo_camera</span>
+                          <p class="text-xs text-outline font-bold">التقاط صورة الدليل</p>
+                        </div>
+                        <input type="file" id="file-${o.row}" accept="image/*" capture="camera" class="hidden" onchange="handleFilePreview(this, ${o.row})">
+                      </label>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-primary mb-1">📝 سبب المرتجع (اختياري)</label>
+                      <input type="text" id="reason-${o.row}" placeholder="مثال: العميل لم يرد..." class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-secondary transition-all">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                      <button class="bg-[#27ae60] text-white py-5 rounded-[1.5rem] font-black text-sm shadow-lg shadow-green-100 hover:opacity-90 active:scale-95 transition-all flex flex-col items-center justify-center gap-1" 
+                        id="btnDel-${o.row}" onclick="processAction(${o.row}, 'delivered')">
+                        <span>تم التسليم</span>
+                        <span class="material-symbols-outlined">verified</span>
+                      </button>
+                      <button class="bg-[#e74c3c] text-white py-5 rounded-[1.5rem] font-black text-sm shadow-lg shadow-red-100 hover:opacity-90 active:scale-95 transition-all flex flex-col items-center justify-center gap-1" 
+                        id="btnRet-${o.row}" onclick="processAction(${o.row}, 'returned')">
+                        <span>مرتجع</span>
+                        <span class="material-symbols-outlined">cancel</span>
+                      </button>
+                    </div>
+                  </div>
+                `}
               </div>
             </div>
           </div>`;
@@ -409,13 +437,40 @@
       }
     }
 
+    function processSimpleAction(row, actionType) {
+      var btn = document.getElementById(actionType === 'picked_up' ? 'btnPick-' + row : 'btnOut-' + row);
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> جاري الحفظ...';
+      
+      if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(function(res) {
+          if(res.success) {
+            var card = document.getElementById('card-' + row);
+            card.style.transform = 'scale(0.9)';
+            card.style.opacity = '0.5';
+            setTimeout(() => { login(); }, 500); // Reload to update state
+          } else {
+            alert("خطأ: " + res.error);
+            btn.disabled = false;
+            btn.innerText = "فشل المحاولة، أعد المحاولة";
+          }
+        }).processCourierUpdate(row, actionType, null, null, "", null);
+      }
+    }
+
     function resetButtons(row) {
       var btnDel = document.getElementById('btnDel-' + row);
       var btnRet = document.getElementById('btnRet-' + row);
-      btnDel.disabled = false; btnRet.disabled = false;
-      btnDel.classList.remove('opacity-50'); btnRet.classList.remove('opacity-50');
-      btnDel.innerHTML = 'إتمام التسليم <span class="material-symbols-outlined text-xl">verified</span>';
-      btnRet.innerHTML = 'تسجيل مرتجع <span class="material-symbols-outlined text-xl">cancel</span>';
+      if(btnDel) {
+        btnDel.disabled = false;
+        btnDel.classList.remove('opacity-50');
+        btnDel.innerHTML = '<span>تم التسليم</span> <span class="material-symbols-outlined">verified</span>';
+      }
+      if(btnRet) {
+        btnRet.disabled = false;
+        btnRet.classList.remove('opacity-50');
+        btnRet.innerHTML = '<span>مرتجع</span> <span class="material-symbols-outlined">cancel</span>';
+      }
     }
   </script>
 </body>

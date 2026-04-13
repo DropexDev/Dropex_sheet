@@ -482,13 +482,15 @@
     };
 
     function validateEgyptianPhone(phone) {
+        if (!phone) return false;
         let clean = phone.replace(/[^\d+]/g, '');
-        if (clean.startsWith('+2')) {
-            return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
-        }
-        if (clean.startsWith('01')) {
-            return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
-        }
+        // إذا بدأ بـ +2 أو 002
+        if (clean.startsWith('+2')) return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
+        if (clean.startsWith('002')) return clean.length === 14 && /^00201[0125]\d{8}$/.test(clean);
+        // الصيغة المحلية 11 رقم تبدأ بصفر
+        if (clean.startsWith('0')) return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
+        // إدخال 10 أرقام مباشرة
+        if (clean.length === 10 && /^1[0125]\d{8}$/.test(clean)) return true;
         return false;
     }
 
@@ -666,6 +668,17 @@
         var payer = document.querySelector('input[name="s-shippingPayer"]:checked').value;
 
         if (!name || !phone || !area || !address || !price) { alert("يرجى ملء جميع الخانات الأساسية!"); return; }
+        
+        if (!validateEgyptianPhone(phone)) {
+            alert("رقم هاتف المستلم غير صحيح! يجب أن يكون رقم موبايل مصري.");
+            return;
+        }
+
+        var phone2 = document.getElementById('s-receiverPhone2').value.replace(/\s+/g, '');
+        var phone3 = document.getElementById('s-receiverPhone3').value.replace(/\s+/g, '');
+        
+        if (phone2 && !validateEgyptianPhone(phone2)) { alert("رقم الهاتف الإضافي 1 غير صحيح!"); return; }
+        if (phone3 && !validateEgyptianPhone(phone3)) { alert("رقم الهاتف الإضافي 2 غير صحيح!"); return; }
 
         var btn = document.getElementById('saveSingleOrderBtn');
         btn.disabled = true; btn.innerText = "جاري الحفظ...";

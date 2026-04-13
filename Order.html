@@ -171,6 +171,31 @@
                     </div>
                 </div>
 
+                <!-- Shipping Options (Inspection & Payment) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="block text-xs font-bold text-primary">مسموح بالفتح للمعاينة</span>
+                            <span class="text-[10px] text-slate-400">السماح للمستلم بفحص الطرد</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="openForInspection" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent focus:ring-accent"></div>
+                        </label>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <label class="block text-xs font-bold text-primary mb-2">طريقة دفع الشحن والتوصيل</label>
+                        <select id="shippingPaymentMethod" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-accent outline-none font-bold">
+                            <option value="COD">الدفع عند الاستلام (COD)</option>
+                            <option value="WALLET_INSTAPAY">محفظة أو إنستا باي</option>
+                            <option value="ALL">الكل (نقداً / محفظة / إنستا باي)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="errorMsg" class="hidden bg-red-50 p-4 rounded-xl border border-red-100 text-error text-sm font-bold"></div>
+
                 <div class="border-t border-slate-100 pt-6">
                     <button type="submit" id="submitBtn" class="w-full bg-primary text-white font-black text-lg py-4 rounded-xl shadow-xl shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
                         تأكيد وإصدار البوليصة <span class="material-symbols-outlined">send</span>
@@ -244,6 +269,19 @@
                     window.location.href = "?page=" + page;
                 }
             }
+        }
+
+        function validateEgyptianPhone(phone) {
+            if (!phone) return false;
+            let clean = phone.replace(/[^\d+]/g, '');
+            // إذا بدأ بـ +2 أو 002
+            if (clean.startsWith('+2')) return clean.length === 13 && /^\+201[0125]\d{8}$/.test(clean);
+            if (clean.startsWith('002')) return clean.length === 14 && /^00201[0125]\d{8}$/.test(clean);
+            // الصيغة المحلية 11 رقم تبدأ بصفر
+            if (clean.startsWith('0')) return clean.length === 11 && /^01[0125]\d{8}$/.test(clean);
+            // إدخال 10 أرقام مباشرة
+            if (clean.length === 10 && /^1[0125]\d{8}$/.test(clean)) return true;
+            return false;
         }
 
         window.onload = function() {
@@ -338,22 +376,44 @@
                 }
             }
 
+            var senderPhone = document.getElementById('senderPhone').value.trim();
+            var receiverPhone = document.getElementById('receiverPhone').value.trim();
+            var errorEl = document.getElementById('errorMsg');
+            errorEl.style.display = 'none';
+
+            if (!validateEgyptianPhone(senderPhone)) {
+                errorEl.innerText = "رقم هاتف المرسل غير صحيح (يجب أن يكون رقم موبايل مصري).";
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = 'تأكيد وإصدار البوليصة <span class="material-symbols-outlined">send</span>';
+                return;
+            }
+            if (!validateEgyptianPhone(receiverPhone)) {
+                errorEl.innerText = "رقم هاتف المستلم غير صحيح (يجب أن يكون رقم موبايل مصري).";
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = 'تأكيد وإصدار البوليصة <span class="material-symbols-outlined">send</span>';
+                return;
+            }
+
             var currentOrderData = {
                 senderEmail: document.getElementById('senderEmail').value,
                 senderName: document.getElementById('senderName').value,
-                senderPhone: document.getElementById('senderPhone').value,
+                senderPhone: senderPhone,
                 senderAddress: document.getElementById('senderAddress').value,
                 senderArea: document.getElementById('senderArea').value,
                 receiverEmail: document.getElementById('receiverEmail').value,
                 receiverName: document.getElementById('receiverName').value,
-                receiverPhone: document.getElementById('receiverPhone').value,
+                receiverPhone: receiverPhone,
                 receiverAddress: document.getElementById('receiverAddress').value,
                 receiverArea: document.getElementById('receiverArea').value,
                 productPrice: document.getElementById('productPrice').value,
                 deliveryCost: document.getElementById('deliveryCost').value,
                 deliveryPaidBy: document.getElementById('deliveryPaidBy').value,
                 divisionDetail: splitDetails,
-                receiverShare: recShare
+                receiverShare: recShare,
+                openForInspection: document.getElementById('openForInspection').checked,
+                shippingPaymentMethod: document.getElementById('shippingPaymentMethod').value
             };
 
             if(typeof google !== 'undefined' && google.script) {

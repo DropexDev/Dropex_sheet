@@ -79,15 +79,12 @@ function createNewOrder(formObj) {
     var base64Barcode = Utilities.base64Encode(barcodeBlob.getBytes());
     var barcodeImgSrc = "data:image/png;base64," + base64Barcode;
 
-    // تجهيز تسميات البيانات الجديدة للبوليصة
-    var inspectTxt = formObj.openForInspection ? "نعم (يسمح بالفتح)" : "لا (ممنوع الفتح)";
-    var payMethodTxt = "نقداً (COD)";
-    if(formObj.shippingPaymentMethod === "Wallet") payMethodTxt = "محفظة إلكترونية";
-    else if(formObj.shippingPaymentMethod === "InstaPay") payMethodTxt = "إنستا باي";
+    var inspectTxt = formObj.openForInspection ? "مسموح" : "ممنوع";
+    var payMethodTxt = "الدفع عند الاستلام (COD)";
+    if(formObj.shippingPaymentMethod === "WALLET_INSTAPAY" || formObj.shippingPaymentMethod === "Wallet" || formObj.shippingPaymentMethod === "InstaPay") payMethodTxt = "محفظة أو إنستا باي";
+    else if(formObj.shippingPaymentMethod === "ALL") payMethodTxt = "نقداً / محفظة / إنستا باي";
 
-    var extraPhonesHtml = "";
-    if (formObj.receiverPhone2) extraPhonesHtml += `<div>هاتف إضافي: ${formObj.receiverPhone2}</div>`;
-    if (formObj.receiverPhone3) extraPhonesHtml += `<div>هاتف إضافي: ${formObj.receiverPhone3}</div>`;
+    var shippingLabel = receiverDeliveryShare === 0 ? "مجاني" : receiverDeliveryShare + " ج.م";
 
     var htmlContent = `
     <!DOCTYPE html>
@@ -95,59 +92,33 @@ function createNewOrder(formObj) {
     <head>
       <meta charset="UTF-8">
       <style>
-        body { font-family: 'Tahoma', 'Arial', sans-serif; color: #333; line-height: 1.4; padding: 10px; }
-        .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 15px; }
-        .header h1 { margin: 0; color: #2c3e50; font-size: 24px; font-weight: bold; }
-        .barcode { margin-top: 10px; width: 220px; height: 50px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .info-table td { width: 50%; padding: 10px; vertical-align: top; border: 1px solid #bdc3c7; background-color: #fafafa; }
-        .info-table h3 { margin: 0 0 5px 0; color: #2980b9; font-size: 14px; border-bottom: 1px solid #eee; }
-        .instructions-table td { padding: 8px; border: 1px solid #bdc3c7; background-color: #fff9f0; font-size: 13px; }
-        .financial-table th { background-color: #2c3e50; color: white; padding: 10px; font-size: 16px; }
-        .financial-table td { padding: 10px; border: 1px solid #bdc3c7; text-align: center; font-size: 18px; }
-        .total-row { background-color: #ecf0f1; font-weight: bold; }
-        .amount { color: #e74c3c; font-size: 22px; }
+        body { font-family: 'Tahoma', sans-serif; padding: 10px; font-size: 13px; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        td, th { border: 1px solid #ccc; padding: 8px; text-align: right; }
+        .total { background: #f9f9f9; font-weight: bold; font-size: 16px; color: #d35400; }
       </style>
     </head>
     <body>
       <div class="header">
-        <h1>Dropex</h1>
-        <p style="font-size:12px; margin:0;">رقم الشحنة: ${newTrackId} | ${dateString}</p>
-        <img src="${barcodeImgSrc}" class="barcode" alt="Barcode">
+        <h2>Dropex Shipping</h2>
+        <p>رقم التتبع: ${newTrackId} | ${dateString}</p>
+        <img src="${barcodeImgSrc}" style="width:200px;">
       </div>
-      
-      <table class="info-table">
+      <table>
         <tr>
-          <td>
-            <h3>إلى (المستلم)</h3>
-            <p><strong>الاسم:</strong> ${formObj.receiverName}</p>
-            <p><strong>الهاتف:</strong> <span dir="ltr">${formObj.receiverPhone}</span></p>
-            <p><strong>العنوان:</strong> ${formObj.receiverAddress} - ${formObj.receiverArea}</p>
-          </td>
-          <td>
-            <h3>من (المرسل)</h3>
-            <p><strong>الاسم:</strong> ${formObj.senderName}</p>
-            <p><strong>الهاتف:</strong> <span dir="ltr">${formObj.senderPhone}</span></p>
-          </td>
+          <td><strong>المستلم:</strong> ${formObj.receiverName}<br><strong>الهاتف:</strong> ${formObj.receiverPhone}<br><strong>العنوان:</strong> ${formObj.receiverArea} - ${formObj.receiverAddress}</td>
+          <td><strong>المرسل:</strong> ${formObj.senderName}</td>
         </tr>
       </table>
-
-      <table class="instructions-table">
-        <tr>
-          <td width="50%"><strong>مسموح بالفتح للمعاينة:</strong> <span class="badge ${formObj.openForInspection ? 'badge-info' : ''}">${inspectTxt}</span></td>
-          <td width="50%"><strong>طريقة دفع الشحن:</strong> ${payMethodTxt}</td>
-        </tr>
-        <tr>
-          <td colspan="2"><strong>الشحن مدفوع بواسطة:</strong> ${formObj.deliveryPaidBy} 
-          ${formObj.deliveryPaidBy === 'تقسيم' ? '(' + formObj.divisionDetail + ')' : ''}</td>
-        </tr>
+      <table>
+        <tr><td><strong>المعاينة:</strong> ${inspectTxt}</td><td><strong>طريقة الدفع:</strong> ${payMethodTxt}</td></tr>
       </table>
-
-      <table class="financial-table">
-        <tr><th colspan="2">المبالغ المطلوب تحصيلها من المستلم</th></tr>
+      <table>
+        <tr><th>البيان</th><th>المبلغ</th></tr>
         <tr><td>سعر المنتج</td><td>${productPrice} ج.م</td></tr>
-        <tr><td>نصيب المستلم من الشحن</td><td>${receiverDeliveryShare} ج.م</td></tr>
-        <tr class="total-row"><td>الإجمالي المطلوب تحصيله</td><td class="amount">${totalToCollectFromReceiver} ج.م</td></tr>
+        <tr><td>التوصيل</td><td>${shippingLabel}</td></tr>
+        <tr class="total"><td>الإجمالي المطلوب</td><td>${totalToCollectFromReceiver} ج.م</td></tr>
       </table>
     </body>
     </html>
@@ -162,16 +133,14 @@ function createNewOrder(formObj) {
     var waybillUrl = pdfFile.getUrl();
     var pdfBase64 = Utilities.base64Encode(pdfBlob.getBytes());
 
-    // الاستقبال من الواجهة
     var openForInspection = formObj.openForInspection ? "نعم" : "لا";
     var shippingPaymentMethod = formObj.shippingPaymentMethod || "COD";
 
-    // التعديل: زيادة المصفوفة لاستيعاب الهواتف الإضافية و "سعر البوليصة" في AJ
     var rowData = new Array(36).fill("");
     rowData[0] = newTrackId; rowData[1] = String(formObj.senderEmail).trim().toLowerCase();
     rowData[2] = String(formObj.senderName).trim(); rowData[3] = formObj.receiverName;
     rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
-    rowData[6] = formObj.productPrice; rowData[7] = systemShippingFee; // العمود H لسعر دروبكس الثابت
+    rowData[6] = formObj.productPrice; rowData[7] = systemShippingFee;
     rowData[8] = formObj.deliveryPaidBy; rowData[9] = 0;
     rowData[10] = waybillUrl;
     rowData[11] = formatPhoneForSheet(formObj.senderPhone); rowData[12] = formObj.senderAddress;
@@ -179,44 +148,28 @@ function createNewOrder(formObj) {
     rowData[15] = formatPhoneForSheet(formObj.receiverPhone); rowData[16] = formObj.receiverAddress;
     rowData[17] = formObj.receiverArea; rowData[26] = orderPin;
     rowData[27] = totalToCollectFromReceiver;
-    rowData[28] = ""; // حالة التصفية
+    rowData[28] = ""; 
     
-    // البيانات التقنية والهواتف والأسعار الإضافية
-    rowData[31] = openForInspection; // AF
-    rowData[32] = shippingPaymentMethod; // AG
-    rowData[33] = formatPhoneForSheet(formObj.receiverPhone2); // AH
-    rowData[34] = formatPhoneForSheet(formObj.receiverPhone3); // AI
-    rowData[35] = merchantShippingPrice; // AJ (السعر الذي وضعه التاجر وسيظهر للعميل)
+    rowData[31] = openForInspection;
+    rowData[32] = shippingPaymentMethod;
+    rowData[33] = formatPhoneForSheet(formObj.receiverPhone2);
+    rowData[34] = formatPhoneForSheet(formObj.receiverPhone3);
+    rowData[35] = receiverDeliveryShare;
 
     sheet.appendRow(rowData);
     return { success: true, trackingId: newTrackId, pin: orderPin, totalToCollect: totalToCollectFromReceiver, receiverDeliveryShare: receiverDeliveryShare, pdfUrl: waybillUrl, pdfBase64: pdfBase64 };
   } catch (e) { return { success: false, error: e.toString() }; } finally { lock.releaseLock(); }
 }
 
-/**
- * Normalizes Egyptian phone numbers to international format (+20...)
- * to ensure Google Sheets treats them as text and for compatibility with WhatsApp/Calling.
- */
 function formatPhoneForSheet(phone) {
   if (phone === null || phone === undefined) return "";
-  var phoneStr = String(phone).replace(/[\s\-\(\)]/g, ""); // Clean formatting characters
+  var phoneStr = String(phone).replace(/[\s\-\(\)]/g, "");
   if (phoneStr === "") return "";
-
-  // 1. If it already starts with +20, just return it
   if (phoneStr.startsWith("+20")) return phoneStr;
-  
-  // 2. If it starts with 20 (but no +), add the +
   if (phoneStr.startsWith("20") && phoneStr.length >= 12) return "+" + phoneStr;
-
-  // 3. If it starts with 0 (e.g., 012...), add +2
   if (phoneStr.startsWith("0")) return "+2" + phoneStr;
-
-  // 4. If it starts with 1 (and is likely an Egyptian mobile number without 0), add +20
   if (phoneStr.startsWith("1") && (phoneStr.length === 10)) return "+20" + phoneStr;
-
-  // 5. If it's something else but looks like it needs the country code
   if (phoneStr.length === 11 && phoneStr.startsWith("01")) return "+2" + phoneStr;
-
   return phoneStr;
 }
 
@@ -243,6 +196,8 @@ function getCourierOrders(email, password) {
   if (!isValid) return { error: "الإيميل أو الرقم السري غير صحيح" };
 
   var orderSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
+  if (!orderSheet) return { error: "لم يتم العثور على شيت الطلبات (Orders)." };
+  
   var orderData = orderSheet.getDataRange().getValues();
   var pendingOrders = [];
   for (var j = 1; j < orderData.length; j++) {
@@ -257,17 +212,30 @@ function getCourierOrders(email, password) {
       pendingOrders.push({ 
         row: j + 1, 
         id: orderData[j][0], 
+        status: status,
         sender: orderData[j][2], 
         senderPhone: orderData[j][11], 
+        senderArea: String(orderData[j][14]).trim(),
+        senderAddress: orderData[j][12] + " (" + orderData[j][14] + ")",
         receiver: orderData[j][3], 
         receiverPhone: orderData[j][15], 
-        address: fullAddress, 
+        receiverArea: String(orderData[j][17]).trim(),
+        receiverAddress: orderData[j][16] + " (" + orderData[j][17] + ")", 
         amount: totalToCollect,
         inspection: inspection,
-        payMethod: payMethod
+        payMethod: payMethod,
+        priority: parseInt(orderData[j][36]) || 999999 // عمود AK للترتيب اليدوي
       });
     }
   }
+
+  // الترتيب حسب رغبتك (يدوياً من الشيت - عمود AK)
+  pendingOrders.sort(function(a, b) {
+    var pA = parseInt(a.priority) || 999999;
+    var pB = parseInt(b.priority) || 999999;
+    return pA - pB;
+  });
+
   return { error: null, courierName: courierName, orders: pendingOrders };
 }
 
@@ -275,7 +243,7 @@ function processCourierUpdate(rowNumber, actionType, imageData, filename, reason
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
     var podUrl = "";
-    if (imageData && filename) {
+    if (imageData && filename && (actionType === 'delivered' || actionType === 'returned')) {
       var folderType = (actionType === 'delivered') ? "Delivered" : "Returned";
       var folder = getSystemFolder(folderType);
       var contentType = imageData.substring(5, imageData.indexOf(';'));
@@ -285,19 +253,35 @@ function processCourierUpdate(rowNumber, actionType, imageData, filename, reason
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
       podUrl = file.getUrl();
     }
+    
     var mapUrl = "";
-    if (location && location.lat) { mapUrl = "https://www.google.com/maps/search/?api=1&query=" + location.lat + "," + location.lng; }
-    var newStatus = (actionType === 'delivered') ? "تم التوصيل" : "مرتجع";
-    sheet.getRange(rowNumber, 5).setValue(newStatus);
-
-    // تسجيل التواريخ المخصصة حسب المرحلة ( AE للنتيجة النهائية)
-    if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") {
-      sheet.getRange(rowNumber, 31).setValue(new Date()); // AE (31)
+    if (location && location.lat) { 
+      mapUrl = "https://www.google.com/maps/search/?api=1&query=" + location.lat + "," + location.lng; 
     }
 
-    if (podUrl != "") sheet.getRange(rowNumber, 20).setValue(podUrl);    // T (20)
-    if (mapUrl != "") sheet.getRange(rowNumber, 21).setValue(mapUrl);    // U (21)
-    if (actionType === 'returned' && reason != "") sheet.getRange(rowNumber, 22).setValue(reason); // V (22)
+    var newStatus = "";
+    if (actionType === 'picked_up') {
+      newStatus = "في المخزن";
+      sheet.getRange(rowNumber, 23).setValue(new Date()); // عمود W (23)
+    } else if (actionType === 'out_for_delivery') {
+      newStatus = "خرج للتوصيل";
+      sheet.getRange(rowNumber, 30).setValue(new Date()); // عمود AD (30)
+    } else if (actionType === 'delivered') {
+      newStatus = "تم التوصيل";
+      sheet.getRange(rowNumber, 31).setValue(new Date()); // عمود AE (31)
+    } else if (actionType === 'returned') {
+      newStatus = "مرتجع";
+      sheet.getRange(rowNumber, 31).setValue(new Date()); // عمود AE (31)
+    }
+
+    if (newStatus !== "") {
+      sheet.getRange(rowNumber, 5).setValue(newStatus);
+    }
+
+    if (podUrl !== "") sheet.getRange(rowNumber, 20).setValue(podUrl);
+    if (mapUrl !== "") sheet.getRange(rowNumber, 21).setValue(mapUrl);
+    if (actionType === 'returned' && reason != "") sheet.getRange(rowNumber, 22).setValue(reason);
+    
     return { success: true };
   } catch (e) { return { success: false, error: e.toString() }; }
 }
@@ -319,7 +303,6 @@ function getDashboardStats(password) {
     var stats = { totalOrders: 0, deliveredOrders: 0, pendingOrders: 0, outForDelivery: 0, totalCollectedAmount: 0, todayCollectedAmount: 0, totalNetProfit: 0, todayNetProfit: 0, recentOrders: [] };
     var todayStr = new Date().toDateString();
 
-    // نمر على البيانات بالعكس لنأخذ أحدث الطلبات أولاً للجدول
     for (var i = data.length - 1; i >= 1; i--) {
       if (data[i][0] == "") continue;
 
@@ -334,17 +317,16 @@ function getDashboardStats(password) {
       var pickupPrice = parseFloat(data[i][9]) || 0;
 
       var updateDateStr = "";
-      // تحديد تاريخ "اليوم" بناءً على الحالة
       if (status === "تم التوصيل" || status === "مرتجع" || status === "ملغي") {
-        if (data[i][30] instanceof Date) updateDateStr = data[i][30].toDateString(); // AE
+        if (data[i][30] instanceof Date) updateDateStr = data[i][30].toDateString();
       } else if (status === "خرج للتوصيل" || status === "خرج للتسليم") {
-        if (data[i][29] instanceof Date) updateDateStr = data[i][29].toDateString(); // AD
+        if (data[i][29] instanceof Date) updateDateStr = data[i][29].toDateString();
       } else if (status === "في المخزن") {
-        if (data[i][22] instanceof Date) updateDateStr = data[i][22].toDateString(); // W
+        if (data[i][22] instanceof Date) updateDateStr = data[i][22].toDateString();
       }
 
       if (updateDateStr === "" && data[i][5] instanceof Date) {
-        updateDateStr = data[i][5].toDateString(); // F (للحالات الجديدة)
+        updateDateStr = data[i][5].toDateString();
       }
 
       if (status == "تم التوصيل") {
@@ -361,7 +343,6 @@ function getDashboardStats(password) {
         stats.pendingOrders++;
       }
 
-      // إضافة الطلب للقائمة (نكتفي بأحدث 500 طلب لتحسين الأداء)
       if (stats.recentOrders.length < 500) {
         var merchantNet = 0;
         if (status === "تم التوصيل") {
@@ -397,6 +378,7 @@ function getDashboardStats(password) {
           waybillUrl: data[i][10] || "",
           inspection: data[i][31] || "لا",
           payMethod: data[i][32] || "COD",
+          priority: data[i][36] || "", // عمود AK
           isSettled: (String(data[i][28]).trim() === "تمت التصفية" || data[i][28] === true)
         });
       }
@@ -412,42 +394,40 @@ function updateOrderFromAdmin(dataObj) {
   try {
     var rowIndex = dataObj.rowIndex;
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders");
-    var oldData = sheet.getRange(rowIndex, 1, 1, 33).getValues()[0]; // جلب السطر الحالي بالكامل
+    var oldData = sheet.getRange(rowIndex, 1, 1, 37).getValues()[0];
     
-    var oldStatus = oldData[4]; // العمود E
+    var oldStatus = oldData[4];
     var newStatus = dataObj.status;
     
-    // 1. تحديث البيانات الأساسية
-    sheet.getRange(rowIndex, 3).setValue(dataObj.senderName); // C
-    sheet.getRange(rowIndex, 4).setValue(dataObj.receiverName); // D
-    sheet.getRange(rowIndex, 5).setValue(newStatus); // E
-    sheet.getRange(rowIndex, 7).setValue(parseFloat(dataObj.productPrice) || 0); // G
-    sheet.getRange(rowIndex, 8).setValue(parseFloat(dataObj.deliveryCost) || 0); // H
-    sheet.getRange(rowIndex, 9).setValue(dataObj.paidBy); // I
-    sheet.getRange(rowIndex, 10).setValue(parseFloat(dataObj.pickupPrice) || 0); // J
-    sheet.getRange(rowIndex, 12).setValue(dataObj.senderPhone); // L
-    sheet.getRange(rowIndex, 13).setValue(dataObj.senderAddress); // M
-    sheet.getRange(rowIndex, 14).setValue(dataObj.senderArea); // N
-    sheet.getRange(rowIndex, 16).setValue(formatPhoneForSheet(dataObj.receiverPhone)); // P
-    sheet.getRange(rowIndex, 17).setValue(dataObj.receiverAddress); // Q
-    sheet.getRange(rowIndex, 18).setValue(dataObj.receiverArea); // R
-    sheet.getRange(rowIndex, 19).setValue(dataObj.courierName); // S
-    sheet.getRange(rowIndex, 24).setValue(parseFloat(dataObj.gas) || 0); // X
-    sheet.getRange(rowIndex, 25).setValue(parseFloat(dataObj.maintenance) || 0); // Y
-    sheet.getRange(rowIndex, 26).setValue(parseFloat(dataObj.netProfit) || 0); // Z
+    sheet.getRange(rowIndex, 3).setValue(dataObj.senderName);
+    sheet.getRange(rowIndex, 4).setValue(dataObj.receiverName);
+    sheet.getRange(rowIndex, 5).setValue(newStatus);
+    sheet.getRange(rowIndex, 7).setValue(parseFloat(dataObj.productPrice) || 0);
+    sheet.getRange(rowIndex, 8).setValue(parseFloat(dataObj.deliveryCost) || 0);
+    sheet.getRange(rowIndex, 9).setValue(dataObj.paidBy);
+    sheet.getRange(rowIndex, 10).setValue(parseFloat(dataObj.pickupPrice) || 0);
+    sheet.getRange(rowIndex, 12).setValue(dataObj.senderPhone);
+    sheet.getRange(rowIndex, 13).setValue(dataObj.senderAddress);
+    sheet.getRange(rowIndex, 14).setValue(dataObj.senderArea);
+    sheet.getRange(rowIndex, 16).setValue(formatPhoneForSheet(dataObj.receiverPhone));
+    sheet.getRange(rowIndex, 17).setValue(dataObj.receiverAddress);
+    sheet.getRange(rowIndex, 18).setValue(dataObj.receiverArea);
+    sheet.getRange(rowIndex, 19).setValue(dataObj.courierName);
+    sheet.getRange(rowIndex, 24).setValue(parseFloat(dataObj.gas) || 0);
+    sheet.getRange(rowIndex, 25).setValue(parseFloat(dataObj.maintenance) || 0);
+    sheet.getRange(rowIndex, 26).setValue(parseFloat(dataObj.netProfit) || 0);
     
-    sheet.getRange(rowIndex, 32).setValue(dataObj.inspection); // AF
-    sheet.getRange(rowIndex, 33).setValue(dataObj.payMethod); // AG
-    sheet.getRange(rowIndex, 36).setValue(parseFloat(dataObj.merchantDeliveryCost) || 0); // AJ
+    sheet.getRange(rowIndex, 32).setValue(dataObj.inspection);
+    sheet.getRange(rowIndex, 33).setValue(dataObj.payMethod);
+    sheet.getRange(rowIndex, 36).setValue(parseFloat(dataObj.merchantDeliveryCost) || 0);
+    sheet.getRange(rowIndex, 37).setValue(dataObj.priority || ""); // عمود AK
 
-    // 2. منطق التواريخ الذكي: تحديث التاريخ فقط إذا تغيرت الحالة
     if (newStatus !== oldStatus) {
-      if (newStatus === "في المخزن") sheet.getRange(rowIndex, 23).setValue(new Date()); // W
-      else if (newStatus === "خرج للتوصيل" || newStatus === "خرج للتسليم") sheet.getRange(rowIndex, 30).setValue(new Date()); // AD
-      else if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") sheet.getRange(rowIndex, 31).setValue(new Date()); // AE
+      if (newStatus === "في المخزن") sheet.getRange(rowIndex, 23).setValue(new Date());
+      else if (newStatus === "خرج للتوصيل" || newStatus === "خرج للتسليم") sheet.getRange(rowIndex, 30).setValue(new Date());
+      else if (newStatus === "تم التوصيل" || newStatus === "مرتجع" || newStatus === "ملغي") sheet.getRange(rowIndex, 31).setValue(new Date());
     }
 
-    // 3. منطق البوليصة الذكي: هل نحتاج لتوليد بوليصة جديدة؟
     var waybillFieldsChanged = (
       dataObj.receiverName !== oldData[3] ||
       dataObj.receiverPhone !== oldData[15] ||
@@ -462,8 +442,8 @@ function updateOrderFromAdmin(dataObj) {
     );
 
     if (waybillFieldsChanged) {
-      var newWaybillUrl = regenerateWaybill(dataObj, oldData[0], oldData[5]); // rowIndex, id, originalDate
-      sheet.getRange(rowIndex, 11).setValue(newWaybillUrl); // K
+      var newWaybillUrl = regenerateWaybill(dataObj, oldData[0], oldData[5]);
+      sheet.getRange(rowIndex, 11).setValue(newWaybillUrl);
     }
 
     return { success: true };
@@ -472,21 +452,19 @@ function updateOrderFromAdmin(dataObj) {
   }
 }
 
-/**
- * دالة مستقلة لإعادة إنشاء البوليصة PDF عند التعديل
- */
 function regenerateWaybill(formObj, trackId, dateAdded) {
   var dateStr = (dateAdded instanceof Date) ? Utilities.formatDate(dateAdded, Session.getScriptTimeZone(), "dd/MM/yyyy") : String(dateAdded);
   
-  var inspectTxt = (formObj.inspection === "نعم") ? "نعم (يسمح بالفتح)" : "لا (ممنوع الفتح)";
-  var payMethodTxt = "نقداً (COD)";
-  if(formObj.payMethod === "WALLET_INSTAPAY") payMethodTxt = "محفظة / إنستا باي";
+  var inspectTxt = (formObj.inspection === "نعم" || formObj.openForInspection) ? "مسموح" : "ممنوع";
+  var payMethodTxt = "الدفع عند الاستلام (COD)";
+  var method = formObj.payMethod || formObj.shippingPaymentMethod || "COD";
+  if(method === "WALLET_INSTAPAY" || method === "Wallet" || method === "InstaPay") payMethodTxt = "محفظة أو إنستا باي";
+  else if(method === "ALL") payMethodTxt = "نقداً / محفظة / إنستا باي";
 
   var productPrice = parseFloat(formObj.productPrice) || 0;
-  var deliveryCost = parseFloat(formObj.deliveryCost) || 0;
-  var receiverDeliveryShare = 0;
-  if (formObj.paidBy === "على المستلم") receiverDeliveryShare = deliveryCost;
+  var receiverDeliveryShare = parseFloat(formObj.merchantDeliveryCost || formObj.receiverShare) || 0;
   var totalToCollect = productPrice + receiverDeliveryShare;
+  var shippingLabel = receiverDeliveryShare === 0 ? "مجاني" : receiverDeliveryShare + " ج.م";
 
   var barcodeUrl = "https://quickchart.io/barcode?type=code128&text=" + trackId + "&height=60&includeText=true";
   var barcodeBlob = UrlFetchApp.fetch(barcodeUrl).getBlob();
@@ -510,17 +488,17 @@ function regenerateWaybill(formObj, trackId, dateAdded) {
       </div>
       <table>
         <tr>
-          <td><strong>المستلم:</strong> ${formObj.receiverName}<br><strong>الهاتف:</strong> ${formObj.receiverPhone}<br><strong>العنوان:</strong> ${formObj.receiverAddress} - ${formObj.receiverArea}</td>
-          <td><strong>المرسل:</strong> ${formObj.senderName}<br><strong>الهاتف:</strong> ${formObj.senderPhone}</td>
+          <td><strong>المستلم:</strong> ${formObj.receiverName}<br><strong>الهاتف:</strong> ${formObj.receiverPhone}<br><strong>العنوان:</strong> ${formObj.receiverArea} - ${formObj.receiverAddress}</td>
+          <td><strong>المرسل:</strong> ${formObj.senderName}</td>
         </tr>
       </table>
       <table>
-        <tr><td><strong>المعاينة:</strong> ${inspectTxt}</td><td><strong>الدفع:</strong> ${payMethodTxt}</td></tr>
+        <tr><td><strong>المعاينة:</strong> ${inspectTxt}</td><td><strong>طريقة الدفع:</strong> ${payMethodTxt}</td></tr>
       </table>
       <table>
         <tr><th>البيان</th><th>المبلغ</th></tr>
         <tr><td>سعر المنتج</td><td>${productPrice} ج.م</td></tr>
-        <tr><td>تكلفة الشحن</td><td>${receiverDeliveryShare} ج.م</td></tr>
+        <tr><td>التوصيل</td><td>${shippingLabel}</td></tr>
         <tr class="total"><td>الإجمالي المطلوب</td><td>${totalToCollect} ج.م</td></tr>
       </table>
     </body></html>`;
@@ -647,30 +625,18 @@ function getUserDashboardStats(email, name) {
       var deliveryCost = parseFloat(data[i][7]) || 0;
       var paidBy = String(data[i][8]).trim();
       var pickupPrice = parseFloat(data[i][9]) || 0;
-
-      var merchantNet = 0;
-
       if (status === "تم التوصيل") {
-        if (paidBy === "على المرسل") {
-          merchantNet = productPrice - deliveryCost - pickupPrice;
-        } else {
-          merchantNet = productPrice - pickupPrice;
-        }
-      }
-      else if (status === "مرتجع") {
-        if (paidBy === "على المرسل") {
-          merchantNet = 0 - deliveryCost - pickupPrice;
-        } else {
-          merchantNet = 0 - pickupPrice;
-        }
       }
 
       var isSettled = (String(data[i][28]).trim() === "تمت التصفية" || data[i][28] === true);
 
       // الحالة المالية: تم التوصيل أو مرتجع أو (ملغي ببيك أب)
       if (status === "تم التوصيل") {
-        var extraShippingProfit = Math.max(0, (parseFloat(data[i][35]) || 0) - (parseFloat(data[i][7]) || 0));
-        var finalNet = (paidBy === "على المرسل") ? (productPrice - deliveryCost - pickupPrice) : (productPrice + extraShippingProfit - pickupPrice);
+        var receiverShareOnWaybill = parseFloat(data[i][35]) || 0; // الخانة AJ
+        var currentSystemFee = parseFloat(data[i][7]) || 0; // الخانة H
+        
+        // المعادلة الموحدة: (سعر المنتج + ما دفعه المستلم فعلياً) - تكلفة السيستم - سعر البيك أب
+        var finalNet = (productPrice + receiverShareOnWaybill) - currentSystemFee - pickupPrice;
         
         stats.deliveredOrders++;
         stats.totalHistoricalAmount += productPrice;
@@ -679,9 +645,18 @@ function getUserDashboardStats(email, name) {
         }
       }
       else if (status === "مرتجع") {
+        // في المرتفع، العميل لم يدفع شيء. التاجر يتحمل (سعر البيك أب)
+        // وإذا كان اختيار "على المرسل" يتحمل أيضاً سعر الشحن (لكن هنا نعتمد على H لخصم التكلفة)
+        var loss = 0;
+        if (paidBy === "على المرسل") {
+            loss = (parseFloat(data[i][7]) || 0) + pickupPrice;
+        } else {
+            loss = pickupPrice;
+        }
+        
         stats.returnedOrders++;
         if (!isSettled) {
-          stats.currentOwed += merchantNet;
+          stats.currentOwed -= loss;
         }
       }
       else if (status === "ملغي") {
@@ -692,6 +667,16 @@ function getUserDashboardStats(email, name) {
       }
       else if (status === "قيد الانتظار" || status === "تم الإنشاء" || status === "خرج للتسليم" || status === "خرج للتوصيل" || status === "في المخزن") {
         stats.pendingOrders++;
+      }
+
+      // حساب صافي الربح للعرض في الجدول بناءً على الحالة
+      var displayNet = 0;
+      if (status === "تم التوصيل") {
+          displayNet = (productPrice + (parseFloat(data[i][35]) || 0)) - (parseFloat(data[i][7]) || 0) - pickupPrice;
+      } else if (status === "مرتجع") {
+          displayNet = (paidBy === "على المرسل") ? (0 - (parseFloat(data[i][7]) || 0) - pickupPrice) : (0 - pickupPrice);
+      } else if (status === "ملغي") {
+          displayNet = (pickupPrice > 0) ? (0 - pickupPrice) : 0;
       }
 
       var safeDateStr = (data[i][5] instanceof Date) ? Utilities.formatDate(data[i][5], Session.getScriptTimeZone(), "dd/MM/yyyy") : String(data[i][5]);
@@ -711,7 +696,7 @@ function getUserDashboardStats(email, name) {
         productPrice: productPrice,
         paidBy: paidBy,
         pickupPrice: pickupPrice,
-        merchantNet: merchantNet,
+        merchantNet: displayNet,
         podImage: data[i][19] || "",
         location: data[i][20] || "",
         waybillUrl: data[i][10]
@@ -742,6 +727,11 @@ function processGridOrders(ordersArray, userData) {
 
       if (recName === "" || recPhone === "") continue;
 
+      var newTrackId = "TRK-" + Math.floor(Math.random() * 90000000 + 10000000);
+      var dateAdded = new Date();
+      var dateString = Utilities.formatDate(dateAdded, Session.getScriptTimeZone(), "dd/MM/yyyy");
+      var orderPin = Math.floor(1000 + Math.random() * 9000).toString();
+      
       var deliveryCost = 0;
       for (var a = 0; a < areasData.length; a++) {
         if (String(areasData[a].name).trim() === recArea) { deliveryCost = parseFloat(areasData[a].price) || 0; break; }
@@ -754,16 +744,14 @@ function processGridOrders(ordersArray, userData) {
         totalToCollect += deliveryCost;
       }
 
-      var newTrackId = generateTrackingNumber();
-      var orderPin = Math.floor(100000 + Math.random() * 900000).toString();
-      var dateAdded = new Date();
-      var dateString = Utilities.formatDate(dateAdded, Session.getScriptTimeZone(), "dd/MM/yyyy");
+      var inspectTxt = (ordersArray[i].inspection === "نعم") ? "مسموح" : "ممنوع";
+      var payM = ordersArray[i].payMethod || "COD";
+      var payMethodTxt = (payM === "WALLET_INSTAPAY") ? "محفظة أو إنستا باي" : "الدفع عند الاستلام (COD)";
+      var shippingLabel = receiverDeliveryShare === 0 ? "مجاني" : receiverDeliveryShare + " ج.م";
 
-      // التعديل: إنشاء بوليصة PDF للطلب المجمع
       var barcodeUrl = "https://quickchart.io/barcode?type=code128&text=" + newTrackId + "&height=60&includeText=true";
       var barcodeBlob = UrlFetchApp.fetch(barcodeUrl).getBlob();
-      var base64Barcode = Utilities.base64Encode(barcodeBlob.getBytes());
-      var barcodeImgSrc = "data:image/png;base64," + base64Barcode;
+      var barcodeImgSrc = "data:image/png;base64," + Utilities.base64Encode(barcodeBlob.getBytes());
 
       var htmlContent = `
       <!DOCTYPE html>
@@ -771,41 +759,50 @@ function processGridOrders(ordersArray, userData) {
       <head>
         <meta charset="UTF-8">
         <style>
-          body { font-family: 'Tahoma', sans-serif; color: #333; line-height: 1.6; padding: 20px; }
-          .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 20px; }
-          .header h1 { margin: 0; color: #2c3e50; font-size: 28px; }
-          .barcode { margin-top: 15px; width: 250px; height: 60px; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          .info-table td { width: 50%; padding: 15px; vertical-align: top; border: 1px solid #bdc3c7; background-color: #fafafa; }
-          .financial-table th { background-color: #ecf0f1; padding: 10px; text-align: right; border: 1px solid #bdc3c7; }
-          .financial-table td { padding: 10px; border: 1px solid #bdc3c7; }
+          body { font-family: 'Tahoma', sans-serif; color: #333; line-height: 1.4; padding: 10px; font-size: 13px; }
+          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+          .barcode { margin-top: 10px; width: 220px; height: 50px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+          td, th { border: 1px solid #bdc3c7; padding: 8px; text-align: right; vertical-align: top; }
+          .financial-table th { background-color: #2c3e50; color: white; padding: 10px; font-size: 16px; }
+          .financial-table td { padding: 10px; text-align: center; font-size: 18px; }
+          .total-row { background-color: #ecf0f1; font-weight: bold; }
+          .amount { color: #e74c3c; font-size: 22px; }
         </style>
       </head>
       <body>
         <div class="header">
-          <h1>Dropex</h1>
-          <p>تاريخ الإنشاء: ${dateString}</p>
+          <h2>Dropex</h2>
+          <p style="font-size:12px; margin:0;">رقم الشحنة: ${newTrackId} | ${dateString}</p>
           <img src="${barcodeImgSrc}" class="barcode" alt="Barcode">
         </div>
-        <table class="info-table">
+        <table>
           <tr>
-            <td>
-              <h3>بيانات المستلم (إلى)</h3>
-              <p>الاسم: ${recName}</p>
-              <p>الهاتف: <span dir="ltr">${recPhone}</span></p>
-              <p>العنوان: ${recAddress} - ${recArea}</p>
+            <td width="50%">
+              <strong>إلى (المستلم):</strong><br>
+              ${recName}<br>
+              <span dir="ltr">${recPhone}</span><br>
+              ${recArea} - ${recAddress}
             </td>
-            <td>
-              <h3>بيانات المرسل (من)</h3>
-              <p>الاسم: ${userData.name}</p>
+            <td width="50%">
+              <strong>من (المرسل):</strong><br>
+              ${userData.name}
             </td>
           </tr>
         </table>
+        
+        <table>
+          <tr>
+            <td width="50%"><strong>المعاينة:</strong> ${inspectTxt}</td>
+            <td width="50%"><strong>طريقة الدفع:</strong> ${payMethodTxt}</td>
+          </tr>
+        </table>
+
         <table class="financial-table">
-          <tr><th colspan="2">التفاصيل المالية</th></tr>
+          <tr><th colspan="2">تفاصيل الحساب</th></tr>
           <tr><td>سعر المنتج</td><td>${productPrice} ج.م</td></tr>
-          <tr><td>رسوم التوصيل</td><td>${receiverDeliveryShare} ج.م</td></tr>
-          <tr><td>الإجمالي</td><td><strong>${totalToCollect} ج.م</strong></td></tr>
+          <tr><td>التوصيل</td><td>${shippingLabel}</td></tr>
+          <tr class="total-row"><td>الإجمالي</td><td class="amount">${totalToCollect} ج.م</td></tr>
         </table>
       </body>
       </html>
@@ -819,25 +816,20 @@ function processGridOrders(ordersArray, userData) {
       pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
       var waybillUrl = pdfFile.getUrl();
 
-      // التعديل: 36 عمود لحفظ البيانات التقنية والهواتف والأسعار المزدوجة
       var rowData = new Array(36).fill("");
       rowData[0] = newTrackId; rowData[1] = String(userData.email).trim().toLowerCase();
       rowData[2] = String(userData.name).trim(); rowData[3] = recName;
       rowData[4] = "تم الإنشاء"; rowData[5] = dateAdded;
-      rowData[6] = productPrice; rowData[7] = deliveryCost; // السعر الأصلي (دروبكس)
+      rowData[6] = productPrice; rowData[7] = deliveryCost;
       rowData[8] = deliveryPaidBy; rowData[10] = waybillUrl;
-      rowData[11] = formatPhoneForSheet(userData.phone);
-      rowData[12] = userData.address; rowData[13] = userData.area;
-      rowData[14] = recEmail; rowData[15] = formatPhoneForSheet(recPhone);
-      rowData[16] = recAddress; rowData[17] = recArea;
-      rowData[26] = orderPin; rowData[27] = totalToCollect;
-      rowData[28] = ""; // حالة التصفية
-      
-      rowData[31] = ordersArray[i].inspection || "لا"; // AF
-      rowData[32] = ordersArray[i].payMethod || "COD"; // AG
-      rowData[33] = ""; // AH (هاتف إضافي 1)
-      rowData[34] = ""; // AI (هاتف إضافي 2)
-      rowData[35] = deliveryCost; // AJ (سعر البوليصة - افتراضياً نفس سعر دروبكس في الرفع المجمع)
+      rowData[12] = userData.address || "";
+      rowData[14] = userData.area || "";
+      rowData[15] = formatPhoneForSheet(recPhone); rowData[16] = recAddress;
+      rowData[17] = recArea; rowData[26] = orderPin;
+      rowData[27] = totalToCollect;
+      rowData[31] = (ordersArray[i].inspection === "نعم") ? "نعم" : "لا";
+      rowData[32] = payM;
+      rowData[35] = receiverDeliveryShare;
 
       sheet.appendRow(rowData);
       addedCount++;

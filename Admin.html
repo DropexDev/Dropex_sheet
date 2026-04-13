@@ -324,6 +324,7 @@
                             class="bg-slate-50 text-slate-500 font-bold sticky top-0 z-10 shadow-sm border-b border-slate-100 uppercase text-[11px] tracking-wider">
                             <tr>
                                 <th class="py-4 px-6">رقم الشحنة</th>
+                                <th class="py-4 px-6">الترتيب</th>
                                 <th class="py-4 px-6">المرسل (التاجر)</th>
                                 <th class="py-4 px-6">المستلم</th>
                                 <th class="py-4 px-6">المندوب</th>
@@ -450,17 +451,21 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <div>
+                        <div class="col-span-2 md:col-span-1">
                             <label class="text-[0.65rem] font-bold text-slate-400 uppercase">المندوب</label>
                             <select id="modalCourierSelect" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2"></select>
                         </div>
-                        <div>
-                            <label class="text-[0.65rem] font-bold text-slate-400 uppercase">المعاينة</label>
-                            <select id="modalInspection" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
-                                <option value="لا">لا (ممنوع)</option>
-                                <option value="نعم">نعم (مسموح)</option>
-                            </select>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="text-[0.65rem] font-bold text-tertiary uppercase">ترتيب خط السير</label>
+                            <input type="number" id="modalPriority" placeholder="مثلاً: 1" class="w-full bg-slate-50 border-tertiary/20 rounded-xl text-sm px-3 py-2 font-bold text-tertiary">
                         </div>
+                        <div class="col-span-2">
+                             <label class="text-[0.65rem] font-bold text-slate-400 uppercase">المعاينة</label>
+                             <select id="modalInspection" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm px-3 py-2">
+                                 <option value="لا">لا (ممنوع)</option>
+                                 <option value="نعم">نعم (مسموح)</option>
+                             </select>
+                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -722,6 +727,7 @@
 
                 html += '<tr class="group hover:bg-slate-50/50 transition border-white border-[6px] rounded-2xl">';
                 html += '<td class="py-3 px-6 font-bold text-primary">' + order.id + '</td>';
+                html += '<td class="py-3 px-6"><span class="px-2 py-1 bg-amber-50 text-amber-600 rounded-lg font-black">' + (order.priority || '---') + '</span></td>';
                 html += '<td class="py-3 px-6 font-medium">' + order.sender + '</td>';
                 html += '<td class="py-3 px-6 text-slate-500">' + order.receiver + '</td>';
                 
@@ -789,6 +795,7 @@
             document.getElementById('modalPayMethod').value = item.payMethod || 'COD';
             document.getElementById('modalInspection').value = item.inspection || 'لا';
             document.getElementById('modalCourierSelect').value = item.courier || '';
+            document.getElementById('modalPriority').value = item.priority || '';
             
             // المصاريف
             document.getElementById('modalGas').value = item.gas || 0;
@@ -808,9 +815,14 @@
         }
 
         function saveOrderUpdates() {
+            var btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> جاري الحفظ...';
+
             var orderData = {
                 rowIndex: document.getElementById('modalRowIndex').value,
                 courierName: document.getElementById('modalCourierSelect').value,
+                priority: document.getElementById('modalPriority').value,
                 gas: document.getElementById('modalGas').value,
                 maintenance: document.getElementById('modalMaintenance').value,
                 netProfit: document.getElementById('modalNetProfit').innerText,
