@@ -751,10 +751,10 @@
         google.script.run.withSuccessHandler(function (res) {
           if (res.success) {
             btn.className = "w-full bg-green-600 text-white py-3 rounded-xl font-bold transition-all shadow-lg text-lg mb-4";
-            btn.innerText = "تم التسجيل بنجاح!";
+            btn.innerText = "تم التسجيل بنجاح! جاري تحويلك...";
             setTimeout(() => {
               navigateTo('user');
-            }, 2000);
+            }, 1500);
           } else {
             err.innerText = res.error;
             err.style.display = 'block';
@@ -763,8 +763,13 @@
           }
         }).verifyAndCreateUser(currentPendingUserData, otpStr);
       } else {
+        // Simulation for local dev
         setTimeout(() => {
-          btn.innerText = "تم التسجيل بنجاح!";
+          btn.className = "w-full bg-green-600 text-white py-3 rounded-xl font-bold transition-all shadow-lg text-lg mb-4";
+          btn.innerText = "تم التسجيل بنجاح! جاري تحويلك...";
+          setTimeout(() => {
+            navigateTo('user');
+          }, 1500);
         }, 1000);
       }
     }

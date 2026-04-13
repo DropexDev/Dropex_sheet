@@ -436,46 +436,6 @@
                 </div>
             </section>
 
-            <!-- Section 5: Who Pays Shipping -->
-            <section class="bg-surface-container-low rounded-2xl p-6 space-y-4 shadow-sm">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="material-symbols-outlined text-primary-stitch">person_search</span>
-                    <h2 class="text-on-surface font-bold text-lg font-headline">من يدفع تكاليف الشحن؟</h2>
-                </div>
-                <div class="grid gap-3 grid-cols-3">
-                    <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[80px]">
-                        <input checked id="payer-sender" class="sr-only" name="s-shippingPayer" type="radio" value="على المرسل"/>
-                        <span class="text-[11px] font-bold text-on-surface text-center">المرسل فقط</span>
-                    </label>
-                    <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[80px]">
-                        <input id="payer-receiver" class="sr-only" name="s-shippingPayer" type="radio" value="على المستلم"/>
-                        <span class="text-[11px] font-bold text-on-surface text-center">المستلم فقط</span>
-                    </label>
-                    <label class="relative flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-transparent cursor-pointer hover:bg-primary-fixed transition-all group has-[:checked]:border-primary-stitch has-[:checked]:bg-primary-fixed min-h-[80px]">
-                        <input id="payer-split" class="sr-only" name="s-shippingPayer" type="radio" value="تقسيم"/>
-                        <span class="text-[11px] font-bold text-on-surface text-center">بالتقسيم</span>
-                    </label>
-                </div>
-
-                <!-- Split Payment Fields -->
-                <div class="space-y-4 pt-2 hidden" id="s-split-inputs">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1">
-                            <label class="text-outline font-bold text-[10px] mr-1">المستلم يدفع</label>
-                            <div class="relative">
-                                <input id="s-receiverShare" class="w-full bg-white border-none rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none text-sm" placeholder="0.00" type="number"/>
-                                <span class="absolute left-3 top-3.5 text-outline text-[10px] font-bold">ج.م</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <label class="text-outline font-bold text-[10px] mr-1">المرسل يدفع</label>
-                            <div class="relative">
-                                <input id="s-senderShare" class="w-full bg-white border-none rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-primary-stitch transition-all outline-none text-sm" placeholder="0.00" type="number"/>
-                                <span class="absolute left-3 top-3.5 text-outline text-[10px] font-bold">ج.م</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
         </main>
 
