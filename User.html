@@ -378,12 +378,12 @@
 
                         <div id="s-split-inputs" class="hidden space-y-2 p-3 bg-primary-stitch/5 rounded-xl border border-primary-stitch/10">
                             <div class="flex justify-between items-center text-[10px] font-bold text-primary-stitch uppercase mb-1">
-                                <span>حصة المستلم</span>
-                                <span>حصة المرسل</span>
+                                <span>يدفع المستلم</span>
+                                <span>يدفع المرسل</span>
                             </div>
                             <div class="flex gap-2">
-                                <input id="s-receiverShare" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="المستلم" type="number"/>
-                                <input id="s-senderShare" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="المرسل" type="number"/>
+                                <input id="s-receiverShare" oninput="balanceSplit('receiver')" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="0" type="number"/>
+                                <input id="s-senderShare" oninput="balanceSplit('sender')" class="w-full bg-white border-none rounded-lg p-2 text-xs text-center focus:ring-1 focus:ring-primary-stitch" placeholder="0" type="number"/>
                             </div>
                         </div>
                     </div>
@@ -599,6 +599,22 @@
       updateShippingPriceLogic();
     }
 
+    function balanceSplit(changedSide) {
+        const total = parseFloat(document.getElementById('s-deliveryCost').value) || 0;
+        const recInput = document.getElementById('s-receiverShare');
+        const sndInput = document.getElementById('s-senderShare');
+
+        if (changedSide === 'receiver') {
+            let val = parseFloat(recInput.value) || 0;
+            if (val > total) { val = total; recInput.value = total; }
+            sndInput.value = (total - val).toFixed(2);
+        } else {
+            let val = parseFloat(sndInput.value) || 0;
+            if (val > total) { val = total; sndInput.value = total; }
+            recInput.value = (total - val).toFixed(2);
+        }
+    }
+
     function updateShippingPriceLogic() {
         const areaSelect = document.getElementById('s-receiverArea');
         const priceInput = document.getElementById('s-deliveryCost');
@@ -631,8 +647,8 @@
             
             if (payer === 'تقسيم') {
                 splitDiv.classList.remove('hidden');
-                document.getElementById('s-receiverShare').value = defaultPrice / 2;
-                document.getElementById('s-senderShare').value = defaultPrice / 2;
+                document.getElementById('s-receiverShare').value = (defaultPrice / 2).toFixed(2);
+                document.getElementById('s-senderShare').value = (defaultPrice / 2).toFixed(2);
             } else {
                 splitDiv.classList.add('hidden');
             }
